@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>step1：Snood 調査結果 | Snoot 開発備忘録</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>step1：Snood とはどんなゲームか（調査結果）</h1>
+  <p>Snoot 開発備忘録 — 2026-06-10 / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+</header>
+<main>
+
+<h2>1. Snood の概要</h2>
+<p>
+Snood（スヌード）は、1996 年に David M. Dobson 氏が Apple Macintosh 向けに開発した
+パズルゲーム。いわゆる「バブルシューター（Puzzle Bobble / パズルボブル系）」の
+ゲーム性を持つが、玉の代わりに <strong>「snood」と呼ばれる表情豊かな顔のキャラクター</strong>
+を撃つのが最大の特徴。シェアウェアとして配布され、1990 年代末〜2000 年代前半に
+Mac・PC で絶大な人気を博し、後に Game Boy Advance などにも移植された。
+</p>
+
+<h2>2. 基本ルール</h2>
+<ul>
+  <li>画面上部に六角格子状（互い違い配置）に snood が並んでいる</li>
+  <li>画面下部中央の <strong>発射台（キャノン）</strong> を左右に回転させ、ランダムに選ばれた snood を撃ち上げる</li>
+  <li>撃った snood は直線に飛び、<strong>左右の壁では反射</strong> する。既存の snood か天井に当たると、その位置の格子に張り付く</li>
+  <li>着弾によって <strong>同じ種類の snood が 3 つ以上つながる</strong> と、そのグループ全体が消滅する</li>
+  <li>消滅の結果、<strong>天井とのつながりを失った snood は落下</strong> して盤面から除去される（落下による除去は得点が高い）</li>
+  <li>盤面の snood をすべて消すとレベルクリア。snood が <strong>画面下端のラインを越えるとゲームオーバー</strong>（ライフ制の場合は 1 ライフ喪失）</li>
+</ul>
+
+<h2>3. 危険ゲージ（Danger Meter）— Snood 最大の独自要素</h2>
+<p>
+一般的なバブルシューターとの最大の違いがこの仕組み。
+</p>
+<ul>
+  <li>snood を <strong>1 発撃つたびに危険ゲージが増加</strong> する</li>
+  <li>ゲージが満タンになると <strong>天井が 1 段降下</strong> し、盤面全体が下端に近づく。ゲージはリセットされる</li>
+  <li><strong>snood を消す・落とすとゲージが減少</strong> する。一度に多く消す（特に落下で大量除去する）ほど効果が大きい</li>
+  <li>このため「3 つだけ消して満足する」プレイは危険で、<strong>落下を狙って一度に大量の snood を除去する</strong> 戦略性が生まれる</li>
+</ul>
+<p>
+時間制限は基本的に存在せず（Time Attack 系モードを除く）、「考える時間は無限にあるが、
+無駄撃ちは確実に死を近づける」という独特の緊張感が Snood の中毒性の核心とされる。
+</p>
+
+<h2>4. キャラクター（snood の種類）</h2>
+<p>通常の snood は 7 種類。色と形・表情で見分ける。</p>
+<table>
+  <tr><th>名前</th><th>色</th></tr>
+  <tr><td>Jake</td><td>青</td></tr>
+  <tr><td>Midoribe</td><td>緑</td></tr>
+  <tr><td>Mildred</td><td>灰色</td></tr>
+  <tr><td>Spike</td><td>紫</td></tr>
+  <tr><td>Zod</td><td>赤</td></tr>
+  <tr><td>Geji</td><td>水色</td></tr>
+  <tr><td>Sunny</td><td>オレンジ</td></tr>
+</table>
+<p>特殊ピースも存在する：</p>
+<ul>
+  <li><strong>Numbskull（ドクロ）</strong>：発射されることがなく、何ともマッチしない。周囲を消して「落とす」ことでしか除去できない</li>
+  <li><strong>Stone（石）</strong>：着弾時に隣接する snood を消す</li>
+  <li><strong>Wildcard</strong>：どの種類ともマッチする</li>
+  <li><strong>Rowbuilder</strong>：横一列を埋める</li>
+</ul>
+
+<h2>5. 難易度</h2>
+<p>
+ランダム生成盤面で遊ぶ標準モードには <strong>Child / Easy / Medium / Hard / Evil</strong> の
+5 段階がある。難易度は次の要素で差が付けられている。
+</p>
+<ul>
+  <li>盤面の広さ（snood の総数）と snood の表示サイズ</li>
+  <li>初期配置の行数</li>
+  <li>危険ゲージの容量（満タンまでの発射数）</li>
+  <li>ドクロ（Numbskull）の出現有無</li>
+</ul>
+<p>判明している具体値（GBA 版攻略情報より）：</p>
+<table>
+  <tr><th>難易度</th><th>盤面（幅×高さ）</th><th>初期行数</th><th>危険ゲージ容量</th></tr>
+  <tr><td>Medium</td><td>17 × 14</td><td>8 行</td><td>8 発</td></tr>
+  <tr><td>Hard</td><td>14 × 14</td><td>8 行</td><td>7 発</td></tr>
+  <tr><td>Evil</td><td>17 × 14</td><td>9 行</td><td>6 発</td></tr>
+</table>
+
+<h2>6. ゲームモード</h2>
+<ul>
+  <li><strong>Classic</strong>：難易度を選んでランダム生成盤面をクリアしていく基本モード</li>
+  <li><strong>Journey</strong>：低難易度から高難易度へ 1 レベルずつ続けて挑戦するモード</li>
+  <li><strong>Puzzle</strong>：あらかじめデザインされた 50 面の固定配置を解くモード</li>
+  <li><strong>Time Attack / Armageddon</strong>：危険ゲージが時間経過で自動上昇するモード</li>
+</ul>
+
+<h2>7. スコアリング</h2>
+<ul>
+  <li>消した snood の数に応じて得点が入る</li>
+  <li><strong>マッチで消すより「落として」除去する方が高得点</strong>（一度に大量落下させるほどボーナスが大きい）</li>
+  <li>クリア時には残りの危険ゲージ等に応じたボーナスが入る</li>
+</ul>
+
+<h2>8. Snoot（本プロジェクト）への反映方針</h2>
+<div class="note">
+著作権上の制約（project.txt）により、Snood のキャラクター画像・名称はそのまま使わず、
+<strong>オリジナルの顔キャラクターをコード描画で自作</strong> する。再現するのは
+「ゲームメカニクス（六角格子・発射・マッチ 3・落下・危険ゲージ）」であり、
+ビジュアルは Snoot 独自のものとする。
+</div>
+<ul>
+  <li>難易度は project.txt の指定どおり <strong>Easy / Normal / Hard の 3 段階</strong> とし、
+      Snood の Easy / Medium / Hard 相当のパラメータ（キャラ種類数・初期行数・危険ゲージ容量）で差を付ける</li>
+  <li>スマホ縦持ちでも遊べるよう、盤面の列数は原作（14〜17 列)より抑えめに調整する
+      （原作の列数はスマホでは 1 個あたりが小さくなりすぎるため）</li>
+  <li>v0.1.0 では Classic 相当の 1 モードのみ実装。Journey / Puzzle / 特殊ピースは
+      フィードバック（step3〜4）を見て検討する</li>
+  <li>危険ゲージ・落下ボーナスの仕組みは Snood の中毒性の核心なので初版から必ず実装する</li>
+</ul>
+
+<h2>9. 参考資料</h2>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Snood_(video_game)">Snood (video game) - Wikipedia</a></li>
+  <li><a href="https://atpm.com/9.12/snood.shtml">ATPM 9.12 - Review: Snood 3.0</a></li>
+  <li><a href="https://gamefaqs.gamespot.com/gba/565768-snood/faqs/28188">Snood - Guide and Walkthrough (GBA) - GameFAQs</a></li>
+  <li><a href="https://www.neoseeker.com/snood/faqs/102294-walkthrough.html">Snood FAQ/Strategy Guide - Neoseeker</a></li>
+  <li><a href="https://tvtropes.org/pmwiki/pmwiki.php/VideoGame/Snood">Snood (Video Game) - TV Tropes</a></li>
+</ul>
+
+</main>
+<footer>Snoot 開発備忘録 — step1</footer>
+</body>
+</html>

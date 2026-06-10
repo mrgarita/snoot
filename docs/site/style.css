@@ -1,0 +1,82 @@
+/* Snoot プロジェクト備忘録サイト共通スタイル */
+:root {
+  --main: #2c5f8a;
+  --accent: #e8704a;
+  --bg: #f7f5f0;
+  --text: #333;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+}
+
+header {
+  background: var(--main);
+  color: #fff;
+  padding: 1.2rem 1rem;
+}
+
+header h1 { margin: 0; font-size: 1.4rem; }
+header p { margin: 0.3rem 0 0; font-size: 0.85rem; opacity: 0.85; }
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+h2 {
+  border-left: 6px solid var(--accent);
+  padding-left: 0.6rem;
+  font-size: 1.2rem;
+  margin-top: 2.2rem;
+}
+
+h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+
+th { background: #e7eef4; }
+
+code {
+  background: #eee;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+a { color: var(--main); }
+
+.toc li { margin: 0.4rem 0; }
+
+.note {
+  background: #fff7e0;
+  border-left: 4px solid #e0b840;
+  padding: 0.6rem 0.9rem;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #888;
+  padding: 1.5rem 0 2rem;
+}
