@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Snoot</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div id="app">
+    <!-- ゲーム画面 -->
+    <div id="game-screen" class="hidden">
+      <div id="hud">
+        <div id="hud-left">
+          <span id="hud-difficulty"></span>
+          <span id="hud-level"></span>
+        </div>
+        <div id="hud-danger">
+          <span class="danger-label">DANGER</span>
+          <div id="danger-bar"><div id="danger-fill"></div></div>
+        </div>
+        <div id="hud-right">
+          <span id="hud-score">0</span>
+          <button id="btn-quit" type="button">タイトルへ</button>
+        </div>
+      </div>
+      <div id="canvas-wrap">
+        <canvas id="game-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- タイトル画面 -->
+    <div id="title-screen">
+      <h1 id="logo">Snoot</h1>
+      <p id="tagline">ねらって、つなげて、おとせ！</p>
+      <div id="level-buttons">
+        <button class="level-btn" data-level="easy" type="button">Easy</button>
+        <button class="level-btn" data-level="normal" type="button">Normal</button>
+        <button class="level-btn" data-level="hard" type="button">Hard</button>
+      </div>
+      <p id="title-help">
+        ねらいを定めてタップ／クリックで発射。同じ顔を 3 つつなげると消える。<br>
+        撃つほど DANGER が増え、満タンで天井が降りてくる。全部消せばクリア！
+      </p>
+    </div>
+
+    <!-- リザルトオーバーレイ（クリア／ゲームオーバー共用） -->
+    <div id="result-overlay" class="hidden">
+      <div id="result-box">
+        <h2 id="result-title"></h2>
+        <p id="result-score"></p>
+        <div id="result-buttons">
+          <button id="btn-retry" type="button">もう一度</button>
+          <button id="btn-next" type="button">次のレベルへ</button>
+          <button id="btn-title" type="button">タイトルへ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- バージョン表示（project.txt step4：プレイ中バージョンの明示） -->
+    <div id="version-badge"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

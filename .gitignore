@@ -7,6 +7,9 @@ dist/
 # ログ
 *.log
 
+# 動作確認用スクリーンショット
+scripts/shots/
+
 # エディタ・OS 固有ファイル
 .DS_Store
 Thumbs.db

@@ -1,0 +1,17 @@
+{
+  "name": "snoot",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Snood 風バブルシューター「Snoot」（ブラウザゲーム）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.60.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
+}
