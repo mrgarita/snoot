@@ -1,0 +1,15 @@
+# 依存パッケージ
+node_modules/
+
+# ビルド成果物
+dist/
+
+# ログ
+*.log
+
+# エディタ・OS 固有ファイル
+.DS_Store
+Thumbs.db
+
+# Claude Code ローカル設定（個人環境固有のため共有しない）
+.claude/settings.local.json
