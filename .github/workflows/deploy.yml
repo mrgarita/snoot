@@ -1,0 +1,77 @@
+# 備忘録サイトと各バージョンのプレイ用ビルドを GitHub Pages へ公開する
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages へのデプロイに必要な権限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行は最新のみ（古い実行はキャンセル）
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリを取得（全履歴・タグ込み）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: サイトを組み立てる（備忘録＋各バージョンのビルド）
+        run: |
+          set -e
+          VERSIONS="v0.1.0 v0.2.0 v0.3.0 v0.4.0 v0.5.0 v0.6.0"
+          LATEST="v0.6.0"
+
+          # 備忘録サイトをルートに配置
+          mkdir -p _site
+          cp -r docs/site/. _site/
+          touch _site/.nojekyll
+
+          # 各バージョンを worktree で取り出してビルドし play/<tag>/ へ
+          for v in $VERSIONS; do
+            wt="$RUNNER_TEMP/build-$v"
+            git worktree add "$wt" "$v"
+            ( cd "$wt" && npm ci && npm run build )
+            mkdir -p "_site/play/$v"
+            cp -r "$wt/dist/." "_site/play/$v/"
+            git worktree remove "$wt" --force
+          done
+
+          # 最新版を play/latest/ にも配置
+          mkdir -p _site/play/latest
+          cp -r "_site/play/$LATEST/." _site/play/latest/
+
+      - name: Pages 設定
+        uses: actions/configure-pages@v5
+
+      - name: アーティファクトをアップロード
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Pages へデプロイ
+        id: deployment
+        uses: actions/deploy-pages@v4

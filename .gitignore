@@ -4,6 +4,10 @@ node_modules/
 # ビルド成果物
 dist/
 
+# Pages 用のローカル組み立て結果・検証用 worktree
+_site/
+.build-tmp/
+
 # ログ
 *.log
 
@@ -16,3 +20,6 @@ Thumbs.db
 
 # Claude Code ローカル設定（個人環境固有のため共有しない）
 .claude/settings.local.json
+
+# 個人運用ガイド（非公開リポジトリで管理。公開リポジトリには置かない）
+docs/claude-code-guide.md

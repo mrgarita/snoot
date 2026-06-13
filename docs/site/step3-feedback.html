@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>step3：プレイフィードバック記録 | Snoot 開発備忘録</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,13 +23,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>フィードバック一覧</h2>
 <table>
-  <tr><th>#</th><th>日付</th><th>指摘内容</th><th>原因・対応</th><th>対応版</th></tr>
+  <tr><th>#</th><th>日付</th><th>指摘内容</th><th>原因・対応</th><th>対応版</th><th>プレイ</th></tr>
   <tr>
     <td>1</td>
     <td>2026-06-13</td>
     <td>スマホでは難易度によってキャラのサイズが大中小と変わるのに、PC ではサイズが一定で挙動が違う</td>
     <td>サイズの自動フィット計算で、縦長画面では「幅÷列数」、横長画面では「高さ÷行数（列数非依存）」が採用されていたのが原因。盤面の横幅を難易度によらず一定とし、列数が増えるほどキャラが小さくなる方式に統一（PC もスマホと同じ見た目に）。<code>src/game.ts</code> の <code>resize()</code> を修正</td>
     <td>v0.2.0</td>
+    <td><a class="play-link" href="play/v0.2.0/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>2</td>
@@ -36,6 +38,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>スマホで赤い点線の上をスワイプすると指がキャラにかぶり、点線の下は操作部分が狭くて砲台に指がかぶる。操作できる範囲に余裕がほしい</td>
     <td>操作エリア（点線から下）が固定 3 セル分しかなく、画面の余り高さが上下余白として捨てられていたのが原因。キャンバスが画面の縦をすべて使うようにし、砲台を画面下端近くへ移動。点線と砲台の間の広い空間がスワイプ用の操作エリアになった。あわせて砲台より下に指がある間は照準を更新しないガードを追加。<code>src/game.ts</code> の <code>resize()</code>・<code>onPointer()</code> を修正</td>
     <td>v0.3.0</td>
+    <td><a class="play-link" href="play/v0.3.0/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>3</td>
@@ -43,6 +46,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>本家はキャラの表情が変化してコミカルさを出していた。Snoot もゲーム中に表情を変化させたい。ただし NEXT のキャラは表情を変えない（目立たせると現在弾と勘違いするため）</td>
     <td>キャラ描画関数に時刻引数を追加し、種類ごとのアニメ（マルオ：まばたき、ハッパ：葉っぱ揺れ、プンタ：眉ピクピク、ヒナタ：星キラキラ＋口の開閉、ネムリ：寝息の浮き沈み、ビック：瞳の泳ぎ＋口の大小、イシゴロ：たまに目を閉じるのみ）を実装。盤面・発射弾・砲台の現在弾はアニメし、<strong>NEXT は誤認防止のため意図的に静止のまま</strong>。セルごとに位相をずらして一斉まばたきも防止。<code>src/characters.ts</code>・<code>src/game.ts</code> を修正</td>
     <td>v0.4.0</td>
+    <td><a class="play-link" href="play/v0.4.0/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>4</td>
@@ -50,6 +54,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>グループが消滅する際、消えるキャラの表情が驚いた顔になるエフェクトでさらにコミカルに。また消滅数が多いときは SE を少し盛大にしてほしい（嬉しさが増す）</td>
     <td>消滅アニメ中のキャラを驚き顔（見開いた白目・大きく開いた口・コミック風の驚き線）に差し替え。体の色・形・葉っぱ等の個性は維持。SE は消滅数に応じてアルペジオの音数（5 個以上で 4 音、8 個以上で 5 音）と音量が増える方式にし、まとめて落としたときは低音スイープも重なる。<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/game.ts</code> を修正</td>
     <td>v0.5.0</td>
+    <td><a class="play-link" href="play/v0.5.0/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>5</td>
@@ -57,6 +62,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>消滅キャラに加えて、それに伴って落ちていくキャラの表情も驚き顔にすると迫力が増す。またまとめて落としたときの低音は迫力を感じないので、ファンファーレのような SE に変更したい</td>
     <td>落下アニメ中のキャラも驚き顔で描画するよう変更（v0.5.0 で追加した驚き顔を再利用）。大量落下（4 個以上）の SE を、低音スイープからブラスふうの上昇ファンファーレ（タタタ・ターン型）に差し替え、落下数が多いほど最後の和音が厚くなる（6 個以上で三和音、9 個以上でさらに 1 声）方式にした。<code>src/game.ts</code>・<code>src/audio.ts</code> を修正</td>
     <td>v0.6.0</td>
+    <td><a class="play-link" href="play/v0.6.0/">▶ プレイ</a></td>
   </tr>
 </table>
 
