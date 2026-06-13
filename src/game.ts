@@ -73,6 +73,8 @@ export class Game {
   private nextType = 0;
   private pops: PopAnim[] = [];
   private falls: FallAnim[] = [];
+  /** 表情アニメーション用の経過時間（秒） */
+  private animTime = 0;
   private lastTime = 0;
   private rafId = 0;
   private running = false;
@@ -237,6 +239,8 @@ export class Game {
   }
 
   private update(dt: number): void {
+    this.animTime += dt;
+
     // 発射弾の移動（トンネリング防止のため小刻みに進める）
     if (this.projectile) {
       const p = this.projectile;
@@ -434,23 +438,24 @@ export class Game {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 盤面のピース
+    // 盤面のピース（セルごとに位相をずらし、一斉まばたきを防ぐ）
     for (const cell of this.board.all()) {
       const pos = this.cellPos(cell.r, cell.c);
-      drawSnoot(ctx, cell.type, pos.x, pos.y, this.cell / 2);
+      const phase = ((cell.r * 7 + cell.c * 13) % 17) * 0.37;
+      drawSnoot(ctx, cell.type, pos.x, pos.y, this.cell / 2, this.animTime + phase);
     }
 
     // 消滅アニメーション（膨らみつつフェードアウト）
     for (const pop of this.pops) {
       const k = pop.t / 0.3;
       ctx.globalAlpha = 1 - k;
-      drawSnoot(ctx, pop.type, pop.x, pop.y, (this.cell / 2) * (1 + k * 0.5));
+      drawSnoot(ctx, pop.type, pop.x, pop.y, (this.cell / 2) * (1 + k * 0.5), this.animTime);
       ctx.globalAlpha = 1;
     }
 
     // 落下アニメーション
     for (const f of this.falls) {
-      drawSnoot(ctx, f.type, f.x, f.y, this.cell / 2);
+      drawSnoot(ctx, f.type, f.x, f.y, this.cell / 2, this.animTime);
     }
 
     // 照準ガイド（壁 1 回反射まで点線で表示）
@@ -460,7 +465,14 @@ export class Game {
 
     // 発射弾
     if (this.projectile) {
-      drawSnoot(ctx, this.projectile.type, this.projectile.x, this.projectile.y, this.cell / 2);
+      drawSnoot(
+        ctx,
+        this.projectile.type,
+        this.projectile.x,
+        this.projectile.y,
+        this.cell / 2,
+        this.animTime,
+      );
     }
 
     // 発射台
@@ -520,10 +532,10 @@ export class Game {
 
     // 現在弾（発射中は表示しない）
     if (this.state === "aim") {
-      drawSnoot(ctx, this.currentType, this.cannonX, this.cannonY, this.cell / 2);
+      drawSnoot(ctx, this.currentType, this.cannonX, this.cannonY, this.cell / 2, this.animTime);
     }
 
-    // NEXT 表示
+    // NEXT 表示（誤認防止のため表情は動かさない＝アニメ時刻を渡さない）
     const nx = this.cannonX + this.cell * 2.2;
     ctx.fillStyle = "rgba(255,255,255,0.6)";
     ctx.font = `${this.cell * 0.32}px sans-serif`;
