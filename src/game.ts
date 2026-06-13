@@ -338,7 +338,7 @@ export class Game {
       }
       removed += group.length;
       this.score += group.length * SCORE_POP;
-      sound.play("pop");
+      sound.play("pop", group.length);
 
       // 天井から切り離されたピースは落下
       const floats = this.board.floating();
@@ -357,7 +357,7 @@ export class Game {
         removed += floats.length;
         // 落下除去は高得点（まとめて落とすほどボーナス）
         this.score += floats.length * SCORE_DROP + (floats.length >= 4 ? floats.length * 10 : 0);
-        sound.play("drop");
+        sound.play("drop", floats.length);
       }
     }
 
@@ -449,7 +449,8 @@ export class Game {
     for (const pop of this.pops) {
       const k = pop.t / 0.3;
       ctx.globalAlpha = 1 - k;
-      drawSnoot(ctx, pop.type, pop.x, pop.y, (this.cell / 2) * (1 + k * 0.5), this.animTime);
+      // 驚き顔で膨らみながら消えていく（コミカル演出）
+      drawSnoot(ctx, pop.type, pop.x, pop.y, (this.cell / 2) * (1 + k * 0.5), this.animTime, true);
       ctx.globalAlpha = 1;
     }
 

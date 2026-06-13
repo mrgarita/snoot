@@ -34,6 +34,7 @@ export function drawSnoot(
   cy: number,
   r: number,
   t?: number,
+  surprised = false,
 ): void {
   const anim = t !== undefined;
   const tt = t ?? 0;
@@ -62,12 +63,50 @@ export function drawSnoot(
   ctx.ellipse(-r * 0.3, -r * 0.4, r * 0.32, r * 0.2, -0.5, 0, Math.PI * 2);
   ctx.fill();
 
+  // ハッパの葉っぱは表情にかかわらず描く（キャラの個性を保つ）
+  if (type % TYPE_COLORS.length === 1) {
+    const sway = anim && !surprised ? 0.35 * Math.sin(tt * 1.8) : 0;
+    ctx.fillStyle = "#2e7d32";
+    ctx.beginPath();
+    ctx.ellipse(0, -r * 1.05, r * 0.28, r * 0.16, -0.6 + sway, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   // 顔パーツ
   ctx.fillStyle = "#222";
   ctx.strokeStyle = "#222";
   ctx.lineWidth = Math.max(1, r * 0.1);
   const eyeY = -r * 0.15;
   const eyeX = r * 0.32;
+
+  // 驚き顔（消滅エフェクト用・全種共通）：体の個性は残し顔だけ差し替える
+  if (surprised) {
+    ctx.fillStyle = "#fff";
+    dot(ctx, -eyeX, eyeY, r * 0.2);
+    dot(ctx, eyeX, eyeY, r * 0.2);
+    ctx.fillStyle = "#222";
+    dot(ctx, -eyeX, eyeY, r * 0.07);
+    dot(ctx, eyeX, eyeY, r * 0.07);
+    // 大きく開いた口
+    ctx.fillStyle = "#5a2222";
+    ctx.beginPath();
+    ctx.ellipse(0, r * 0.4, r * 0.2, r * 0.26, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // コミック風の驚き線
+    ctx.strokeStyle = "#ffe27a";
+    ctx.lineWidth = Math.max(1.5, r * 0.09);
+    for (const a of [-2.2, -Math.PI / 2, -0.95]) {
+      line(
+        ctx,
+        Math.cos(a) * r * 1.05,
+        Math.sin(a) * r * 1.05,
+        Math.cos(a) * r * 1.35,
+        Math.sin(a) * r * 1.35,
+      );
+    }
+    ctx.restore();
+    return;
+  }
 
   switch (type % TYPE_COLORS.length) {
     case 0: { // マルオ：丸目＋にっこり口。まばたきし、口がゆれる
@@ -82,13 +121,7 @@ export function drawSnoot(
       arcMouth(ctx, 0, r * 0.25, rm, 0.15 * Math.PI, 0.85 * Math.PI);
       break;
     }
-    case 1: { // ハッパ：頭の葉っぱがゆらゆら揺れる＋まばたき
-      const sway = anim ? 0.35 * Math.sin(tt * 1.8) : 0;
-      ctx.fillStyle = "#2e7d32";
-      ctx.beginPath();
-      ctx.ellipse(0, -r * 1.05, r * 0.28, r * 0.16, -0.6 + sway, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#222";
+    case 1: { // ハッパ：まばたき（葉っぱの揺れは共通部で描画済み）
       if (anim && isBlinking(tt, 3.7, 0.18)) {
         line(ctx, -eyeX - r * 0.12, eyeY, -eyeX + r * 0.12, eyeY);
         line(ctx, eyeX - r * 0.12, eyeY, eyeX + r * 0.12, eyeY);

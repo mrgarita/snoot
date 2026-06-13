@@ -17,7 +17,11 @@ class SoundPlayer {
     }
   }
 
-  play(name: SeName): void {
+  /**
+   * SE を再生する。intensity（消滅したキャラ数など）が大きいほど
+   * pop / drop は音数・音量が増えて盛大になる（上限あり）。
+   */
+  play(name: SeName, intensity = 0): void {
     if (!this.ctx || this.ctx.state !== "running") return;
     const t = this.ctx.currentTime;
     switch (name) {
@@ -27,14 +31,24 @@ class SoundPlayer {
       case "stick":
         this.tone(220, t, 0.05, "triangle", 0.2);
         break;
-      case "pop":
-        this.tone(523, t, 0.09, "sine", 0.25);
-        this.tone(784, t + 0.06, 0.09, "sine", 0.22);
-        this.tone(1047, t + 0.12, 0.12, "sine", 0.2);
+      case "pop": {
+        // 消滅数が多いほどアルペジオの音数と音量を増やす
+        const gain = Math.min(0.34, 0.2 + intensity * 0.012);
+        const notes = [523, 784, 1047];
+        if (intensity >= 5) notes.push(1319);
+        if (intensity >= 8) notes.push(1568);
+        notes.forEach((f, i) => this.tone(f, t + i * 0.06, 0.12, "sine", gain));
         break;
-      case "drop":
-        this.tone(880, t, 0.25, "sawtooth", 0.15, 220);
+      }
+      case "drop": {
+        const gain = Math.min(0.3, 0.15 + intensity * 0.012);
+        this.tone(880, t, 0.25, "sawtooth", gain, 220);
+        // まとめて落としたときは低音のスイープを重ねて迫力を出す
+        if (intensity >= 4) {
+          this.tone(440, t + 0.08, 0.3, "sawtooth", gain * 0.9, 110);
+        }
         break;
+      }
       case "alarm":
         this.tone(440, t, 0.12, "square", 0.2);
         this.tone(440, t + 0.18, 0.12, "square", 0.2);
