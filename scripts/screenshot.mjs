@@ -4,6 +4,7 @@ import { chromium } from "playwright-core";
 
 const url = process.env.URL ?? "http://localhost:5173";
 const mobile = process.env.MOBILE === "1";
+const level = process.env.LEVEL ?? "easy"; // easy | normal | hard
 
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const ctx = await browser.newContext(
@@ -19,16 +20,16 @@ page.on("console", (msg) => {
 });
 page.on("pageerror", (err) => errors.push(String(err)));
 
-const suffix = mobile ? "-mobile" : "";
+const suffix = (mobile ? "-mobile" : "") + (level !== "easy" ? `-${level}` : "");
 
 await page.goto(url, { waitUntil: "networkidle" });
 await page.waitForSelector("#logo");
 await page.screenshot({ path: `scripts/shots/title${suffix}.png` });
 
-// Easy を選んでゲーム画面へ
-await page.click('button[data-level="easy"]');
+// 指定の難易度を選んでゲーム画面へ
+await page.click(`button[data-level="${level}"]`);
 await page.waitForTimeout(600);
-await page.screenshot({ path: `scripts/shots/game-easy${suffix}.png` });
+await page.screenshot({ path: `scripts/shots/game${suffix}.png` });
 
 // キャンバス上で照準→発射を 3 回行い、盤面が動くことを確認
 const canvas = page.locator("#game-canvas");

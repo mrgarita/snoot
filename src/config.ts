@@ -23,6 +23,9 @@ export const DIFFICULTIES: Record<DifficultyId, DifficultyConfig> = {
   hard:   { id: "hard",   label: "Hard",   cols: 13, initialRows: 8, typeCount: 7, dangerCap: 6 },
 };
 
+/** 全難易度の最小列数（盤面幅を難易度間で揃える基準。セルが最大になる難易度） */
+export const MIN_COLS = Math.min(...Object.values(DIFFICULTIES).map((d) => d.cols));
+
 /** この行（視覚上の行番号）にピースが達したらゲームオーバー */
 export const ROWS_LIMIT = 12;
 

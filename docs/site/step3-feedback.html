@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>step3：プレイフィードバック記録 | Snoot 開発備忘録</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>step3：プレイフィードバック記録</h1>
+  <p>Snoot 開発備忘録 — 開始 2026-06-13 / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+</header>
+<main>
+
+<h2>このページについて</h2>
+<p>
+step3（人間によるプレイ確認）で挙がったフィードバックと、その対応（step4 → step2 反復）を
+時系列で記録する。project.txt の規定により、対応のたびにゲームのバージョンを上げる。
+フィードバックが 0 になった時点で step5（一般公開）へ遷移する。
+</p>
+
+<h2>フィードバック一覧</h2>
+<table>
+  <tr><th>#</th><th>日付</th><th>指摘内容</th><th>原因・対応</th><th>対応版</th></tr>
+  <tr>
+    <td>1</td>
+    <td>2026-06-13</td>
+    <td>スマホでは難易度によってキャラのサイズが大中小と変わるのに、PC ではサイズが一定で挙動が違う</td>
+    <td>サイズの自動フィット計算で、縦長画面では「幅÷列数」、横長画面では「高さ÷行数（列数非依存）」が採用されていたのが原因。盤面の横幅を難易度によらず一定とし、列数が増えるほどキャラが小さくなる方式に統一（PC もスマホと同じ見た目に）。<code>src/game.ts</code> の <code>resize()</code> を修正</td>
+    <td>v0.2.0</td>
+  </tr>
+</table>
+
+<h2>未対応・検討中</h2>
+<p>（現在なし）</p>
+
+</main>
+<footer>Snoot 開発備忘録 — step3</footer>
+</body>
+</html>

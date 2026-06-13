@@ -3,6 +3,7 @@ import {
   DIFFICULTIES,
   DifficultyConfig,
   DifficultyId,
+  MIN_COLS,
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
@@ -149,14 +150,18 @@ export class Game {
     const availH = wrap.clientHeight;
     if (availW === 0 || availH === 0) return;
 
-    // セル直径：横は cols+0.5 個分、縦は盤面 + 発射台エリア 3 個分が収まるサイズ
-    const fitW = availW / (this.cfg.cols + 0.5);
-    const fitH = availH / (1 + (ROWS_LIMIT - 1) * ROW_H + 3);
-    this.cell = Math.min(fitW, fitH);
+    // 縦方向の行数換算（盤面 + 発射台エリア 3 セル分）
+    const rowFactor = 1 + (ROWS_LIMIT - 1) * ROW_H + 3;
 
-    const boardW = this.cell * (this.cfg.cols + 0.5);
+    // 盤面の横幅は難易度によらず一定にする（列数が増えるほどキャラが小さくなり、
+    // 縦長・横長どちらの画面でも同じ見た目になる）。
+    // 上限は「最小列数＝セルが最大になる難易度」でも縦が収まる幅。
+    const maxBoardW = availH * ((MIN_COLS + 0.5) / rowFactor);
+    const boardW = Math.min(availW, maxBoardW);
+    this.cell = boardW / (this.cfg.cols + 0.5);
+
     this.W = boardW;
-    this.H = Math.min(availH, this.cell * (1 + (ROWS_LIMIT - 1) * ROW_H + 3));
+    this.H = Math.min(availH, this.cell * rowFactor);
     this.offsetX = 0;
     this.cannonX = this.W / 2;
     this.cannonY = this.H - this.cell * 1.4;
