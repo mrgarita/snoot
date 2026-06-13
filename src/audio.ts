@@ -43,9 +43,9 @@ class SoundPlayer {
       case "drop": {
         const gain = Math.min(0.3, 0.15 + intensity * 0.012);
         this.tone(880, t, 0.25, "sawtooth", gain, 220);
-        // まとめて落としたときは低音のスイープを重ねて迫力を出す
+        // まとめて落としたときはブラスふうの上昇ファンファーレで祝う
         if (intensity >= 4) {
-          this.tone(440, t + 0.08, 0.3, "sawtooth", gain * 0.9, 110);
+          this.fanfare(t + 0.05, intensity);
         }
         break;
       }
@@ -64,6 +64,28 @@ class SoundPlayer {
         });
         break;
     }
+  }
+
+  /**
+   * 大量落下を祝うブラスふうの上昇ファンファーレ。
+   * 「タタタ・ターン」型で、落下数が多いほど最後の和音が豪華になる。
+   */
+  private fanfare(start: number, intensity: number): void {
+    // 上昇する助走（G4→C5→E5）と、最後に伸ばす主和音（G5 を軸に）
+    const lead = [392, 523, 659]; // G4, C5, E5
+    const step = 0.1;
+    lead.forEach((f, i) => this.tone(f, start + i * step, 0.12, "square", 0.22));
+
+    const climax = start + lead.length * step;
+    // 主和音：G5 + C6（5 度＋オクターブ）。intensity が大きいほど厚くする
+    const chord = [784, 1047]; // G5, C6
+    if (intensity >= 6) chord.push(1319); // E6 を足して三和音に
+    if (intensity >= 9) chord.push(1568); // さらに G6 で華やかに
+    for (const f of chord) {
+      this.tone(f, climax, 0.5, "square", 0.2);
+    }
+    // 主和音の根音を triangle で軽く重ねて芯を出す
+    this.tone(392, climax, 0.5, "triangle", 0.18);
   }
 
   private tone(

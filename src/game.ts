@@ -454,9 +454,9 @@ export class Game {
       ctx.globalAlpha = 1;
     }
 
-    // 落下アニメーション
+    // 落下アニメーション（驚き顔のまま飛び散らせて迫力を出す）
     for (const f of this.falls) {
-      drawSnoot(ctx, f.type, f.x, f.y, this.cell / 2, this.animTime);
+      drawSnoot(ctx, f.type, f.x, f.y, this.cell / 2, this.animTime, true);
     }
 
     // 照準ガイド（壁 1 回反射まで点線で表示）
