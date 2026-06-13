@@ -60,3 +60,6 @@
 - デプロイ先候補：XServer レンタルサーバ（本番）、GitHub Pages（ステージング）
   ※ユーザー保有の既存資源を優先する
 - 各 step の備忘録は `docs/site/*.html` に置き、`docs/site/index.html` から参照する
+- 備忘録は文字だけにせず、**スクリーンショットや図を併載する**（画像は
+  `scripts/make-doc-images.mjs` で `docs/site/img/` に生成。Snood 本家の画像は
+  著作権配慮のため使わない）

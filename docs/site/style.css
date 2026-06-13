@@ -66,6 +66,44 @@ a { color: var(--main); }
 
 .toc li { margin: 0.4rem 0; }
 
+/* 図版・スクリーンショット */
+figure {
+  margin: 1.2rem 0;
+  text-align: center;
+}
+
+figure img, figure svg {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+figcaption {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.45rem;
+}
+
+/* スクリーンショットを横に並べるグリッド */
+.shot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.shot-grid figure {
+  flex: 1 1 240px;
+  max-width: 380px;
+  margin: 0.5rem 0;
+}
+
+.shot-grid img { width: 100%; }
+
 .note {
   background: #fff7e0;
   border-left: 4px solid #e0b840;

@@ -23,6 +23,18 @@
   <tr><td>入力</td><td>Pointer Events</td><td>マウス（PC）とタッチ（スマホ）を同一コードで処理。<code>touch-action: none</code> でスクロール抑止</td></tr>
 </table>
 
+<div class="shot-grid">
+  <figure>
+    <img src="img/title-pc.png" alt="タイトル画面（PC）">
+    <figcaption>タイトル画面（PC）。Easy / Normal / Hard を選んで開始</figcaption>
+  </figure>
+  <figure>
+    <img src="img/game-easy-pc.png" alt="ゲーム画面（PC・Easy）">
+    <figcaption>ゲーム画面（PC・Easy）。上部に DANGER ゲージとスコア、右下にバージョン表示</figcaption>
+  </figure>
+</div>
+<p class="note">掲載スクリーンショットは v0.3.0 時点の画面（フィードバック反映後）。</p>
+
 <h2>2. 実装したゲーム仕様</h2>
 <ul>
   <li><strong>タイトル画面</strong>：Easy / Normal / Hard の 3 レベル選択（project.txt の要件）</li>
@@ -45,6 +57,10 @@
 </table>
 
 <h3>オリジナルキャラクター（7 種）</h3>
+<figure>
+  <img src="img/characters.png" alt="Snoot オリジナルキャラクター 7 種の一覧">
+  <figcaption>全 7 種。ゲーム本体と同じ描画コード（src/characters.ts）で生成した画像</figcaption>
+</figure>
 <table>
   <tr><th>名前</th><th>色</th><th>特徴</th></tr>
   <tr><td>マルオ</td><td>青</td><td>丸目のにっこり顔</td></tr>
@@ -70,7 +86,20 @@
   <tr><td><code>src/audio.ts</code></td><td>Web Audio による効果音</td></tr>
   <tr><td><code>src/config.ts</code></td><td>難易度設定・定数</td></tr>
   <tr><td><code>scripts/screenshot.mjs</code></td><td>動作確認用（ヘッドレスブラウザでスクリーンショット撮影）</td></tr>
+  <tr><td><code>scripts/make-doc-images.mjs</code></td><td>備忘録掲載用の画像（画面写真・キャラ一覧）を docs/site/img/ に一括生成</td></tr>
 </table>
+
+<h3>スマホ・PC 両対応</h3>
+<div class="shot-grid">
+  <figure>
+    <img src="img/game-easy-mobile.png" alt="ゲーム画面（スマホ・Easy）">
+    <figcaption>スマホ縦持ち（Easy）。点線下の広い空間が照準操作エリア</figcaption>
+  </figure>
+  <figure>
+    <img src="img/game-hard-mobile.png" alt="ゲーム画面（スマホ・Hard）">
+    <figcaption>スマホ縦持ち（Hard）。列数が増えキャラが小さくなる</figcaption>
+  </figure>
+</div>
 
 <h2>4. 遊び方</h2>
 <ol>

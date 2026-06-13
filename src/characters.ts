@@ -14,6 +14,9 @@ export const TYPE_COLORS = [
 
 export const TYPE_COUNT_MAX = TYPE_COLORS.length;
 
+/** キャラクター名（TYPE_COLORS と同順） */
+export const TYPE_NAMES = ["マルオ", "ハッパ", "プンタ", "ヒナタ", "ネムリ", "ビック", "イシゴロ"];
+
 /** 種類 type のキャラを中心 (cx, cy)・半径 r で描画する */
 export function drawSnoot(
   ctx: CanvasRenderingContext2D,

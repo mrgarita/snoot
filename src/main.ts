@@ -4,6 +4,12 @@ import pkg from "../package.json";
 import { Game, GameEndInfo } from "./game";
 import { DifficultyId } from "./config";
 import { sound } from "./audio";
+import { drawSnoot, TYPE_COLORS, TYPE_NAMES } from "./characters";
+
+// 備忘録用の画像生成スクリプト（scripts/make-doc-images.mjs）から参照する。開発時のみ
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).__snoot = { drawSnoot, TYPE_COLORS, TYPE_NAMES };
+}
 
 const titleScreen = document.getElementById("title-screen")!;
 const gameScreen = document.getElementById("game-screen")!;
