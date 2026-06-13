@@ -57,8 +57,10 @@ jobs:
           mkdir -p _site/play/latest
           cp -r "_site/play/$LATEST/." _site/play/latest/
 
-      - name: Pages 設定
+      - name: Pages 設定（未設定なら自動で有効化）
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: アーティファクトをアップロード
         uses: actions/upload-pages-artifact@v3
