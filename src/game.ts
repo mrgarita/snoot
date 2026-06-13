@@ -150,7 +150,7 @@ export class Game {
     const availH = wrap.clientHeight;
     if (availW === 0 || availH === 0) return;
 
-    // 縦方向の行数換算（盤面 + 発射台エリア 3 セル分）
+    // 縦方向の行数換算（盤面 + 操作エリアの最小 3 セル分）
     const rowFactor = 1 + (ROWS_LIMIT - 1) * ROW_H + 3;
 
     // 盤面の横幅は難易度によらず一定にする（列数が増えるほどキャラが小さくなり、
@@ -161,10 +161,12 @@ export class Game {
     this.cell = boardW / (this.cfg.cols + 0.5);
 
     this.W = boardW;
-    this.H = Math.min(availH, this.cell * rowFactor);
+    // 縦は使える高さを全部使う。デッドラインから下の余白がすべて操作エリアになり、
+    // 砲台を画面下端近くに置くことで、指がキャラや砲台にかぶらず照準できる
+    this.H = availH;
     this.offsetX = 0;
     this.cannonX = this.W / 2;
-    this.cannonY = this.H - this.cell * 1.4;
+    this.cannonY = this.H - this.cell * 1.6;
 
     const dpr = window.devicePixelRatio || 1;
     this.canvas.width = Math.round(this.W * dpr);
@@ -198,11 +200,14 @@ export class Game {
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
 
-    // 発射台から見た角度（真上 0、±80° に制限）
+    // 発射台から見た角度（真上 0、±80° に制限）。
+    // 砲台より下に指がある間は角度を更新しない（画面下端での誤照準を防ぐ）
     const dx = px - this.cannonX;
     const dy = this.cannonY - py;
-    const limit = (80 * Math.PI) / 180;
-    this.aimAngle = Math.max(-limit, Math.min(limit, Math.atan2(dx, Math.max(dy, 0.01))));
+    if (dy > this.cell * 0.3) {
+      const limit = (80 * Math.PI) / 180;
+      this.aimAngle = Math.max(-limit, Math.min(limit, Math.atan2(dx, dy)));
+    }
 
     if (isUp && this.state === "aim") {
       this.fire();
