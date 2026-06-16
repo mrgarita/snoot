@@ -9,6 +9,8 @@ import {
   SHOT_SPEED,
   SCORE_POP,
   SCORE_DROP,
+  SCORE_LEVEL_BONUS,
+  effectiveConfig,
 } from "./config";
 import { Board, Cell } from "./grid";
 import { drawSnoot } from "./characters";
@@ -97,7 +99,8 @@ export class Game {
   }
 
   start(difficulty: DifficultyId, level = 1, carriedScore = 0): void {
-    this.cfg = DIFFICULTIES[difficulty];
+    // 選んだ難易度を起点に、レベルに応じて段階的に難化させた実効設定で開始する
+    this.cfg = effectiveConfig(DIFFICULTIES[difficulty], level);
     this.level = level;
     this.score = carriedScore;
     this.danger = 0;
@@ -374,7 +377,8 @@ export class Game {
     // 終了判定
     if (this.board.count === 0) {
       this.state = "clear";
-      this.score += 500 + this.cfg.dangerCap * 20;
+      // クリアボーナス：基本点＋残ゲージ余裕＋レベルが上がるほど増える加点
+      this.score += 500 + this.cfg.dangerCap * 20 + (this.level - 1) * SCORE_LEVEL_BONUS;
       this.updateHud();
       sound.play("clear");
       this.onEnd({ kind: "clear", score: this.score, level: this.level });

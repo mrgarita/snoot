@@ -64,6 +64,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>v0.6.0</td>
     <td><a class="play-link" href="play/v0.6.0/">▶ プレイ</a></td>
   </tr>
+  <tr>
+    <td>6</td>
+    <td>2026-06-16</td>
+    <td>クリアすると次のレベルへ進めるが、レベルが上がったときに何が変化しているのか分からなかった。レベルアップで何が変わる仕様にするのか決めたい（原作 Snood に合わせるかどうかを含めて）</td>
+    <td>原因＝<code>level</code> は HUD 表示とスコア引き継ぎにしか使われておらず、盤面の難しさは難易度（Easy/Normal/Hard）だけで決まり、レベルでは一切変わっていなかった。原作 Snood を再調査したところ、原作の <strong>Classic も面を進めて難化はせず</strong>、難化するのは難易度ラダーを上る <strong>Journey モード</strong>だった（下記参照）。検討の結果、原作 Classic そのままではなく<strong>現代のバブルシューター流に「選んだ難易度を起点として、レベルが上がるほど段階的に難化させる」</strong>方式を採用。レベル+1ごとに 初期行数+1 / 危険ゲージ容量-1（天井がより速く降りる） / キャラ種類数+1（2レベルごと）で難化させ（各値に上限・下限）、クリアボーナスも高レベルほど増やした。あわせてリザルトに到達レベルを明示し、「次のレベルへ（Lv.N）」表示と retry のレベル整合も修正。<code>src/config.ts</code>・<code>src/game.ts</code>・<code>src/main.ts</code> を修正</td>
+    <td>v0.7.0</td>
+    <td><a class="play-link" href="play/v0.7.0/">▶ プレイ</a></td>
+  </tr>
 </table>
 
 <h2>対応結果のスクリーンショット</h2>
@@ -92,6 +100,49 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <img src="img/game-hard-mobile.png" alt="対応後のスマホ・Hard 画面">
     <figcaption>スマホ・Hard でも同様</figcaption>
   </figure>
+</div>
+
+<h3>#6：レベルアップによる段階的難化（v0.7.0）</h3>
+<p>
+同じ難易度（Easy）でも、レベルが上がると <strong>初期行数が増え（盤面がより埋まる）</strong>、
+キャラの種類が増え、危険ゲージが満タンになるまでの発射数が減る（天井がより速く降りる）。
+下のスクリーンショットは同じ Easy の Lv.1 と Lv.5 の開始直後で、盤面の埋まり方が違う。
+</p>
+<div class="shot-grid">
+  <figure>
+    <img src="img/game-level-1.png" alt="Easy・Lv.1 の開始直後">
+    <figcaption>Easy・Lv.1（初期 5 行・種類 4・ゲージ 10）</figcaption>
+  </figure>
+  <figure>
+    <img src="img/game-level-5.png" alt="Easy・Lv.5 の開始直後">
+    <figcaption>Easy・Lv.5（初期 9 行・種類 6・ゲージ 6）。同じ難易度でも明らかに手強い</figcaption>
+  </figure>
+</div>
+
+<p>レベルごとの難化（Easy を起点とした例。各値は上限・下限で頭打ち／底打ち）：</p>
+<table>
+  <tr><th>レベル</th><th>初期行数</th><th>危険ゲージ容量</th><th>キャラ種類数</th></tr>
+  <tr><td>Lv.1（起点）</td><td>5</td><td>10</td><td>4</td></tr>
+  <tr><td>Lv.2</td><td>6</td><td>9</td><td>4</td></tr>
+  <tr><td>Lv.3</td><td>7</td><td>8</td><td>5</td></tr>
+  <tr><td>Lv.4</td><td>8</td><td>7</td><td>5</td></tr>
+  <tr><td>Lv.5</td><td>9</td><td>6</td><td>6</td></tr>
+  <tr><td>Lv.6 以降</td><td>10（上限）</td><td>5 → 3（下限）</td><td>7（上限）</td></tr>
+</table>
+<p class="note">
+  ルール＝レベル+1ごとに「初期行数 +1」「危険ゲージ容量 −1」「キャラ種類数 +1（2 レベルごと）」。
+  盤面の列数は見た目を難易度間で揃えるためレベルでは変えない。Normal / Hard も同じルールで、
+  起点の値が高いぶん早く上限・下限に達する。
+</p>
+
+<div class="note">
+<strong>補足：原作 Snood ではどうだったか。</strong>
+原作の <em>Classic</em> モードは難易度（Child/Easy/Medium/Hard/Evil）を選ぶと盤面サイズ・
+初期行数・危険ゲージ容量が固定で、<strong>面を進めても難化しない</strong>（新しいランダム盤面が
+出るだけ）。難易度が段階的に上がるのは、Child から 1 レベルずつ難易度ラダーを上っていく
+<em>Journey</em> モードの方だった。Snoot は 3 難易度（Easy/Normal/Hard）を選ぶ構成なので、
+原作 Classic の「難化しない」をそのまま踏襲せず、選んだ難易度を起点に少しずつ難化させる
+現代的な方式（上表）を採った。
 </div>
 
 <h2>未対応・検討中</h2>

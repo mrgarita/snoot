@@ -33,6 +33,22 @@ await shoot({ width: 900, height: 675 }, false, "hard", { game: "game-hard-pc" }
 await shoot({ width: 390, height: 844 }, true, "easy", { title: "title-mobile", game: "game-easy-mobile" });
 await shoot({ width: 390, height: 844 }, true, "hard", { game: "game-hard-mobile" });
 
+/** 指定難易度・レベルでゲームを開始して撮影する（レベルアップ比較用。DEV フックを使用） */
+async function shootLevel(viewport, difficulty, level, name) {
+  const ctx = await browser.newContext({ viewport });
+  const page = await ctx.newPage();
+  await page.goto(url, { waitUntil: "networkidle" });
+  await page.waitForSelector("#logo");
+  await page.evaluate(([d, lv]) => window.__snoot.startGame(d, lv), [difficulty, level]);
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${outDir}/${name}.png` });
+  await ctx.close();
+}
+
+// レベルアップによる段階的難化の比較（同じ Easy の Lv.1 と Lv.5）
+await shootLevel({ width: 420, height: 760 }, "easy", 1, "game-level-1");
+await shootLevel({ width: 420, height: 760 }, "easy", 5, "game-level-5");
+
 // キャラクター 7 種の名前付き一覧（ゲーム本体の描画コードをそのまま使う）
 {
   const ctx = await browser.newContext({ viewport: { width: 900, height: 220 } });
