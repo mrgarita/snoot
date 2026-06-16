@@ -37,6 +37,7 @@
         <button class="level-btn" data-level="easy" type="button">Easy</button>
         <button class="level-btn" data-level="normal" type="button">Normal</button>
         <button class="level-btn" data-level="hard" type="button">Hard</button>
+        <button id="btn-highscore" type="button">ハイスコア</button>
       </div>
       <p id="title-help">
         ねらいを定めてタップ／クリックで発射。同じ顔を 3 つつなげると消える。<br>
@@ -49,11 +50,31 @@
       <div id="result-box">
         <h2 id="result-title"></h2>
         <p id="result-score"></p>
+        <p id="result-best"></p>
         <div id="result-buttons">
           <button id="btn-retry" type="button">もう一度</button>
           <button id="btn-next" type="button">次のレベルへ</button>
           <button id="btn-title" type="button">タイトルへ</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 名前入力オーバーレイ（新記録達成時） -->
+    <div id="name-entry-overlay" class="hidden">
+      <div id="name-entry-box">
+        <h2>新記録！</h2>
+        <p id="name-entry-msg"></p>
+        <input id="name-input" type="text" maxlength="8" autocomplete="off">
+        <button id="btn-name-ok" type="button">登録</button>
+      </div>
+    </div>
+
+    <!-- ハイスコア一覧オーバーレイ（難易度別 Top5） -->
+    <div id="highscore-overlay" class="hidden">
+      <div id="highscore-box">
+        <h2>ハイスコア</h2>
+        <div id="highscore-tables"></div>
+        <button id="btn-highscore-close" type="button">閉じる</button>
       </div>
     </div>
 

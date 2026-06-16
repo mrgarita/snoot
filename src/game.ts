@@ -136,6 +136,16 @@ export class Game {
     cancelAnimationFrame(this.rafId);
   }
 
+  /** 現在の run の得点（途中離脱時のハイスコア記録に使う） */
+  getScore(): number {
+    return this.score;
+  }
+
+  /** 現在の run の到達レベル */
+  getLevel(): number {
+    return this.level;
+  }
+
   // ---------- 内部ロジック ----------
 
   private randomType(): number {

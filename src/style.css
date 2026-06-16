@@ -156,7 +156,9 @@ html, body {
 }
 
 #result-title { margin: 0 0 0.5rem; font-size: 1.6rem; }
-#result-score { margin: 0 0 1.2rem; font-size: 1.1rem; }
+#result-score { margin: 0 0 0.4rem; font-size: 1.1rem; }
+#result-best { margin: 0 0 1.2rem; font-size: 0.95rem; color: #666; }
+#result-best.new-record { color: #e67e22; font-weight: bold; }
 
 #result-buttons { display: flex; flex-direction: column; gap: 0.6rem; }
 
@@ -172,6 +174,90 @@ html, body {
 #btn-retry { background: #4a90d9; color: #fff; }
 #btn-next  { background: #5cb85c; color: #fff; }
 #btn-title { background: #ddd; color: #333; }
+
+/* ---- タイトルのハイスコアボタン ---- */
+#btn-highscore {
+  font-size: 1rem;
+  padding: 0.55rem;
+  margin-top: 0.2rem;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+#btn-highscore:active { transform: translateY(2px); }
+
+/* ---- 名前入力・ハイスコア共通オーバーレイ ---- */
+#name-entry-overlay,
+#highscore-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+}
+
+#name-entry-box,
+#highscore-box {
+  background: #fff;
+  color: #333;
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+  text-align: center;
+  min-width: min(86vw, 360px);
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+#name-entry-box h2,
+#highscore-box h2 { margin: 0 0 0.8rem; color: #e67e22; }
+#name-entry-msg { margin: 0 0 0.8rem; font-size: 0.95rem; }
+
+#name-input {
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+#name-input:focus { outline: none; border-color: #4a90d9; }
+
+#btn-name-ok,
+#btn-highscore-close {
+  font-size: 1rem;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  background: #5cb85c;
+}
+#btn-highscore-close { background: #888; margin-top: 0.6rem; }
+
+/* ---- ハイスコア表 ---- */
+.hs-group { margin-bottom: 1rem; text-align: left; }
+.hs-group h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.2rem;
+}
+.hs-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.hs-table td { padding: 0.2rem 0.3rem; }
+.hs-rank { width: 1.6em; color: #999; text-align: right; }
+.hs-name { max-width: 8em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hs-score { text-align: right; font-variant-numeric: tabular-nums; font-weight: bold; }
+.hs-level { width: 3.2em; text-align: right; color: #888; font-size: 0.8rem; }
+.hs-empty td { color: #ccc; }
+.hs-table tr.hs-highlight { background: #fff3e0; }
 
 /* ---- バージョン表示 ---- */
 #version-badge {

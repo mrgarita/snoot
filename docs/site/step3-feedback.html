@@ -72,6 +72,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>v0.7.0</td>
     <td><a class="play-link" href="play/v0.7.0/">▶ プレイ</a></td>
   </tr>
+  <tr>
+    <td>7</td>
+    <td>2026-06-16</td>
+    <td>得点が毎回リセットされ記録に残らないので、やる気が出にくい。ハイスコアの保存機能をつけたい（原作のリサーチを踏まえて）</td>
+    <td>原作 Snood を調査したところ、<strong>難易度別のローカル・ベストスコア表（名前入力あり）</strong>に加え、SnoodWorld.com の<strong>オンライン世界ランキング（検証コード付き）</strong>という二層構造だった。Snoot は「ブラウザ完結・ゼロコスト・オフライン」が制約のため、オンライン世界ランキングは対象外とし、原作のローカル表を <strong>localStorage による難易度別 Top5 ランキング</strong>として再現。新記録達成時に名前を入力（前回名を既定表示）し、タイトルの「ハイスコア」ボタンとリザルトから閲覧できる。「次のレベルへ」で続く間は記録せず、最終的なゲームオーバー（または途中でタイトルへ戻ったとき）に積み上げ得点を 1 回だけ記録する。<code>src/scores.ts</code>（新規）・<code>src/main.ts</code>・<code>src/game.ts</code>・<code>index.html</code>・<code>src/style.css</code> を追加／修正</td>
+    <td>v0.8.0</td>
+    <td><a class="play-link" href="play/v0.8.0/">▶ プレイ</a></td>
+  </tr>
 </table>
 
 <h2>対応結果のスクリーンショット</h2>
@@ -143,6 +151,36 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <em>Journey</em> モードの方だった。Snoot は 3 難易度（Easy/Normal/Hard）を選ぶ構成なので、
 原作 Classic の「難化しない」をそのまま踏襲せず、選んだ難易度を起点に少しずつ難化させる
 現代的な方式（上表）を採った。
+</div>
+
+<h3>#7：ハイスコア保存機能（v0.8.0）</h3>
+<p>
+難易度ごとに自分のベスト 5 が残るようにした。新記録を出すと名前を入力でき
+（前回名が既定で入る）、タイトルの「ハイスコア」ボタンといつでも見返せる。スコアは
+ブラウザの <code>localStorage</code> に保存するので、閉じても次回に残る。
+</p>
+<div class="shot-grid">
+  <figure>
+    <img src="img/highscore.png" alt="ハイスコア一覧（難易度別 Top5）">
+    <figcaption>難易度別の Top5 ランキング。未記録の枠は「—」で表示</figcaption>
+  </figure>
+</div>
+<p>保存仕様：</p>
+<ul>
+  <li><strong>難易度別</strong>に Easy / Normal / Hard それぞれ上位 5 件を保持（得点は難易度で
+      スケールが違うため別管理）。各記録は 名前・スコア・到達レベル・日付を持つ</li>
+  <li>保存先は <code>localStorage</code>（キー <code>snoot.highscores.v1</code>）。サーバを使わない
+      ブラウザ完結・ゼロコスト方式。データが壊れていても安全に空表示へフォールバックする</li>
+  <li>記録のタイミングは「<strong>同じプレイ（連続レベル）につき 1 回</strong>」。「次のレベルへ」で
+      続く間は記録せず、最終的なゲームオーバー、または途中でタイトルへ戻ったときに、
+      積み上げたスコアを 1 回だけ記録する（同一プレイの途中得点で表が埋まらない）</li>
+</ul>
+<div class="note">
+<strong>補足：原作 Snood のハイスコア。</strong>
+原作は <strong>難易度別のローカル・ベスト表（名前入力あり）</strong>に加えて、
+SnoodWorld.com の <strong>オンライン世界ランキング</strong>（不正対策のスコア検証コード付き）に
+提出できる二層構造だった。Snoot はゼロコスト・ブラウザ完結の方針のため、オンライン
+世界ランキングは採用せず、ローカルの難易度別ベスト表だけを <code>localStorage</code> で再現した。
 </div>
 
 <h2>未対応・検討中</h2>

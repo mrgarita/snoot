@@ -49,6 +49,36 @@ async function shootLevel(viewport, difficulty, level, name) {
 await shootLevel({ width: 420, height: 760 }, "easy", 1, "game-level-1");
 await shootLevel({ width: 420, height: 760 }, "easy", 5, "game-level-5");
 
+// ハイスコア画面（サンプルスコアを localStorage に投入してから一覧を開く）
+{
+  const ctx = await browser.newContext({ viewport: { width: 420, height: 760 } });
+  const page = await ctx.newPage();
+  await page.goto(url, { waitUntil: "networkidle" });
+  await page.waitForSelector("#logo");
+  // 難易度別 Top5 のサンプルデータを投入（実データ形式に合わせる）
+  await page.evaluate(() => {
+    const mk = (name, score, level, date) => ({ name, score, level, date });
+    const sample = {
+      easy: [
+        mk("しゅう", 12300, 8, "2026-06-16"),
+        mk("しゅう", 9800, 6, "2026-06-16"),
+        mk("ゲスト", 7100, 5, "2026-06-15"),
+        mk("しゅう", 5400, 4, "2026-06-15"),
+        mk("ゲスト", 3200, 3, "2026-06-14"),
+      ],
+      normal: [mk("しゅう", 8400, 5, "2026-06-16"), mk("ゲスト", 4100, 3, "2026-06-15")],
+      hard: [mk("しゅう", 4100, 2, "2026-06-16")],
+    };
+    localStorage.setItem("snoot.highscores.v1", JSON.stringify(sample));
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.click("#btn-highscore");
+  await page.waitForSelector("#highscore-overlay:not(.hidden)");
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${outDir}/highscore.png` });
+  await ctx.close();
+}
+
 // キャラクター 7 種の名前付き一覧（ゲーム本体の描画コードをそのまま使う）
 {
   const ctx = await browser.newContext({ viewport: { width: 900, height: 220 } });
