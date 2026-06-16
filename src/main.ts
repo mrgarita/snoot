@@ -240,10 +240,16 @@ btnTitle.addEventListener("click", () => finalizeRun(showTitle));
 btnQuit.addEventListener("click", () => finalizeRun(showTitle));
 
 // タイトルからハイスコア一覧を開く
+function closeHighscore(): void {
+  highscoreOverlay.classList.add("hidden");
+}
 btnHighscore.addEventListener("click", () => {
   renderHighscores();
   highscoreOverlay.classList.remove("hidden");
 });
-btnHighscoreClose.addEventListener("click", () => {
-  highscoreOverlay.classList.add("hidden");
+btnHighscoreClose.addEventListener("click", closeHighscore);
+// 枠外（オーバーレイ背景）をタップ／クリックしても閉じる。
+// ボックス内側のタップでは閉じないよう、対象がオーバーレイ自身のときだけ閉じる
+highscoreOverlay.addEventListener("click", (e) => {
+  if (e.target === highscoreOverlay) closeHighscore();
 });
