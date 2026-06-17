@@ -88,6 +88,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>v0.8.1</td>
     <td><a class="play-link" href="play/v0.8.1/">▶ プレイ</a></td>
   </tr>
+  <tr>
+    <td>9</td>
+    <td>2026-06-17</td>
+    <td>テストプレイしやすいよう PWA 化したい。あわせて黄色いアプリアイコンを、ゲームキャラに使われている紫の「ネムリ：寝息の浮き沈み」のアイコンに変更したい</td>
+    <td>スマホで「ホーム画面に追加」でき、スタンドアロン（全画面）で起動・オフライン対応する PWA にした。今後のこまめな更新が確実に届くよう、<code>vite-plugin-pwa</code> の <code>autoUpdate</code> でビルド毎に Service Worker を更新し、インストール済みアプリが次回起動時に自動で最新化する方式を採用。配信場所（<code>play/&lt;tag&gt;/</code>・XServer サブディレクトリ）が一定しないため manifest / SW 登録をすべて相対パスにした。アイコンは著作権配慮のため本家画像を使わず、<code>drawSnoot()</code> の <code>type=4</code>（ネムリ）から生成（<code>scripts/make-icons.mjs</code>）。詳細は <a href="step4-pwa.html">step4：PWA 化</a>。<code>vite.config.ts</code>・<code>index.html</code>・<code>package.json</code>・<code>.github/workflows/deploy.yml</code> を修正、<code>public/</code> アイコンと <code>scripts/make-icons.mjs</code> を追加</td>
+    <td>v0.9.0</td>
+    <td><a class="play-link" href="play/v0.9.0/">▶ プレイ</a></td>
+  </tr>
 </table>
 
 <h2>対応結果のスクリーンショット</h2>

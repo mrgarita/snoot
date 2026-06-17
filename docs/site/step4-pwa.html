@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>step4：PWA 化とアプリアイコン変更（v0.9.0） | Snoot 開発備忘録</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%239b59b6' stroke='%23222' stroke-width='4'/%3E%3Cellipse cx='36' cy='32' rx='15' ry='9' fill='%23ffffff' fill-opacity='0.25' transform='rotate(-28 36 32)'/%3E%3Cline x1='28' y1='43' x2='42' y2='43' stroke='%23222' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='58' y1='43' x2='72' y2='43' stroke='%23222' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='66' r='4' fill='%23222'/%3E%3Ctext x='70' y='30' font-family='sans-serif' font-size='22' font-weight='bold' fill='%23222'%3Ez%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>step4：PWA 化とアプリアイコン変更（v0.9.0）</h1>
+  <p>Snoot 開発備忘録 — 2026-06-17 / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+</header>
+<main>
+
+<h2>このページについて</h2>
+<p>
+スマホ実機でのテストプレイを楽にするため、Snoot を <strong>PWA（Progressive Web App）</strong>
+にした（フィードバック #9、v0.9.0）。ブラウザから「ホーム画面に追加」でき、アドレスバーの
+ない<strong>スタンドアロン（全画面）</strong>でネイティブアプリのように起動できる。あわせて、
+これまでの黄色いアプリアイコンを、ゲームキャラ <strong>「ネムリ：寝息の浮き沈み」</strong>
+（紫）に変更した。
+</p>
+
+<h2>アプリアイコンを「ネムリ」に変更</h2>
+<div class="shot-grid">
+  <figure>
+    <img src="img/app-icon.png" alt="新しいアプリアイコン（紫キャラ ネムリ）" width="256">
+    <figcaption>新アイコン：キャラ「ネムリ」（紫 <code>#9b59b6</code>・閉じ目・寝息の z）</figcaption>
+  </figure>
+</div>
+<ul>
+  <li>旧アイコン（黄色いキャラ「ヒナタ」）から、紫の「ネムリ」へ差し替え。</li>
+  <li>著作権配慮の方針どおり Snood 本家の画像は使わず、<strong>ゲーム本体の描画コード
+      <code>drawSnoot()</code>（<code>src/characters.ts</code> の <code>type=4</code>）をそのまま流用</strong>して
+      アイコン画像を生成した（<code>scripts/make-icons.mjs</code>）。ゲーム内のキャラと完全に同じ意匠。</li>
+  <li>背景はゲーム本体の背景に馴染む紺 <code>#1b2a4a</code>。マスカブル版（Android の丸／角丸
+      マスク用）はキャラを安全域に収めるため少し小さめに描いている。</li>
+  <li>ブラウザのタブに出る favicon も、同じネムリの意匠（インライン SVG）へ変更した。</li>
+</ul>
+
+<h2>PWA でできること</h2>
+<ul>
+  <li><strong>ホーム画面に追加</strong>：スマホのブラウザの共有メニューやインストール導線から追加。
+      ホーム画面に紫ネムリのアイコンが並ぶ。</li>
+  <li><strong>スタンドアロン起動</strong>：アドレスバーなしの全画面で起動し、テストプレイ時の没入感が増す。</li>
+  <li><strong>オフライン対応</strong>：一度開けば Service Worker がアプリ本体をキャッシュし、
+      電波が不安定でも起動できる。</li>
+</ul>
+
+<h2>更新は自動で反映される</h2>
+<p>
+今後 step3/step4 を反復してこまめに更新していくので、<strong>インストール済みアプリが次回
+起動時に自動で最新版へ入れ替わる</strong>方式（<code>vite-plugin-pwa</code> の
+<code>registerType: "autoUpdate"</code>）を採用した。アプリストアのような入れ直しは不要。
+</p>
+<table>
+  <tr><th>段階</th><th>起きること</th></tr>
+  <tr><td>ビルド時</td><td>新しいアセット一覧を埋め込んだ Service Worker が毎回生成される（中身が変わる）</td></tr>
+  <tr><td>次回アクセス時</td><td>ブラウザが新しい Service Worker を検知し、裏で新アセットを取得</td></tr>
+  <tr><td>次回起動時</td><td>取得済みの最新版へ自動で切り替わる（右下のバージョン表示が上がる）</td></tr>
+</table>
+
+<h2>技術メモ：どこに置いても動く相対パス設計</h2>
+<p>
+Snoot は GitHub Pages のバージョン別ディレクトリ（<code>play/&lt;tag&gt;/</code>・<code>play/latest/</code>）や
+XServer のサブディレクトリなど、<strong>置き場所が一定しない</strong>。そこで PWA の各設定を
+すべて<strong>相対パス</strong>にして、どの階層に置いても動くようにした。
+</p>
+<ul>
+  <li><code>vite.config.ts</code> の <code>base: "./"</code> を維持。</li>
+  <li>manifest の <code>start_url: "."</code> / <code>scope: "./"</code>、アイコンも相対指定。</li>
+  <li>Service Worker の登録も <code>register("./sw.js", { scope: "./" })</code> と相対。
+      これにより各バージョンのディレクトリごとに独立した PWA として成立する。</li>
+  <li><code>display: standalone</code> / テーマ色・背景色は紺 <code>#1b2a4a</code>。</li>
+</ul>
+
+<p style="text-align:center;margin:1.4rem 0;">
+  <a class="play-now" href="play/latest/">▶ 最新版（v0.9.0）で試す</a>
+</p>
+
+<div class="note">
+<strong>著作権への配慮：</strong>アイコンは Snood 本家の画像を一切使わず、Snoot 用に自作した
+オリジナルキャラ「ネムリ」を Canvas 描画コードから生成している。BGM・SE 同様、画像も
+オリジナル素材で完結させる方針を踏襲している。
+</div>
+
+</main>
+<footer>Snoot 開発備忘録 — step4（PWA 化）</footer>
+</body>
+</html>
