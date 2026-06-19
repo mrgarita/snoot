@@ -30,6 +30,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
     <td>2026-06-19</td>
+    <td>11</td>
+    <td>iPhone のスタンドアロン起動時、画面下端に白い余白が出る</td>
+    <td>v0.9.2</td>
+    <td><a class="detail-link" href="#fb11">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.2/">▶ プレイ</a></td>
+  </tr>
+  <tr>
+    <td>2026-06-19</td>
     <td>10</td>
     <td>iPhone でステータスバー（時刻・電池）と HUD が重なり「タイトルへ」が押せない</td>
     <td>v0.9.1</td>
@@ -112,6 +120,79 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb11">#11：iPhone スタンドアロン時の画面下端の白い余白を解消（v0.9.2） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>iPhone 8 でホーム画面から起動（スタンドアロン）すると、ゲーム画面の最下部に横幅いっぱいの白い帯が出て、濃紺の画面と違和感があった。Android では出ず下端まで途切れない。Android と同様に境目のない見た目にしたい。</p>
+<p><strong>原因・対応：</strong>原因＝ゲームの濃紺は <code>html, body</code> の背景グラデーション（透明なキャンバスに 25% 黒オーバーレイを重ねたものを透かして見えている）だが、この背景が<strong>グラデーション画像のみで単色の <code>background-color</code> を持たない</strong>ため。iOS スタンドアロンでは高さ <code>100%</code> の文書の外側に余白領域ができ、そこは画像が届かず既定の白で塗られていた（Android は文書が画面を埋めるので隙間が出ない）。対応＝ルート背景に<strong>盤面下端の実効色 <code>#213654</code></strong>（グラデーション下端 <code>#2c4870</code> に 25% 黒オーバーレイを重ねた色）を単色として併記。ルート要素の背景色はビューポート全体へ伝播するため、余白が盤面と同色で埋まり白帯が消える。通常ブラウザ・PC・Android は隙間が無いので見た目は不変。<code>src/style.css</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前は iPhone スタンドアロン時に画面下端へ白い帯が出る。対応後は下端まで盤面と同色で継ぎ目が無い。">
+    <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
+    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.1</text>
+    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.2</text>
+    <defs>
+      <linearGradient id="be-bg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1b2a4a"/>
+        <stop offset="1" stop-color="#2c4870"/>
+      </linearGradient>
+      <clipPath id="be-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+      <clipPath id="be-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+    </defs>
+
+    <!-- 対応前：下端に白い帯 -->
+    <g clip-path="url(#be-clipA)">
+      <rect x="45" y="44" width="180" height="320" fill="url(#be-bg)"/>
+      <!-- キャンバス相当の 25% 黒オーバーレイ -->
+      <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+      <!-- HUD -->
+      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
+      <!-- バブル -->
+      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+      <!-- 砲台 -->
+      <circle cx="135" cy="322" r="13" fill="#3a4a63"/>
+      <circle cx="135" cy="322" r="8" fill="#4a90d9"/>
+      <text x="216" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.1</text>
+      <!-- 不具合：下端の白帯 -->
+      <rect x="45" y="350" width="180" height="14" fill="#ffffff"/>
+    </g>
+    <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に白い帯が出る</text>
+
+    <!-- 対応後：下端まで盤面色で継ぎ目なし -->
+    <g clip-path="url(#be-clipB)">
+      <rect x="315" y="44" width="180" height="320" fill="url(#be-bg)"/>
+      <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
+      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="405" cy="322" r="13" fill="#3a4a63"/>
+      <circle cx="405" cy="322" r="8" fill="#4a90d9"/>
+      <text x="486" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
+    </g>
+    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで継ぎ目なし</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.1）は iPhone のスタンドアロン起動時、画面下端に白い帯が出る。
+    右：対応後（v0.9.2）は下端の余白を盤面と同じ色（<code>#213654</code>）で塗り、Android と同様に継ぎ目をなくした。
+  </figcaption>
+</figure>
 
 <h3 id="fb10">#10：iPhone のステータスバー（セーフエリア）との重なり解消（v0.9.1） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>iPhone 8 でホーム画面から起動（スタンドアロン）すると、上部の HUD（レベル表示・スコア・「タイトルへ」ボタン）が iOS のステータスバー（時刻・電波・電池）と重なって見づらく、ステータスバー領域に隠れた「タイトルへ」ボタンが押せなくなっていた。</p>

@@ -2,6 +2,9 @@
 :root {
   --bg-top: #1b2a4a;
   --bg-bottom: #2c4870;
+  /* 盤面下端の実効色（--bg-bottom にキャンバスの 25% 黒オーバーレイを重ねた色）。
+     iOS スタンドアロンで画面外に生じる余白を盤面と同色で塗り、下端の白帯を防ぐ */
+  --bg-edge: #213654;
   --accent: #ffb347;
   --danger: #e74c3c;
 }
@@ -13,7 +16,9 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  background: linear-gradient(var(--bg-top), var(--bg-bottom));
+  /* 末尾の単色がルート背景色。ルート要素の背景色はビューポート全体へ伝播するため、
+     iOS スタンドアロンでグラデーション画像が届かない下端の余白も同色で埋まる */
+  background: linear-gradient(var(--bg-top), var(--bg-bottom)) var(--bg-edge);
   color: #fff;
   -webkit-user-select: none;
   user-select: none;
