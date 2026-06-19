@@ -104,6 +104,25 @@ a.play-link {
 }
 a.play-link:hover { color: var(--accent); }
 
+/* フィードバック一覧から「対応の詳細」セクションへ飛ぶリンク */
+a.detail-link {
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--main);
+  white-space: nowrap;
+}
+a.detail-link:hover { color: var(--accent); }
+
+/* 各詳細セクション見出しの右に置く「↑ 一覧へ戻る」リンク */
+a.back-to-list {
+  float: right;
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+/* アンカーで飛んだとき、見出しがページ上端で隠れないよう少し余白を取る */
+h3[id] { scroll-margin-top: 0.6rem; }
+
 /* 図版・スクリーンショット */
 figure {
   margin: 1.2rem 0;
