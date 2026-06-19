@@ -83,8 +83,24 @@ html, body {
   justify-content: space-between;
   gap: 0.6rem;
   padding: 0.4rem 0.7rem;
+  /* 横向きのノッチ端末で左右の切り欠きを避ける（非ノッチ・PC では 0.7rem のまま） */
+  padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
   background: rgba(0, 0, 0, 0.35);
   font-size: 0.9rem;
+}
+
+/*
+ * PWA スタンドアロン起動時のみ、HUD 上部に iOS ステータスバー分の余白を確保する。
+ * ノッチ端末では env(safe-area-inset-top) の実値（44px 以上）を使い、
+ * ノッチなし端末（iPhone 8 等。env が 0 を返す）では 20px のフォールバックで
+ * ステータスバーとの重なり／「タイトルへ」ボタンのタップ不能を防ぐ。
+ * 通常ブラウザ表示には適用されないため余計な余白は出ない。
+ */
+@media all and (display-mode: standalone) {
+  #hud {
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 20px) + 0.4rem);
+  }
 }
 
 #hud-left { display: flex; gap: 0.6rem; align-items: baseline; }
@@ -127,6 +143,8 @@ html, body {
   align-items: center;
   justify-content: center;
   min-height: 0;
+  /* ノッチ端末のホームインジケータに砲台が潜らないよう下端を持ち上げる（非ノッチでは 0） */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 #game-canvas {
@@ -262,8 +280,9 @@ html, body {
 /* ---- バージョン表示 ---- */
 #version-badge {
   position: absolute;
-  right: 0.5rem;
-  bottom: 0.4rem;
+  /* ノッチ端末のホームインジケータ／右切り欠きに重ならないようインセットを加算 */
+  right: calc(0.5rem + env(safe-area-inset-right, 0px));
+  bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
   font-size: 0.7rem;
   opacity: 0.6;
   z-index: 20;

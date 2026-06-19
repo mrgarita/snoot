@@ -1,7 +1,7 @@
 {
   "name": "snoot",
   "private": true,
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "description": "Snood 風バブルシューター「Snoot」（ブラウザゲーム）",
   "scripts": {
