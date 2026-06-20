@@ -148,6 +148,11 @@ html, body {
   align-items: center;
   justify-content: center;
   min-height: 0;
+  /* canvas を中央寄せする都合で下端にサブピクセルの隙間が生じると、そこに
+     盤面背景（body グラデーション＋25% 黒＝--bg-edge）より明るい素の
+     グラデーション（--bg-bottom）が透けて薄い横線に見える。枠自体を
+     --bg-edge で塗っておくと、隙間に透ける色が canvas 下端と同色になり消える */
+  background: var(--bg-edge);
   /* ノッチ端末のホームインジケータに砲台が潜らないよう下端を持ち上げる（非ノッチでは 0） */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
