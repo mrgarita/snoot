@@ -29,6 +29,22 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <table>
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
+    <td>2026-06-21</td>
+    <td>13</td>
+    <td>iPhone でバージョン表示下の帯が盤面と違う色（PC の左右余白と同色）になる</td>
+    <td>v0.9.4</td>
+    <td><a class="detail-link" href="#fb13">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.4/">▶ プレイ</a></td>
+  </tr>
+  <tr>
+    <td>2026-06-20</td>
+    <td>12</td>
+    <td>iPhone 画面下端の背景継ぎ目（バージョン表示下の横線）が残る</td>
+    <td>v0.9.3</td>
+    <td><a class="detail-link" href="#fb12">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.3/">▶ プレイ</a></td>
+  </tr>
+  <tr>
     <td>2026-06-19</td>
     <td>11</td>
     <td>iPhone のスタンドアロン起動時、画面下端に白い余白が出る</td>
@@ -120,6 +136,146 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb13">#13：iPhone でバージョン表示下の帯を盤面と同色にする（v0.9.4） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>#11（v0.9.2）で白い帯は消え、#12（v0.9.3）で横線も消えたが、iPhone 8 のスタンドアロン起動だと「Snoot v0.9.3」の下に<strong>盤面とは少し違う色の帯</strong>が残って違和感がある。その色は PC 版でゲーム画面の左右に見える余白と同じ色。Android のように、iPhone でもこの帯を盤面の背景色と同じに見せたい。</p>
+<p><strong>原因・対応：</strong>原因＝「ほぼ同じだが微妙に違う 2 色」が併存していたこと。盤面（キャンバス）は透明背景に 25% 黒を重ねており、その背後は <code>#canvas-wrap</code> の <code>#213654</code> なので実効色は <strong><code>#213654 × 0.75 ≒ #19283f</code>（やや濃い）</strong>。一方、PC の左右余白（<code>#canvas-wrap</code> 背景）と、iOS スタンドアロンで文書外に生じる下端余白を塗る <code>html, body</code> の単色フォールバックは <strong><code>#213654</code>（やや明るい）</strong>。v0.9.2（白帯対策）と v0.9.3（横線対策）で <code>#213654</code> を背景に足した結果、キャンバスの背後がグラデーションから単色 <code>#213654</code> に変わって盤面が一律 <code>#19283f</code> になり、明るい <code>#213654</code> の余白との差が iPhone 下端の広い平面で目立つようになっていた。<br>
+対応＝<strong>全体を 1 色に統一はしない</strong>。PC ではキャンバス左右の色差が<strong>ボールの跳ね返り壁の目印</strong>になっており、統一すると壁が分かりにくくなるため。PC 左右余白（<code>#canvas-wrap</code> 背景）と iPhone 下端の帯（<code>html, body</code> フォールバック）は別々の面で、フォールバックは PC では表示されない。そこで盤面の実効色を変数 <code>--play-bg: #19283f</code> として定義し、<strong><code>html, body</code> のフォールバックだけ <code>#213654</code> → <code>--play-bg</code> に差し替えた</strong>。これで iPhone 下端の帯だけ盤面色に揃い、PC の跳ね返り壁（<code>#213654</code>）はそのまま残る。<code>src/style.css</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前は iPhone 下端の帯が盤面より明るい #213654 で違和感がある。対応後は帯が盤面と同じ #19283f になり継ぎ目が消える。PC の跳ね返り壁の色 #213654 は維持する。">
+    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.3</text>
+    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.4</text>
+    <defs>
+      <clipPath id="bd-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+      <clipPath id="bd-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+    </defs>
+
+    <!-- 対応前：盤面 #19283f に対し下端の帯が明るい #213654 -->
+    <g clip-path="url(#bd-clipA)">
+      <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
+      <!-- HUD -->
+      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <!-- バブル -->
+      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+      <!-- 砲台 -->
+      <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
+      <circle cx="135" cy="320" r="8" fill="#f5a623"/>
+      <text x="216" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
+      <!-- 不具合：下端の帯が盤面より明るい #213654 -->
+      <rect x="45" y="350" width="180" height="14" fill="#213654"/>
+    </g>
+    <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">帯が盤面より明るい</text>
+    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 帯 #213654</text>
+
+    <!-- 対応後：帯も盤面と同じ #19283f で継ぎ目なし -->
+    <g clip-path="url(#bd-clipB)">
+      <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
+      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
+      <circle cx="405" cy="320" r="8" fill="#f5a623"/>
+      <text x="486" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
+      <!-- 下端まで盤面と同色（帯が見えない） -->
+    </g>
+    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">帯も盤面と同色で継ぎ目なし</text>
+    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">盤面・帯とも #19283f</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.3）は iPhone 下端の帯が盤面（<code>#19283f</code>）より明るい <code>#213654</code> で違和感がある。
+    右：対応後（v0.9.4）は <code>html, body</code> のフォールバックを盤面色 <code>--play-bg</code>（<code>#19283f</code>）に変え、帯を盤面と同色にして継ぎ目をなくした。
+    PC の左右余白（ボールの跳ね返り壁の目印）は <code>#213654</code> のまま維持している。
+  </figcaption>
+</figure>
+
+<h3 id="fb12">#12：iPhone 画面下端の背景継ぎ目（横線）を解消（v0.9.3） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>#11（v0.9.2）で下端の白い帯は消えたが、iPhone 8 のスタンドアロン起動だと、バージョン表示の下あたり（盤面の最下部）に<strong>薄い横線（継ぎ目）</strong>がうっすら残って見えた。</p>
+<p><strong>原因・対応：</strong>原因＝キャンバスを中央寄せする都合で下端にサブピクセルの隙間が生じると、そこに盤面背景（当時は <code>html, body</code> のグラデーションに 25% 黒を重ねた色）より明るい<strong>素のグラデーション下端 <code>#2c4870</code></strong>が透けて、細い横線に見えていた。対応＝キャンバスを載せる枠 <code>#canvas-wrap</code> 自体を盤面外周色 <code>#213654</code> で塗り、隙間に透ける色をキャンバス下端と同系色にして横線を消した。<code>src/style.css</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前は盤面下端のサブピクセル隙間に明るいグラデーションが透けて薄い横線が見える。対応後は枠を #213654 で塗り横線が消える。">
+    <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
+    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.2</text>
+    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.3</text>
+    <defs>
+      <linearGradient id="ln-bg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1b2a4a"/>
+        <stop offset="1" stop-color="#2c4870"/>
+      </linearGradient>
+      <clipPath id="ln-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+      <clipPath id="ln-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+    </defs>
+
+    <!-- 対応前：下端のサブピクセル隙間に明るいグラデーションが透けて横線 -->
+    <g clip-path="url(#ln-clipA)">
+      <rect x="45" y="44" width="180" height="320" fill="url(#ln-bg)"/>
+      <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
+      <circle cx="135" cy="320" r="8" fill="#f5a623"/>
+      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
+      <!-- 不具合：隙間に透ける明るい横線（素のグラデーション #2c4870） -->
+      <rect x="45" y="356" width="180" height="3" fill="#2c4870"/>
+    </g>
+    <rect x="45" y="353" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に薄い横線が残る</text>
+
+    <!-- 対応後：枠を #213654 で塗り隙間も同色化、横線が消える -->
+    <g clip-path="url(#ln-clipB)">
+      <rect x="315" y="44" width="180" height="320" fill="#213654"/>
+      <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
+      <circle cx="405" cy="320" r="8" fill="#f5a623"/>
+      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
+    </g>
+    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">枠を盤面色で塗り横線が消える</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.2）はキャンバス下端のサブピクセル隙間に明るいグラデーション（<code>#2c4870</code>）が透け、薄い横線に見える。
+    右：対応後（v0.9.3）は <code>#canvas-wrap</code> を <code>#213654</code> で塗り、隙間に透ける色を同系色にして横線を消した。
+  </figcaption>
+</figure>
 
 <h3 id="fb11">#11：iPhone スタンドアロン時の画面下端の白い余白を解消（v0.9.2） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>iPhone 8 でホーム画面から起動（スタンドアロン）すると、ゲーム画面の最下部に横幅いっぱいの白い帯が出て、濃紺の画面と違和感があった。Android では出ず下端まで途切れない。Android と同様に境目のない見た目にしたい。</p>
