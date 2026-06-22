@@ -153,14 +153,18 @@ html, body {
   align-items: center;
   justify-content: center;
   min-height: 0;
-  /* canvas を中央寄せする都合で下端にサブピクセルの隙間が生じると、そこに
-     盤面背景（body グラデーション＋25% 黒＝--bg-edge）より明るい素の
-     グラデーション（--bg-bottom）が透けて薄い横線に見える。枠自体を
-     --bg-edge で塗っておくと、隙間に透ける色が canvas 下端と同色になり消える */
+  /* 既定（PC など盤面が画面より狭い場合）は枠を --bg-edge で塗る。盤面の左右に
+     見えるこの色差がボールの跳ね返り壁の目印になる */
   background: var(--bg-edge);
   /* ノッチ端末のホームインジケータに砲台が潜らないよう下端を持ち上げる（非ノッチでは 0） */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* スマホ等で盤面が画面全幅のときは左右余白＝跳ね返り壁が存在しない。枠を盤面の
+   実効色 --play-bg に揃え、canvas 下端のサブピクセル隙間や iOS スタンドアロンの
+   レイアウト外帯に枠色が覗いて横線（バージョン表示下の継ぎ目）になるのを防ぐ。
+   全幅判定は実測値で行い、game.ts の resize() がこのクラスを付け外しする */
+#canvas-wrap.board-fullwidth { background: var(--play-bg); }
 
 #game-canvas {
   touch-action: none; /* スマホでのスクロール・ズームを抑止して照準操作を可能にする */

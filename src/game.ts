@@ -189,6 +189,12 @@ export class Game {
     this.canvas.style.width = `${this.W}px`;
     this.canvas.style.height = `${this.H}px`;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 盤面が画面全幅のとき（スマホ）は左右余白＝ボールの跳ね返り壁が存在しない。
+    // この場合だけ枠（#canvas-wrap）を盤面色に揃える。盤面下端のサブピクセル隙間や
+    // iOS スタンドアロンのレイアウト外帯に枠色（#213654）が覗いて横線になるのを防ぐ。
+    // 左右余白が出る PC では枠色を残し、壁の目印を維持する。
+    wrap.classList.toggle("board-fullwidth", boardW >= availW - 0.5);
   }
 
   /** セル (r,c) の描画中心座標 */

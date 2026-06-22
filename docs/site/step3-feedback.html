@@ -29,6 +29,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <table>
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
+    <td>2026-06-22</td>
+    <td>14</td>
+    <td>iPhone でバージョン表示下の横線が v0.9.4 でも残る（v0.9.2 と大差ない）</td>
+    <td>v0.9.5</td>
+    <td><a class="detail-link" href="#fb14">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.5/">▶ プレイ</a></td>
+  </tr>
+  <tr>
     <td>2026-06-21</td>
     <td>13</td>
     <td>iPhone でバージョン表示下の帯が盤面と違う色（PC の左右余白と同色）になる</td>
@@ -136,6 +144,75 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb14">#14：iPhone でバージョン表示下に残る横線を根本解消（v0.9.5） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>#11〜#13（v0.9.2〜v0.9.4）で対応してきたが、iPhone 8 のスタンドアロン起動だと <strong>v0.9.4 でも「Snoot v0.9.4」の下に細い横線が残り、v0.9.2 とほとんど見え方が変わらない</strong>。タイトル画面では横線は出ず、ゲーム画面でだけ出る。</p>
+<p><strong>原因・対応：</strong>これまでの 3 回はいずれも「背景色を合わせて隠す」対症療法で、横線を生む構造そのものは残っていた。<br>
+真因＝画面最下端で<strong>「ほぼ同じだが微妙に違う 2 色」が隣接</strong>し、その境界が線に見えること。盤面（キャンバス）は透明地に 25% 黒を重ねるため実効色は <code>#19283f</code>（やや濃い）。その背後・周囲の <code>#canvas-wrap</code> 背景は <code>#213654</code>（やや明るい）。iPhone では盤面が<strong>画面全幅</strong>でキャンバスが <code>#canvas-wrap</code> を覆うため、<code>#213654</code> は「キャンバスを中央寄せした際の下端のサブピクセル隙間」や「iOS スタンドアロンでレイアウト外に生じる下端帯」としてだけ細く覗き、それが横線に見えていた。v0.9.4 はルート背景の下端帯を <code>#19283f</code> に揃えたが、<code>#canvas-wrap</code> は <code>#213654</code> のまま残したため、明るい <code>#213654</code> の細線が消えずに残っていた。<br>
+着眼点＝<code>#213654</code>（跳ね返り壁の目印）が<strong>実際に見えるのは PC だけ</strong>（盤面が画面より狭く左右に余白が出る）。<strong>スマホでは盤面が全幅で左右余白＝壁が存在しない</strong>。そこで、盤面が全幅のとき（＝スマホ）だけ <code>#canvas-wrap</code> を盤面実効色 <code>--play-bg</code>（<code>#19283f</code>）に揃えるようにした。これで下端に覗く面が「隙間」でも「レイアウト外帯」でも一律 <code>#19283f</code>＝盤面色になり、原因のどちらに転んでも横線が消える。全幅かどうかは <code>resize()</code> の実測値（<code>boardW ≥ availW</code>）で判定して <code>#canvas-wrap</code> にクラスを付け外しするため、PC では従来どおり <code>#213654</code> の壁が残る。<code>src/game.ts</code>（<code>resize()</code>）と <code>src/style.css</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.4)はキャンバス下端の隙間に明るい #213654 が細く覗いて横線が残る。対応後(v0.9.5)は盤面が全幅のとき枠も盤面色 #19283f に揃え、覗く色が盤面と同色になって横線が消える。">
+    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.4</text>
+    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.5</text>
+    <defs>
+      <clipPath id="ln-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+      <clipPath id="ln-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+    </defs>
+
+    <!-- 対応前：盤面 #19283f の下端に明るい #213654 の細線が残る -->
+    <g clip-path="url(#ln-clipA)">
+      <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
+      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="135" cy="318" r="13" fill="#3a4a63"/>
+      <circle cx="135" cy="318" r="8" fill="#f5a623"/>
+      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
+      <!-- 不具合：下端に明るい #213654 の細い横線 -->
+      <rect x="45" y="360" width="180" height="4" fill="#213654"/>
+    </g>
+    <rect x="45" y="357" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に明るい細線が残る</text>
+    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 隙間に #213654 が覗く</text>
+
+    <!-- 対応後：全幅のとき枠も #19283f。覗く色が盤面と同色で線が消える -->
+    <g clip-path="url(#ln-clipB)">
+      <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
+      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+      <circle cx="405" cy="318" r="13" fill="#3a4a63"/>
+      <circle cx="405" cy="318" r="8" fill="#f5a623"/>
+      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
+      <!-- 下端まで一様な #19283f（隙間に覗く色も盤面と同色＝線が見えない） -->
+    </g>
+    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで一様で横線なし</text>
+    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">全幅時は枠も #19283f に統一</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.4）は盤面（<code>#19283f</code>）の下端に、キャンバスを覆い切れない隙間から明るい枠色 <code>#213654</code> が細く覗き、横線として残っていた。
+    右：対応後（v0.9.5）は盤面が全幅のとき（スマホ）だけ <code>#canvas-wrap</code> も盤面色 <code>--play-bg</code>（<code>#19283f</code>）に揃え、覗く色を盤面と同色にして横線を消した。
+    左右余白が出る PC では <code>#213654</code> の跳ね返り壁の目印をそのまま維持している。
+  </figcaption>
+</figure>
 
 <h3 id="fb13">#13：iPhone でバージョン表示下の帯を盤面と同色にする（v0.9.4） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>#11（v0.9.2）で白い帯は消え、#12（v0.9.3）で横線も消えたが、iPhone 8 のスタンドアロン起動だと「Snoot v0.9.3」の下に<strong>盤面とは少し違う色の帯</strong>が残って違和感がある。その色は PC 版でゲーム画面の左右に見える余白と同じ色。Android のように、iPhone でもこの帯を盤面の背景色と同じに見せたい。</p>
