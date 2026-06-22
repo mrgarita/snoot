@@ -85,6 +85,8 @@ export class Game {
   private lastTime = 0;
   private rafId = 0;
   private running = false;
+  /** 開発者向け：着地予測の表示。URL に ?debug を付けると初期 ON、PC では d キーで切替 */
+  private debug = false;
 
   // HUD 要素
   private elScore = document.getElementById("hud-score")!;
@@ -101,6 +103,13 @@ export class Game {
     canvas.addEventListener("pointermove", (e) => this.onPointer(e, false));
     canvas.addEventListener("pointerup", (e) => this.onPointer(e, true));
     window.addEventListener("resize", () => this.resize());
+
+    // 開発者向け：?debug（または #debug）で着地予測を初期 ON、d キーで切替
+    this.debug = /[?&#]debug\b/.test(location.search + location.hash);
+    window.addEventListener("keydown", (e) => {
+      if (e.target instanceof HTMLInputElement) return; // 名前入力中などは無視
+      if (e.key === "d" || e.key === "D") this.debug = !this.debug;
+    });
   }
 
   start(difficulty: DifficultyId, level = 1, carriedScore = 0): void {
@@ -353,6 +362,80 @@ export class Game {
     this.resolve(landed.r, landed.c);
   }
 
+  /**
+   * 開発者向け：現在の照準で発射した場合の着地セルを予測する。
+   * 実弾と同じ移動（壁反射・サブステップ）・衝突・着弾ロジックを使うので、
+   * 表示されたセルに実際に着地する（着地予測の検証に使える）。
+   */
+  private predictLanding(): { r: number; c: number } | null {
+    const speed = SHOT_SPEED * this.cell;
+    const p: Projectile = {
+      x: this.cannonX,
+      y: this.cannonY,
+      vx: Math.sin(this.aimAngle) * speed,
+      vy: -Math.cos(this.aimAngle) * speed,
+      type: this.currentType,
+    };
+    const stepLen = this.cell * 0.25;
+    const left = this.offsetX + this.cell / 2;
+    const right = this.offsetX + this.W - this.cell / 2;
+    const maxIter = Math.ceil((this.H * 4) / stepLen) + 10; // 反射込みの十分な上限
+    for (let i = 0; i < maxIter; i++) {
+      const len = Math.hypot(p.vx, p.vy) || 1;
+      p.x += (p.vx / len) * stepLen;
+      p.y += (p.vy / len) * stepLen;
+      if (p.x < left) {
+        p.x = left + (left - p.x);
+        p.vx = -p.vx;
+      } else if (p.x > right) {
+        p.x = right - (p.x - right);
+        p.vx = -p.vx;
+      }
+      if (this.hitsSomething(p)) {
+        const l2 = Math.hypot(p.vx, p.vy) || 1;
+        return chooseLandingCell(
+          this.board,
+          (r, c) => this.cellPos(r, c),
+          this.cell,
+          p.x,
+          p.y,
+          p.vx / l2,
+          p.vy / l2,
+          {
+            forwardMinDot: SETTLE_FORWARD_MIN_DOT,
+            maxPerp: SETTLE_MAX_PERP,
+            maxSteps: SETTLE_MAX_STEPS,
+          },
+        );
+      }
+      if (p.y < -this.cell) break; // 安全：画面上に抜けた
+    }
+    return null;
+  }
+
+  /** 開発者向け：着地予測セルをリングと座標で重ね描きする */
+  private renderLandingPreview(ctx: CanvasRenderingContext2D): void {
+    const pred = this.predictLanding();
+    ctx.save();
+    if (pred) {
+      const pos = this.cellPos(pred.r, pred.c);
+      ctx.strokeStyle = "#00e5ff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, this.cell / 2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "#00e5ff";
+      ctx.font = `bold ${Math.max(10, this.cell * 0.3)}px monospace`;
+      ctx.textAlign = "center";
+      ctx.fillText(`${pred.r},${pred.c}`, pos.x, pos.y - this.cell * 0.62);
+    }
+    ctx.fillStyle = "#00e5ff";
+    ctx.font = "12px monospace";
+    ctx.textAlign = "left";
+    ctx.fillText("DEBUG 着地予測 ON（d キーで切替）", 6, this.H - 8);
+    ctx.restore();
+  }
+
   /** 着弾後の消去・落下・危険ゲージ・終了判定 */
   private resolve(r: number, c: number): void {
     let removed = 0;
@@ -491,6 +574,8 @@ export class Game {
     // 照準ガイド（壁 1 回反射まで点線で表示）
     if (this.state === "aim") {
       this.renderAimGuide(ctx);
+      // 開発者向け：着地予測の重ね描き
+      if (this.debug) this.renderLandingPreview(ctx);
     }
 
     // 発射弾
