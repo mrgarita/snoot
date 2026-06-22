@@ -32,9 +32,9 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>2026-06-22</td>
     <td>15</td>
     <td>キャラのセット位置に奥行きの許容範囲が無い（奥の空きに入れられない）</td>
-    <td>v0.9.6</td>
+    <td>v0.9.6 → v0.9.7</td>
     <td><a class="detail-link" href="#fb15">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.6/">▶ プレイ</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.7/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>2026-06-22</td>
@@ -197,6 +197,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     右：対応後（v0.9.6）はねらった線に沿って空きセルを前進し、奥のくぼみ（青〇）まで入れる。微妙な角度で手前／奥を撃ち分けられる（原作 Snood 準拠）。空きセルだけを辿るのでキャラ群は貫通しない。
   </figcaption>
 </figure>
+<p><strong>追記（v0.9.7・感度調整）：</strong>v0.9.6 を実際にプレイしたところ「奥に入りにくい」との指摘があり、奥のくぼみへ入りやすくなるよう前進の感度を調整した。<code>src/config.ts</code> の <code>SETTLE_FORWARD_MIN_DOT</code>（前進を許す方向の許容角）を <code>0.5 → 0.35</code>、<code>SETTLE_MAX_PERP</code>（射線からの逸脱上限）を <code>0.6 → 0.72</code> に緩めた。経路上の全セルが射線から <code>SETTLE_MAX_PERP</code> 以内に収まる仕組みのため、緩めても横滑りは構造的に 1 セル未満に抑えられ、キャラ群の貫通も起きない。ロジックは変えず定数のみの調整。</p>
 
 <h3 id="fb14">#14：iPhone でバージョン表示下に残る横線を根本解消（v0.9.5） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>#11〜#13（v0.9.2〜v0.9.4）で対応してきたが、iPhone 8 のスタンドアロン起動だと <strong>v0.9.4 でも「Snoot v0.9.4」の下に細い横線が残り、v0.9.2 とほとんど見え方が変わらない</strong>。タイトル画面では横線は出ず、ゲーム画面でだけ出る。</p>
