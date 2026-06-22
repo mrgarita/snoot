@@ -7,12 +7,17 @@ import {
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
+  HIT_DIST_RATIO,
+  SETTLE_FORWARD_MIN_DOT,
+  SETTLE_MAX_PERP,
+  SETTLE_MAX_STEPS,
   SCORE_POP,
   SCORE_DROP,
   SCORE_LEVEL_BONUS,
   effectiveConfig,
 } from "./config";
 import { Board, Cell } from "./grid";
+import { chooseLandingCell } from "./placement";
 import { drawSnoot } from "./characters";
 import { sound } from "./audio";
 
@@ -303,7 +308,7 @@ export class Game {
   /** 天井または既存ピースに接触したか */
   private hitsSomething(p: Projectile): boolean {
     if (p.y - this.cell / 2 <= this.ceilingY()) return true;
-    const hitDist = this.cell * 0.85;
+    const hitDist = this.cell * HIT_DIST_RATIO;
     for (const cell of this.board.all()) {
       const pos = this.cellPos(cell.r, cell.c);
       if (Math.hypot(p.x - pos.x, p.y - pos.y) < hitDist) return true;
@@ -311,37 +316,41 @@ export class Game {
     return false;
   }
 
-  /** 着弾：最寄りの空きセルに吸着して消去判定へ */
+  /**
+   * 着弾：進行方向に沿って奥（天井側）の空きセルまで入れてから吸着し、消去判定へ。
+   * 衝突相手の手前で止まった弾を、ねらった線が通る奥のくぼみまで前進させることで、
+   * 微妙な角度で手前／奥を撃ち分けられる（原作 Snood の配置許容範囲を再現）。
+   * 配置の純粋ロジックは placement.ts（DOM 非依存・テスト可能）に切り出している。
+   */
   private land(p: Projectile): void {
     this.projectile = null;
 
-    // 着弾点近傍の空きセルから、占有セル隣接または天井接触のものを距離順に選ぶ
-    const vApprox = Math.round((p.y - this.cell / 2) / (ROW_H * this.cell));
-    let best: { r: number; c: number; d: number } | null = null;
-    for (let v = vApprox - 2; v <= vApprox + 2; v++) {
-      const r = v - this.board.rowShift;
-      if (r < 0) continue;
-      for (let c = 0; c < this.board.colsInRow(r); c++) {
-        if (this.board.get(r, c)) continue;
-        const anchoredOk =
-          r === 0 ||
-          this.board.neighbors(r, c).some(([nr, nc]) => this.board.get(nr, nc));
-        if (!anchoredOk) continue;
-        const pos = this.cellPos(r, c);
-        const d = Math.hypot(p.x - pos.x, p.y - pos.y);
-        if (!best || d < best.d) best = { r, c, d };
-      }
-    }
+    // 進行方向（壁反射後の現在の向き）の単位ベクトル。盤面座標は y が下向き。
+    const speed = Math.hypot(p.vx, p.vy) || 1;
+    const landed = chooseLandingCell(
+      this.board,
+      (r, c) => this.cellPos(r, c),
+      this.cell,
+      p.x,
+      p.y,
+      p.vx / speed,
+      p.vy / speed,
+      {
+        forwardMinDot: SETTLE_FORWARD_MIN_DOT,
+        maxPerp: SETTLE_MAX_PERP,
+        maxSteps: SETTLE_MAX_STEPS,
+      },
+    );
 
-    if (!best) {
+    if (!landed) {
       // 置き場がない（理論上ほぼ起きない）：そのままターンを返す
       this.state = "aim";
       return;
     }
 
-    this.board.set(best.r, best.c, p.type);
+    this.board.set(landed.r, landed.c, p.type);
     sound.play("stick");
-    this.resolve(best.r, best.c);
+    this.resolve(landed.r, landed.c);
   }
 
   /** 着弾後の消去・落下・危険ゲージ・終了判定 */

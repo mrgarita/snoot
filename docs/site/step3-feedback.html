@@ -30,6 +30,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
     <td>2026-06-22</td>
+    <td>15</td>
+    <td>キャラのセット位置に奥行きの許容範囲が無い（奥の空きに入れられない）</td>
+    <td>v0.9.6</td>
+    <td><a class="detail-link" href="#fb15">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.6/">▶ プレイ</a></td>
+  </tr>
+  <tr>
+    <td>2026-06-22</td>
     <td>14</td>
     <td>iPhone でバージョン表示下の横線が v0.9.4 でも残る（v0.9.2 と大差ない）</td>
     <td>v0.9.5</td>
@@ -144,6 +152,51 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb15">#15：キャラのセット位置に奥行きの許容範囲を持たせる（v0.9.6） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>原作 Snood では、発射角度の微調整でキャラを「手前の空きセル」または「その奥（天井側）の空きセル」のどちらにもセットできた。現状の Snoot は、ねらった線の先に空きがあっても<strong>衝突したキャラの手前にしかセットされず、その奥の空きセル（図の青〇）に入れられない</strong>。原作のように配置に許容範囲を持たせるとゲーム性が上がるので取り入れたい。</p>
+<p><strong>原因・対応：</strong>原因＝着弾時、弾は最初に当たったキャラの手前で止まり、その停止座標に<strong>最も近い空きセルを距離だけで選んでいた</strong>ため、停止点が常に手前側に固定され、奥のセルは必ず手前のセルに負けていた（<code>src/game.ts</code> の <code>land()</code>）。<br>
+対応＝着弾後、<strong>進行方向（壁反射後の向き）に沿って空きセルを 1 つずつ前進（グリッド・ウォーク）し、行き止まり手前の最も奥の空き＋支持セルに着地</strong>させるようにした。空きセルだけを辿るのでキャラ群は貫通しない。さらに、斜め狙いのときに弾が横方向へ滑ってしまうのを防ぐため、<strong>ねらった射線から大きく逸れる前進は弾く</strong>（射線からの垂直距離に上限）。これにより、線が通る奥のくぼみまで入れられ、微妙な角度で手前／奥を撃ち分けられる。前進のしきい値などは <code>src/config.ts</code> に定数化（<code>SETTLE_FORWARD_MIN_DOT</code> ほか）。配置の純粋ロジックは <code>src/placement.ts</code> に切り出し、決定論的に動作検証した（奥へ到達／角度で手前に留まる／壁は貫通しない の3ケース）。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.5)は弾が衝突相手の手前(赤〇)で止まり、奥のくぼみ(青〇)に入れない。対応後(v0.9.6)はねらった線に沿って奥のくぼみまで入り、微妙な角度で手前/奥を撃ち分けられる。">
+    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.6</text>
+
+    <!-- 対応前：手前(赤)で止まり、奥(青)に入れない -->
+    <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+    <!-- くぼみの両脇のキャラ -->
+    <circle cx="105" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="165" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <!-- 奥の空き（青〇・入れない） -->
+    <circle cx="135" cy="128" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
+    <!-- 手前で止まった弾（赤〇） -->
+    <circle cx="135" cy="172" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <circle cx="135" cy="172" r="24" fill="none" stroke="#ff5b5b" stroke-width="3"/>
+    <!-- 照準線 -->
+    <line x1="135" y1="350" x2="135" y2="150" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">手前(赤)で止まり</text>
+    <text x="135" y="408" fill="#ff9a9a" font-size="11" text-anchor="middle">奥(青)に入れない</text>
+
+    <!-- 対応後：線に沿って奥(青)まで入る -->
+    <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+    <circle cx="375" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="435" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <!-- 奥のくぼみに入った弾（青〇） -->
+    <circle cx="405" cy="128" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <circle cx="405" cy="128" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
+    <!-- 手前は空き（赤〇） -->
+    <circle cx="405" cy="172" r="20" fill="none" stroke="#ff5b5b" stroke-width="3" stroke-dasharray="5 4"/>
+    <line x1="405" y1="350" x2="405" y2="106" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">線に沿って奥(青)まで入る</text>
+    <text x="405" y="408" fill="#8ce6a6" font-size="11" text-anchor="middle">角度で手前/奥を撃ち分け</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.5）は弾が衝突相手の手前（赤〇）で止まり、停止点に最も近いセルへ吸着するため、奥のくぼみ（青〇）に入れなかった。
+    右：対応後（v0.9.6）はねらった線に沿って空きセルを前進し、奥のくぼみ（青〇）まで入れる。微妙な角度で手前／奥を撃ち分けられる（原作 Snood 準拠）。空きセルだけを辿るのでキャラ群は貫通しない。
+  </figcaption>
+</figure>
 
 <h3 id="fb14">#14：iPhone でバージョン表示下に残る横線を根本解消（v0.9.5） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>#11〜#13（v0.9.2〜v0.9.4）で対応してきたが、iPhone 8 のスタンドアロン起動だと <strong>v0.9.4 でも「Snoot v0.9.4」の下に細い横線が残り、v0.9.2 とほとんど見え方が変わらない</strong>。タイトル画面では横線は出ず、ゲーム画面でだけ出る。</p>
