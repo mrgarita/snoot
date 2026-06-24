@@ -29,6 +29,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <table>
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
+    <td>2026-06-24</td>
+    <td>16</td>
+    <td>原作のように、ねらった角度で奥のくぼみへ撃ち込みたい（手前で止まる）</td>
+    <td>v0.9.9</td>
+    <td><a class="detail-link" href="#fb16">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.9/">▶ プレイ</a></td>
+  </tr>
+  <tr>
     <td>2026-06-22</td>
     <td>15</td>
     <td>キャラのセット位置に奥行きの許容範囲が無い（奥の空きに入れられない）</td>
@@ -152,6 +160,54 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb16">#16：ねらった角度で奥のくぼみへ撃ち込めるようにする（v0.9.9・判定モデル刷新） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>Steam で配信中の原作 Snood では、<strong>表示された照準角どおりに撃てば予測枠（奥の深いくぼみ）まで弾が滑り込む</strong>。これは「キャラの幅を通り道では考慮しない計算方法」だからと考えられる。一方 #15（v0.9.6〜v0.9.8）で奥取りに対応した現状の Snoot でも、まだ<strong>赤枠（奥のくぼみ）の手前で止まってしまう</strong>。この原作の挙動を Snoot でも実現したい。</p>
+<p><strong>原因・対応：</strong>原因＝飛行中の当たり判定が、弾の中心を既存キャラ中心から <code>HIT_DIST_RATIO = 0.85×cell</code> 以内で即「衝突」とみなす<strong>円オーバーラップ判定＝通り道全体で弾の幅を考慮</strong>していたこと。これがくぼみ入口の「肩」に引っかかり、奥へ届く前に止まる。その後の前進処理（<code>chooseLandingCell</code>）は <code>SETTLE_FORWARD_MIN_DOT</code> / <code>SETTLE_MAX_PERP</code> という 2 つの感度パラメータで奥へ押し込もうとする方式で、横向き気味の入口には届きにくく、#15 で繰り返し再調整が続いていた。<br>
+対応＝判定を<strong>最近傍セル（ボロノイ）方式</strong>に刷新した。弾の中心を小刻みに進め、各ステップで「いま中心が最も近いセル」だけを見る。最近接の<strong>空きセル</strong>より<strong>埋まりセル</strong>の方が近くなった瞬間＝中心が埋まりセルの領域に入った瞬間に、その直前まで居た空きセル（衝突相手に隣接＝必ず支持済み）へ着地する。<strong>弾の幅は着地先セルでだけ効き、通り道では効かない</strong>ので、ねらった射線どおり奥のくぼみへ滑り込む（＝原作の挙動）。隣り合う 2 つの埋まりセルの境界は両側とも occupied なので、間をすり抜けない（壁抜け防止）。これにより <code>HIT_DIST_RATIO</code>・<code>SETTLE_FORWARD_MIN_DOT</code>・<code>SETTLE_MAX_PERP</code>・<code>SETTLE_MAX_STEPS</code> といった<strong>感度パラメータをすべて廃止</strong>でき、#15 の再調整地獄から抜けられた。配置の純粋ロジックは <code>src/placement.ts</code>（<code>resolveLanding</code> ほか・DOM 非依存）に切り出し、実モジュールをブラウザ内で読み込んで<strong>決定論的に検証</strong>した：ランダム盤面×ランダム角度 600 発がすべて「空き＋支持セル」に着地（重なり 0／浮き 0）、くぼみの無い密な壁は貫通せず手前で停止、1 マスのくぼみには肩で止まらず到達。開発者向けの着地予測表示（<kbd>d</kbd> キー／<code>?debug</code>）も同じ判定を共有するので表示どおりに着地する。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.8)は弾の幅を通り道で考慮する円判定のため、くぼみ入口の肩に当たって手前で止まる。対応後(v0.9.9)は最近傍セル(ボロノイ)方式で中心が最も近い空きセルを辿るため、肩に当たらず奥のくぼみに入る。">
+    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.8</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.9</text>
+
+    <!-- 対応前：円判定で弾の幅が肩に当たり手前で止まる -->
+    <rect x="45" y="40" width="180" height="335" rx="12" fill="#19283f"/>
+    <!-- くぼみ入口の両脇のキャラ（肩） -->
+    <circle cx="105" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="165" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <!-- 奥の空きくぼみ（入れない） -->
+    <circle cx="135" cy="112" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
+    <!-- 照準線（くぼみまで通っている） -->
+    <line x1="135" y1="355" x2="135" y2="100" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+    <!-- 手前で止まった弾＋弾幅を表す当たり判定の輪（肩に重なる） -->
+    <circle cx="135" cy="196" r="31" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <circle cx="135" cy="196" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <text x="135" y="402" fill="#ff9a9a" font-size="11" text-anchor="middle">弾の幅(赤い輪)が肩に当たり</text>
+    <text x="135" y="420" fill="#ff9a9a" font-size="11" text-anchor="middle">奥のくぼみの手前で止まる</text>
+
+    <!-- 対応後：最近傍セルで中心を辿り奥のくぼみに入る -->
+    <rect x="315" y="40" width="180" height="335" rx="12" fill="#19283f"/>
+    <circle cx="375" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="435" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <!-- 弾の中心が辿った経路（点線＋点） -->
+    <line x1="405" y1="355" x2="405" y2="112" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+    <circle cx="405" cy="300" r="2.5" fill="#00e5ff"/>
+    <circle cx="405" cy="260" r="2.5" fill="#00e5ff"/>
+    <circle cx="405" cy="220" r="2.5" fill="#00e5ff"/>
+    <circle cx="405" cy="180" r="2.5" fill="#00e5ff"/>
+    <!-- くぼみに入った弾 -->
+    <circle cx="405" cy="112" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <circle cx="405" cy="112" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
+    <text x="405" y="402" fill="#8ce6a6" font-size="11" text-anchor="middle">中心が最も近い空きセルを辿り</text>
+    <text x="405" y="420" fill="#8ce6a6" font-size="11" text-anchor="middle">肩に当たらず奥のくぼみに入る</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.8）は飛行中の当たり判定が弾の幅（赤い輪＝<code>0.85×cell</code> の円）を通り道で考慮するため、くぼみ入口の肩に当たって奥のくぼみの手前で止まっていた。
+    右：対応後（v0.9.9）は最近傍セル（ボロノイ）方式に刷新し、弾の中心がいちばん近い空きセルを辿る。弾の幅は着地先でだけ効くので肩に当たらず、ねらった射線どおり奥のくぼみまで滑り込む（原作 Snood 準拠）。隣り合う埋まりセルの間はすり抜けない（壁抜け防止）。
+  </figcaption>
+</figure>
 
 <h3 id="fb15">#15：キャラのセット位置に奥行きの許容範囲を持たせる（v0.9.6） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>原作 Snood では、発射角度の微調整でキャラを「手前の空きセル」または「その奥（天井側）の空きセル」のどちらにもセットできた。現状の Snoot は、ねらった線の先に空きがあっても<strong>衝突したキャラの手前にしかセットされず、その奥の空きセル（図の青〇）に入れられない</strong>。原作のように配置に許容範囲を持たせるとゲーム性が上がるので取り入れたい。</p>

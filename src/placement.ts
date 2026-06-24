@@ -1,18 +1,11 @@
 // 着弾セルの決定（純粋ロジック・DOM 非依存でテスト可能）
-// 衝突相手の手前で止まった弾を、ねらった線（進行方向 dir）が通る奥（天井側）の
-// 空きセルまで前進させ、行き止まり手前の支持された空きセルに着地させる。
-// 空きセルだけを辿るのでキャラ群を貫通しない。原作 Snood の配置許容範囲を再現する。
+// 原作 Snood の「弾の幅を通り道では考慮しない」挙動を最近傍セル（ボロノイ）方式で再現する。
+// 弾の中心がいま最も近いセルが空きなら通過し、埋まったセルの領域に入った瞬間に、
+// その直前まで居た空きセルへ着地する。弾の幅は着地先セルでだけ効き、入口の「肩」には
+// 引っかからないので、ねらった射線どおりに奥のくぼみへ滑り込める（HIT_DIST_RATIO や
+// SETTLE_* のような調整パラメータは不要）。
 import { Board } from "./grid";
 import { ROW_H } from "./config";
-
-export interface PlacementParams {
-  /** 奥へ前進する内積しきい値（dir と隣セル方向の cosθ の最小値。大=奥に入りにくい） */
-  forwardMinDot: number;
-  /** 前進先が射線（接触点を通る dir 直線）から離れてよい上限（cell 比の垂直距離） */
-  maxPerp: number;
-  /** 前進ループの安全上限 */
-  maxSteps: number;
-}
 
 /** ピクセル座標 (x,y) に最も近い空きセル（支持の有無は問わない）。近傍 ±2 視覚行を走査 */
 export function nearestEmptyCell(
@@ -37,88 +30,43 @@ export function nearestEmptyCell(
   return best ? { r: best.r, c: best.c } : null;
 }
 
-/**
- * (r,c) の空き隣接セルのうち、進行方向 (dirx,diry) に最も沿う 1 つを返す。
- * 条件：内積が forwardMinDot 以上（奥向きに十分沿う）かつ、隣セル中心が射線
- * （接触点 (ox,oy) を通る dir 直線）から maxPerp 以内（横滑り防止）。dir は単位ベクトル。
- */
-export function forwardEmptyNeighbor(
+/** ピクセル座標 (x,y) に最も近い「埋まっているセル」中心までの距離。盤面が空なら Infinity */
+export function nearestOccupiedDist(
   board: Board,
   cellPos: (r: number, c: number) => { x: number; y: number },
-  r: number,
-  c: number,
-  ox: number,
-  oy: number,
-  dirx: number,
-  diry: number,
-  forwardMinDot: number,
-  maxPerp: number,
-): { r: number; c: number } | null {
-  const from = cellPos(r, c);
-  let best: { r: number; c: number; dot: number } | null = null;
-  for (const [nr, nc] of board.neighbors(r, c)) {
-    if (board.get(nr, nc)) continue; // 占有セルには入らない（貫通防止）
-    const to = cellPos(nr, nc);
-    const len = Math.hypot(to.x - from.x, to.y - from.y) || 1;
-    const dot = ((to.x - from.x) * dirx + (to.y - from.y) * diry) / len;
-    if (dot < forwardMinDot) continue;
-    // 接触点を通る射線からの垂直距離（横滑り＝大きく逸れる前進を弾く）
-    const perp = Math.abs(dirx * (to.y - oy) - diry * (to.x - ox));
-    if (perp > maxPerp) continue;
-    if (!best || dot > best.dot) best = { r: nr, c: nc, dot };
+  x: number,
+  y: number,
+): number {
+  let best = Infinity;
+  for (const cell of board.all()) {
+    const pos = cellPos(cell.r, cell.c);
+    const d = Math.hypot(x - pos.x, y - pos.y);
+    if (d < best) best = d;
   }
-  return best ? { r: best.r, c: best.c } : null;
-}
-
-/** (r,c) が支持されている（天井行 or 占有隣接あり）か */
-function isSupported(board: Board, r: number, c: number): boolean {
-  return (
-    r === 0 || board.neighbors(r, c).some(([nr, nc]) => board.get(nr, nc))
-  );
+  return best;
 }
 
 /**
- * 着弾セルを決める。
- * @returns 着地する空き＋支持セル。置き場が無ければ null。
+ * 弾の現在中心 (x,y) で着地すべきかを判定し、着地セルを返す（まだ飛行を続けるなら null）。
+ * 最近接の埋まりセルが最近接の空きセルより近い＝弾の中心がボロノイ境界を越えて埋まりセルの
+ * 領域に入った瞬間に、その（直前まで居た）空きセルへ着地する。
+ *  - 着地セルは衝突した埋まりセルに隣接するため、必ず支持されている（落下しない）。
+ *  - 隣り合う 2 つの埋まりセルの境界は両側とも occupied なので、間をすり抜けない（壁抜け防止）。
+ *  - 実在する空きセルの領域を中心が通る場合だけ奥へ進める＝原作の配置許容を再現する。
+ * 天井への着地は呼び出し側（ピクセル比較）で扱う。置き場が無ければ null（着地させない）。
  */
-export function chooseLandingCell(
+export function resolveLanding(
   board: Board,
   cellPos: (r: number, c: number) => { x: number; y: number },
   cell: number,
-  contactX: number,
-  contactY: number,
-  dirx: number,
-  diry: number,
-  params: PlacementParams,
+  x: number,
+  y: number,
 ): { r: number; c: number } | null {
-  // 起点＝着弾点に最も近い空きセル（衝突相手の手前側＝図の赤〇）
-  const start = nearestEmptyCell(board, cellPos, cell, contactX, contactY);
-  if (!start) return null;
-
-  // 進行方向に沿って空きセルを前進し、通った空きセルを記録
-  const path: Array<{ r: number; c: number }> = [start];
-  let cur = start;
-  for (let step = 0; step < params.maxSteps; step++) {
-    const next = forwardEmptyNeighbor(
-      board,
-      cellPos,
-      cur.r,
-      cur.c,
-      contactX,
-      contactY,
-      dirx,
-      diry,
-      params.forwardMinDot,
-      params.maxPerp,
-    );
-    if (!next) break;
-    cur = next;
-    path.push(cur);
-  }
-
-  // 最も奥から手前へ見て、支持されている最初のセルに着地
-  for (let i = path.length - 1; i >= 0; i--) {
-    if (isSupported(board, path[i].r, path[i].c)) return path[i];
-  }
-  return null;
+  const empty = nearestEmptyCell(board, cellPos, cell, x, y);
+  if (!empty) return null; // 極端に密で近傍に空きが無い：着地させず飛行を続ける安全側
+  const pos = cellPos(empty.r, empty.c);
+  const dEmpty = Math.hypot(x - pos.x, y - pos.y);
+  const dOcc = nearestOccupiedDist(board, cellPos, x, y);
+  // まだ空きセルの領域内なら飛行継続。埋まりセルの方が近くなったら着地。
+  return dOcc < dEmpty ? empty : null;
 }

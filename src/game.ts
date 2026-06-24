@@ -7,17 +7,13 @@ import {
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
-  HIT_DIST_RATIO,
-  SETTLE_FORWARD_MIN_DOT,
-  SETTLE_MAX_PERP,
-  SETTLE_MAX_STEPS,
   SCORE_POP,
   SCORE_DROP,
   SCORE_LEVEL_BONUS,
   effectiveConfig,
 } from "./config";
 import { Board, Cell } from "./grid";
-import { chooseLandingCell } from "./placement";
+import { nearestEmptyCell, resolveLanding } from "./placement";
 import { drawSnoot } from "./characters";
 import { sound } from "./audio";
 
@@ -295,9 +291,8 @@ export class Game {
           p.vx = -p.vx;
         }
 
-        if (this.hitsSomething(p)) {
-          this.land(p);
-        }
+        const landed = this.hitCell(p.x, p.y);
+        if (landed) this.land(p, landed);
       }
     }
 
@@ -314,49 +309,23 @@ export class Game {
     this.falls = this.falls.filter((f) => f.y < this.H + this.cell);
   }
 
-  /** 天井または既存ピースに接触したか */
-  private hitsSomething(p: Projectile): boolean {
-    if (p.y - this.cell / 2 <= this.ceilingY()) return true;
-    const hitDist = this.cell * HIT_DIST_RATIO;
-    for (const cell of this.board.all()) {
-      const pos = this.cellPos(cell.r, cell.c);
-      if (Math.hypot(p.x - pos.x, p.y - pos.y) < hitDist) return true;
+  /**
+   * 弾の現在中心 (x,y) で着地すべきか判定し、着地セルを返す（まだ飛ぶなら null）。
+   * 天井に達したら天井直下の空きセルへ、そうでなければ最近傍セル（ボロノイ）方式で
+   * 「埋まりセルの領域に入った瞬間に直前の空きセルへ」着地する（placement.ts）。
+   * 弾の幅を通り道では考慮しないので、ねらった射線どおり奥のくぼみへ滑り込める。
+   */
+  private hitCell(x: number, y: number): { r: number; c: number } | null {
+    const cellPos = (r: number, c: number) => this.cellPos(r, c);
+    if (y - this.cell / 2 <= this.ceilingY()) {
+      return nearestEmptyCell(this.board, cellPos, this.cell, x, y);
     }
-    return false;
+    return resolveLanding(this.board, cellPos, this.cell, x, y);
   }
 
-  /**
-   * 着弾：進行方向に沿って奥（天井側）の空きセルまで入れてから吸着し、消去判定へ。
-   * 衝突相手の手前で止まった弾を、ねらった線が通る奥のくぼみまで前進させることで、
-   * 微妙な角度で手前／奥を撃ち分けられる（原作 Snood の配置許容範囲を再現）。
-   * 配置の純粋ロジックは placement.ts（DOM 非依存・テスト可能）に切り出している。
-   */
-  private land(p: Projectile): void {
+  /** 着弾：確定した空きセルに弾を吸着させ、消去判定へ。 */
+  private land(p: Projectile, landed: { r: number; c: number }): void {
     this.projectile = null;
-
-    // 進行方向（壁反射後の現在の向き）の単位ベクトル。盤面座標は y が下向き。
-    const speed = Math.hypot(p.vx, p.vy) || 1;
-    const landed = chooseLandingCell(
-      this.board,
-      (r, c) => this.cellPos(r, c),
-      this.cell,
-      p.x,
-      p.y,
-      p.vx / speed,
-      p.vy / speed,
-      {
-        forwardMinDot: SETTLE_FORWARD_MIN_DOT,
-        maxPerp: SETTLE_MAX_PERP,
-        maxSteps: SETTLE_MAX_STEPS,
-      },
-    );
-
-    if (!landed) {
-      // 置き場がない（理論上ほぼ起きない）：そのままターンを返す
-      this.state = "aim";
-      return;
-    }
-
     this.board.set(landed.r, landed.c, p.type);
     sound.play("stick");
     this.resolve(landed.r, landed.c);
@@ -391,23 +360,8 @@ export class Game {
         p.x = right - (p.x - right);
         p.vx = -p.vx;
       }
-      if (this.hitsSomething(p)) {
-        const l2 = Math.hypot(p.vx, p.vy) || 1;
-        return chooseLandingCell(
-          this.board,
-          (r, c) => this.cellPos(r, c),
-          this.cell,
-          p.x,
-          p.y,
-          p.vx / l2,
-          p.vy / l2,
-          {
-            forwardMinDot: SETTLE_FORWARD_MIN_DOT,
-            maxPerp: SETTLE_MAX_PERP,
-            maxSteps: SETTLE_MAX_STEPS,
-          },
-        );
-      }
+      const landed = this.hitCell(p.x, p.y);
+      if (landed) return landed;
       if (p.y < -this.cell) break; // 安全：画面上に抜けた
     }
     return null;
