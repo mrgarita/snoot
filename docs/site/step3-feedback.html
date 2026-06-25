@@ -29,6 +29,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <table>
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
+    <td>2026-06-25</td>
+    <td>17</td>
+    <td>クリア時の「次のレベルへ」が他ボタンと同サイズで、押し間違えやすい</td>
+    <td>v0.9.11</td>
+    <td><a class="detail-link" href="#fb17">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.11/">▶ プレイ</a></td>
+  </tr>
+  <tr>
     <td>2026-06-24</td>
     <td>16</td>
     <td>原作のように、ねらった角度で奥のくぼみへ撃ち込みたい（手前で止まる）</td>
@@ -160,6 +168,51 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb17">#17：クリア時の「次のレベルへ」を大きく強調して誤タップを防ぐ（v0.9.11） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>ステージクリア後のリザルトで<strong>「次のレベルへ」を押したかったのに、誤って「タイトルへ」などを押してしまう</strong>ことがあった。原因は、3 つのボタン（「同じレベルをもう一度」「次のレベルへ」「タイトルへ」）が<strong>すべて同じ大きさ</strong>で縦に並んでおり、いちばん押したい主要アクションが見分けにくく、隣のボタンと押し間違えやすいこと。</p>
+<p><strong>原因・対応：</strong>原因＝リザルトの 3 ボタンが共通スタイル（<code>#result-buttons button</code> の <code>font-size:1rem; padding:0.6rem</code>）で<strong>同サイズ・等間隔</strong>だったこと。<br>
+対応＝<strong>主要アクションの「次のレベルへ」(<code>#btn-next</code>) だけを一回り大きく</strong>した。フォントを大きく（<code>1.3rem</code>）、縦のパディングを増やして<strong>タップ標的を拡大</strong>し、下方向の影（<code>box-shadow: 0 3px 0 #3d8b3d</code>）で押せる感を出した。文言の先頭に主要アクションの目印として <code>▶</code> を付けた。<strong>ボタンの並び順や他 2 つのサイズは変えない</strong>（「次へだけ大きく・順序維持」）。ゲームオーバー時は <code>#btn-next</code> が非表示（「もう一度」＋「タイトルへ」の 2 つ）になるため、この強調はクリア画面にだけ効き、ゲームオーバー画面の見た目は従来どおり。<code>src/style.css</code>・<code>src/main.ts</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.10)はリザルトの3ボタンが同じ大きさで縦に並び、次のレベルへとタイトルへを押し間違えやすい。対応後(v0.9.11)は次のレベルへだけを一回り大きく強調し、押し分けやすくして誤タップを防ぐ。">
+    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.10</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.11</text>
+
+    <!-- 対応前：3ボタンが同サイズで並び、押し間違えやすい -->
+    <rect x="45" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
+    <text x="135" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
+    <rect x="60" y="88" width="150" height="40" rx="8" fill="#4a90d9"/>
+    <text x="135" y="113" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
+    <rect x="60" y="138" width="150" height="40" rx="8" fill="#5cb85c"/>
+    <text x="135" y="163" fill="#ffffff" font-size="11" text-anchor="middle">次のレベルへ</text>
+    <rect x="60" y="188" width="150" height="40" rx="8" fill="#dddddd"/>
+    <text x="135" y="213" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
+    <!-- 誤タップ注意：同サイズで隣接する2つを赤枠で囲む -->
+    <rect x="53" y="132" width="164" height="102" rx="10" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">3つとも同じ大きさで</text>
+    <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">「次へ」と「タイトルへ」を押し間違える</text>
+
+    <!-- 対応後：「次のレベルへ」だけ大きく強調 -->
+    <rect x="315" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
+    <text x="405" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
+    <rect x="330" y="86" width="150" height="34" rx="8" fill="#4a90d9"/>
+    <text x="405" y="108" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
+    <!-- 主要アクション：影＋拡大で目立たせる -->
+    <rect x="322" y="131" width="166" height="56" rx="8" fill="#3d8b3d"/>
+    <rect x="322" y="128" width="166" height="56" rx="8" fill="#5cb85c"/>
+    <text x="405" y="162" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">▶ 次のレベルへ</text>
+    <rect x="330" y="196" width="150" height="34" rx="8" fill="#dddddd"/>
+    <text x="405" y="218" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
+    <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">「次のレベルへ」だけ大きく強調し</text>
+    <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">押し分けやすくして誤タップを防ぐ</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.10）はリザルトの 3 ボタンが同じ大きさで縦に並び、主要アクションが見分けにくく、「次のレベルへ」と「タイトルへ」を押し間違えやすかった（赤枠）。
+    右：対応後（v0.9.11）は順序を変えず、主要アクションの「次のレベルへ」だけを一回り大きく（フォント拡大・縦パディング増・影）して <code>▶</code> を付け、指で押し分けやすくした。ゲームオーバー時はこのボタンが非表示になるため、強調はクリア画面にだけ効く。
+  </figcaption>
+</figure>
 
 <h3 id="fb16">#16：ねらった角度で奥のくぼみへ撃ち込めるようにする（v0.9.9・判定モデル刷新） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>Steam で配信中の原作 Snood では、<strong>表示された照準角どおりに撃てば予測枠（奥の深いくぼみ）まで弾が滑り込む</strong>。これは「キャラの幅を通り道では考慮しない計算方法」だからと考えられる。一方 #15（v0.9.6〜v0.9.8）で奥取りに対応した現状の Snoot でも、まだ<strong>赤枠（奥のくぼみ）の手前で止まってしまう</strong>。この原作の挙動を Snoot でも実現したい。</p>
