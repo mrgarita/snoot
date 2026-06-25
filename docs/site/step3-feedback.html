@@ -32,9 +32,9 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>2026-06-25</td>
     <td>17</td>
     <td>クリア時の「次のレベルへ」が他ボタンと同サイズで、押し間違えやすい</td>
-    <td>v0.9.11</td>
+    <td>v0.9.11 → v0.9.12</td>
     <td><a class="detail-link" href="#fb17">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.11/">▶ プレイ</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.12/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>2026-06-24</td>
@@ -210,9 +210,10 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
   </svg>
   <figcaption>
     左：対応前（v0.9.10）はリザルトの 3 ボタンが同じ大きさで縦に並び、主要アクションが見分けにくく、「次のレベルへ」と「タイトルへ」を押し間違えやすかった（赤枠）。
-    右：対応後（v0.9.11）は順序を変えず、主要アクションの「次のレベルへ」だけを一回り大きく（フォント拡大・縦パディング増・影）して <code>▶</code> を付け、指で押し分けやすくした。ゲームオーバー時はこのボタンが非表示になるため、強調はクリア画面にだけ効く。
+    右：対応後（v0.9.11→v0.9.12）は順序を変えず、主要アクションの「次のレベルへ」だけを一回り大きく（フォント拡大・縦パディング増・影）して <code>▶</code> を付け、指で押し分けやすくした。ゲームオーバー時はこのボタンが非表示になるため、強調はクリア画面にだけ効く。
   </figcaption>
 </figure>
+<p><strong>追記（v0.9.12・拡大が効かない不具合を修正）：</strong>v0.9.11 では実機で「次のレベルへ」が<strong>影が付くだけで大きくならなかった</strong>。原因は CSS の<strong>詳細度（specificity）</strong>で、共通ルール <code>#result-buttons button</code>（id＋要素型）の方が <code>#btn-next</code> 単独より優先され、<code>font-size</code>・<code>padding</code> の拡大指定が上書きされていた（共通ルールに無い <code>box-shadow</code> だけが効いていた＝「影だけ付く」状態）。対応＝セレクタを <code>#result-buttons #btn-next</code>（id 2 つ）に変えて詳細度を上げ、拡大を確実に適用した。これで上図のとおり実際に一回り大きく表示される。<code>src/style.css</code> を修正。</p>
 
 <h3 id="fb16">#16：ねらった角度で奥のくぼみへ撃ち込めるようにする（v0.9.9・判定モデル刷新） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>Steam で配信中の原作 Snood では、<strong>表示された照準角どおりに撃てば予測枠（奥の深いくぼみ）まで弾が滑り込む</strong>。これは「キャラの幅を通り道では考慮しない計算方法」だからと考えられる。一方 #15（v0.9.6〜v0.9.8）で奥取りに対応した現状の Snoot でも、まだ<strong>赤枠（奥のくぼみ）の手前で止まってしまう</strong>。この原作の挙動を Snoot でも実現したい。</p>
