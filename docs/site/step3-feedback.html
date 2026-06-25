@@ -30,6 +30,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
     <td>2026-06-25</td>
+    <td>18</td>
+    <td>降りてくる天井を岩っぽくし、降下をアニメ＋低音で「怖さ」を演出してほしい（②c）</td>
+    <td>v0.9.13</td>
+    <td><a class="detail-link" href="#fb18">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.13/">▶ プレイ</a></td>
+  </tr>
+  <tr>
+    <td>2026-06-25</td>
     <td>17</td>
     <td>クリア時の「次のレベルへ」が他ボタンと同サイズで、押し間違えやすい</td>
     <td>v0.9.11 → v0.9.12</td>
@@ -168,6 +176,60 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb18">#18：降りてくる天井を岩肌にし、降下をアニメ＋低音で怖く演出（v0.9.13・演出②c） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>危険ゲージが満タンになると降りてくる天井について、(1) 見た目を<strong>岩っぽく</strong>し、(2) 降りるときも<strong>すぐに下げず、アニメーションさせて「怖さ」を演出</strong>してほしい（BGM は低い音源）。プレイ演出フィードバック②のうち ②c。</p>
+<p><strong>原因・対応：</strong>従来の天井は茶色の<strong>ベタ塗り（<code>#55432c</code>）＋白い線</strong>で、降下は危険ゲージ満タン時に <code>rowShift</code> を +1 する<strong>一瞬のジャンプ</strong>だった。対応は 3 点。<br>
+(1) <strong>岩肌の描画</strong>：石肌のグラデーション＋地層＋<strong>下端のギザギザ岩（鍾乳石風の歯）</strong>をコードで描画（著作権配慮で画像は使わない）。質感は整数インデックスのハッシュで決定論的に生成し、毎フレームのちらつきを防ぐ（<code>renderRockyCeiling</code>）。<br>
+(2) <strong>降下アニメ</strong>：当たり判定は論理座標のまま据え置き、<strong>描画時だけ</strong>オフセット <code>dropPx</code>（smoothstep で緩急）を当てて、天井と盤面のピースを 1 行ぶん<strong>スライド</strong>させる（所要 <code>CEILING_DROP_DUR = 0.5</code> 秒）。スライド中は誤発射を防ぐため発射をロックする。天井降下でデッドラインに達した場合も、<strong>降下を見せ切ってから</strong>ゲームオーバー画面を出す（<code>pendingEnd</code> で遅延）。<br>
+(3) <strong>低音 SE</strong>：従来の警告音 <code>alarm</code> を、低い地鳴り＋着地の「ドスン」を重ねた <code>quake</code> に差し替えた。<br>
+修正ファイル：<code>src/game.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</p>
+<figure>
+  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.12)は天井が茶色のベタ塗りで、降下は一瞬で1行下がる。対応後(v0.9.13)は天井が岩肌で下端がギザギザになり、低い地鳴りとともにゆっくりスライドして降りる。">
+    <defs>
+      <linearGradient id="c18-stone" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2c2622"/>
+        <stop offset="1" stop-color="#4a423a"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.12</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.13</text>
+
+    <!-- 対応前：茶色ベタ塗りの天井＋一瞬で降下 -->
+    <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+    <rect x="45" y="40" width="180" height="78" fill="#55432c"/>
+    <line x1="45" y1="118" x2="225" y2="118" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+    <circle cx="95" cy="152" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="135" cy="152" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <circle cx="175" cy="152" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <text x="135" y="250" fill="#ff9a9a" font-size="22" text-anchor="middle">⚡</text>
+    <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">茶色のベタ塗り</text>
+    <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">一瞬で 1 行下がる</text>
+
+    <!-- 対応後：岩肌＋ギザギザ下端＋ゆっくり降下＋低音 -->
+    <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+    <rect x="315" y="40" width="180" height="70" fill="url(#c18-stone)"/>
+    <line x1="315" y1="62" x2="495" y2="62" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+    <line x1="315" y1="84" x2="495" y2="84" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+    <path d="M315,110 L327,128 L339,110 L351,132 L363,110 L375,126 L387,110 L399,131 L411,110 L423,127 L435,110 L447,130 L459,110 L471,126 L483,110 L495,129 L495,110 Z" fill="#3b342d" stroke="#1c1814" stroke-width="1.5"/>
+    <circle cx="345" cy="60" r="1.5" fill="rgba(255,255,255,0.25)"/>
+    <circle cx="430" cy="76" r="1.5" fill="rgba(0,0,0,0.3)"/>
+    <circle cx="390" cy="55" r="1.3" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="365" cy="167" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+    <circle cx="405" cy="167" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
+    <circle cx="445" cy="167" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+    <path d="M405,152 l0,40 m-8,-12 l8,12 l8,-12" fill="none" stroke="#8ce6a6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="345" y="214" fill="#8ce6a6" font-size="16" text-anchor="middle">♪</text>
+    <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">岩肌＋下端ギザギザ</text>
+    <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">低い地鳴りでゆっくり降下</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.12）は天井が茶色のベタ塗りで、危険ゲージ満タン時に一瞬で 1 行ぶん下がっていた。
+    右：対応後（v0.9.13）は天井を岩肌（地層・スペックル・下端のギザギザ岩）にし、当たり判定は据え置いたまま描画だけを <code>dropPx</code> でスライドさせて、低い地鳴り（<code>quake</code>）とともにゆっくり降下する。天井降下でデッドラインに達した場合も降下を見せ切ってからゲームオーバー画面を出す。図はコード描画（本家 Snood の画像は使わない）。
+  </figcaption>
+</figure>
 
 <h3 id="fb17">#17：クリア時の「次のレベルへ」を大きく強調して誤タップを防ぐ（v0.9.11） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>ステージクリア後のリザルトで<strong>「次のレベルへ」を押したかったのに、誤って「タイトルへ」などを押してしまう</strong>ことがあった。原因は、3 つのボタン（「同じレベルをもう一度」「次のレベルへ」「タイトルへ」）が<strong>すべて同じ大きさ</strong>で縦に並んでおり、いちばん押したい主要アクションが見分けにくく、隣のボタンと押し間違えやすいこと。</p>
