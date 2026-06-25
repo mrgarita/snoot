@@ -7,6 +7,7 @@ import {
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
+  CEILING_DROP_DUR,
   SCORE_POP,
   SCORE_DROP,
   SCORE_LEVEL_BONUS,
@@ -76,6 +77,10 @@ export class Game {
   private nextType = 0;
   private pops: PopAnim[] = [];
   private falls: FallAnim[] = [];
+  /** 天井降下アニメの残量（1→0 に減衰。1 のとき論理位置より 1 行ぶん上に描画＝降りる前） */
+  private dropAnim = 0;
+  /** 降下アニメ中に確定した終了情報の保留（降下を見せ切ってから onEnd で通知する） */
+  private pendingEnd: GameEndInfo | null = null;
   /** 表情アニメーション用の経過時間（秒） */
   private animTime = 0;
   private lastTime = 0;
@@ -118,6 +123,8 @@ export class Game {
     this.projectile = null;
     this.pops = [];
     this.falls = [];
+    this.dropAnim = 0;
+    this.pendingEnd = null;
     this.state = "aim";
     this.aimAngle = 0;
 
@@ -240,7 +247,8 @@ export class Game {
       this.aimAngle = Math.max(-limit, Math.min(limit, Math.atan2(dx, dy)));
     }
 
-    if (isUp && this.state === "aim") {
+    // 天井降下のスライド中は発射をロックする（誤発射を防ぎ、緊張の間をつくる）
+    if (isUp && this.state === "aim" && this.dropAnim === 0) {
       this.fire();
     }
   }
@@ -269,6 +277,18 @@ export class Game {
 
   private update(dt: number): void {
     this.animTime += dt;
+
+    // 天井降下のスライドを進める。降り切った瞬間に、保留していた終了通知を出す
+    // （降下を見せてからゲームオーバー画面へ）
+    if (this.dropAnim > 0) {
+      this.dropAnim = Math.max(0, this.dropAnim - dt / CEILING_DROP_DUR);
+      if (this.dropAnim === 0 && this.pendingEnd) {
+        const end = this.pendingEnd;
+        this.pendingEnd = null;
+        sound.play("gameover");
+        this.onEnd(end);
+      }
+    }
 
     // 発射弾の移動（トンネリング防止のため小刻みに進める）
     if (this.projectile) {
@@ -431,7 +451,9 @@ export class Game {
     if (this.danger >= this.cfg.dangerCap) {
       this.danger = 0;
       this.board.rowShift += 1;
-      sound.play("alarm");
+      // 即時に下げず、描画側で 1 行ぶんスライドさせる（怖さの演出）＋低い地鳴り
+      this.dropAnim = 1;
+      sound.play("quake");
     }
 
     this.updateHud();
@@ -448,8 +470,14 @@ export class Game {
     }
     if (this.board.maxVisualRow() >= ROWS_LIMIT) {
       this.state = "over";
-      sound.play("gameover");
-      this.onEnd({ kind: "gameover", score: this.score, level: this.level });
+      // 天井降下の最中なら、スライドを見せ切ってから終了通知する（update で発火）。
+      // それ以外（着弾でデッドライン到達）は従来どおり即時に通知する。
+      if (this.dropAnim > 0) {
+        this.pendingEnd = { kind: "gameover", score: this.score, level: this.level };
+      } else {
+        sound.play("gameover");
+        this.onEnd({ kind: "gameover", score: this.score, level: this.level });
+      }
       return;
     }
 
@@ -482,17 +510,15 @@ export class Game {
     ctx.fillStyle = "#19283f";
     ctx.fillRect(0, 0, this.W, this.H);
 
-    // 天井バンド
+    // 天井降下アニメの見かけのオフセット（px）。論理座標は動かさず描画だけずらす。
+    // smoothstep で緩急をつけ、岩天井が「ジリッ」と降りてくるようにする。
+    const off = this.dropAnim * this.dropAnim * (3 - 2 * this.dropAnim);
+    const dropPx = off * ROW_H * this.cell;
+
+    // 天井バンド（岩肌＋下端ギザギザ）。降下中は見かけの下端を 1 行ぶん上げて描く。
     const cy = this.ceilingY();
     if (cy > 0) {
-      ctx.fillStyle = "#55432c";
-      ctx.fillRect(0, 0, this.W, cy);
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, cy);
-      ctx.lineTo(this.W, cy);
-      ctx.stroke();
+      this.renderRockyCeiling(ctx, cy - dropPx);
     }
 
     // デッドライン
@@ -506,11 +532,12 @@ export class Game {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 盤面のピース（セルごとに位相をずらし、一斉まばたきを防ぐ）
+    // 盤面のピース（セルごとに位相をずらし、一斉まばたきを防ぐ）。
+    // 天井と一緒に降下スライドさせるため dropPx ぶん上へずらして描く。
     for (const cell of this.board.all()) {
       const pos = this.cellPos(cell.r, cell.c);
       const phase = ((cell.r * 7 + cell.c * 13) % 17) * 0.37;
-      drawSnoot(ctx, cell.type, pos.x, pos.y, this.cell / 2, this.animTime + phase);
+      drawSnoot(ctx, cell.type, pos.x, pos.y - dropPx, this.cell / 2, this.animTime + phase);
     }
 
     // 消滅アニメーション（膨らみつつフェードアウト）
@@ -548,6 +575,87 @@ export class Game {
 
     // 発射台
     this.renderCannon(ctx);
+  }
+
+  /**
+   * 岩っぽい天井バンドを描く（著作権配慮でコード描画・画像は使わない）。
+   * edgeY は見かけの下端 y（降下アニメ中は 1 行ぶん上がる）。
+   * 地層・スペックル・下端のギザギザ岩は整数インデックスのハッシュで決定論的に
+   * 生成し、毎フレームのちらつきを防ぐ。
+   */
+  private renderRockyCeiling(ctx: CanvasRenderingContext2D, edgeY: number): void {
+    const W = this.W;
+    if (edgeY <= 0) return;
+    // 0〜1 を返す決定論的ハッシュ（i ごとに固定値）
+    const h = (i: number): number => {
+      const x = Math.sin(i * 12.9898) * 43758.5453;
+      return x - Math.floor(x);
+    };
+
+    ctx.save();
+
+    // 帯本体：上が暗く下が明るい石肌のグラデーション
+    const grad = ctx.createLinearGradient(0, 0, 0, edgeY);
+    grad.addColorStop(0, "#2c2622");
+    grad.addColorStop(1, "#4a423a");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, edgeY);
+
+    // 地層（暗い横線）
+    ctx.strokeStyle = "rgba(0,0,0,0.18)";
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 3; i++) {
+      const y = edgeY * (i / 4) + (h(i) - 0.5) * 4;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    // スペックル（岩肌の粒。明暗を散らす）
+    const dots = Math.floor((W * edgeY) / 900);
+    for (let i = 0; i < dots; i++) {
+      const x = h(i * 2 + 1) * W;
+      const y = h(i * 2 + 2) * edgeY;
+      const r = 0.6 + h(i + 7) * 1.2;
+      ctx.fillStyle = h(i + 3) > 0.5 ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.16)";
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 下端のギザギザ岩（鍾乳石風の歯）。edgeY を基準に下へ突き出す。
+    const step = Math.max(10, this.cell * 0.7);
+    const n = Math.ceil(W / step) + 1;
+    ctx.beginPath();
+    ctx.moveTo(0, edgeY);
+    for (let i = 0; i < n; i++) {
+      const x0 = i * step;
+      const xMid = x0 + step / 2;
+      const x1 = x0 + step;
+      const depth = this.cell * (0.18 + h(i) * 0.22); // 歯の長さに変化をつける
+      ctx.lineTo(xMid, edgeY + depth);
+      ctx.lineTo(Math.min(W, x1), edgeY);
+    }
+    ctx.lineTo(W, edgeY);
+    ctx.closePath();
+    ctx.fillStyle = "#3b342d";
+    ctx.fill();
+
+    // 歯の輪郭（暗い影）で立体感を出す
+    ctx.strokeStyle = "#1c1814";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 下端に明るいリムを 1 本入れて岩の張り出し感を強める
+    ctx.strokeStyle = "rgba(150,140,125,0.5)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, edgeY - 1);
+    ctx.lineTo(W, edgeY - 1);
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   private renderAimGuide(ctx: CanvasRenderingContext2D): void {

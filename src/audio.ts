@@ -2,7 +2,7 @@
 // v0.1 はフリー素材を使わずコード生成の簡易 SE とする（ゼロコスト・ライセンス確認不要）。
 // step3 のフィードバック次第でフリー素材の BGM/SE への差し替えを検討する。
 
-type SeName = "shoot" | "stick" | "pop" | "drop" | "alarm" | "clear" | "gameover";
+type SeName = "shoot" | "stick" | "pop" | "drop" | "quake" | "clear" | "gameover";
 
 class SoundPlayer {
   private ctx: AudioContext | null = null;
@@ -49,10 +49,14 @@ class SoundPlayer {
         }
         break;
       }
-      case "alarm":
-        this.tone(440, t, 0.12, "square", 0.2);
-        this.tone(440, t + 0.18, 0.12, "square", 0.2);
+      case "quake": {
+        // 天井降下：岩の天井がジリッと降りてくる低い地鳴り（怖さの演出）。
+        // 低域を下げながら鳴らし、末尾に重い着地音（ドスン）を重ねる。
+        this.tone(80, t, 0.55, "triangle", 0.32, 42);
+        this.tone(60, t, 0.55, "sawtooth", 0.16, 36);
+        this.tone(110, t + 0.42, 0.18, "square", 0.18, 55);
         break;
+      }
       case "clear":
         [523, 659, 784, 1047].forEach((f, i) => {
           this.tone(f, t + i * 0.12, 0.25, "triangle", 0.25);
