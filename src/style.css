@@ -223,10 +223,13 @@ html.in-game body {
 
 /* クリア時の主要アクション「次のレベルへ」は誤タップを防ぐため一回り大きく強調する
    （フィードバック #17）。順序・他ボタンのサイズは変えず、このボタンだけ拡大する。
-   ゲームオーバー時は #btn-next が hidden になるためこの強調は影響しない。 */
-#btn-next {
-  font-size: 1.3rem;
-  padding: 0.95rem 0.6rem;
+   ゲームオーバー時は #btn-next が hidden になるためこの強調は影響しない。
+   注意：共通ルール #result-buttons button（id＋要素型）の方が #btn-next 単独より
+   詳細度が高く font-size/padding が上書きされてしまう（v0.9.11 の不具合）。
+   #result-buttons #btn-next（id 2 つ）で詳細度を上げ、確実に拡大を効かせる。 */
+#result-buttons #btn-next {
+  font-size: 1.35rem;
+  padding: 1rem 0.6rem;
   box-shadow: 0 3px 0 #3d8b3d;
 }
 
