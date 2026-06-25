@@ -81,6 +81,8 @@ function startGame(difficulty: DifficultyId, level = 1, score = 0): void {
   titleScreen.classList.add("hidden");
   resultOverlay.classList.add("hidden");
   gameScreen.classList.remove("hidden");
+  // ルート背景のフォールバックを盤面色へ（iOS 下端帯を盤面と同色にし横帯を消す）
+  document.documentElement.classList.add("in-game");
   // 画面表示後にサイズが確定してから開始する
   requestAnimationFrame(() => game.start(difficulty, level, score));
 }
@@ -90,6 +92,8 @@ function showTitle(): void {
   gameScreen.classList.add("hidden");
   resultOverlay.classList.add("hidden");
   titleScreen.classList.remove("hidden");
+  // ルート背景のフォールバックをグラデ裾色へ戻す（タイトルの下端帯を均一に保つ）
+  document.documentElement.classList.remove("in-game");
 }
 
 /**

@@ -5,9 +5,9 @@
   /* 盤面の外周（PC の左右余白＝ボールの跳ね返り壁の外側）の色。#canvas-wrap の
      背景に使い、盤面（やや濃い --play-bg）との色差で跳ね返り壁の位置を示す */
   --bg-edge: #213654;
-  /* 盤面（キャンバス）の実効色＝--bg-edge に 25% 黒オーバーレイを重ねた色
-     （#213654 × 0.75 ≒ #19283f）。iOS スタンドアロンで画面外に出る下端余白を
-     この色で塗り、盤面と継ぎ目なく見せる。値は実レンダリングのピクセルに一致させる */
+  /* 盤面（キャンバス）の実効色。game.ts の render() がこの色で不透明に塗る。
+     ゲーム中はルート背景のフォールバックと #canvas-wrap.board-fullwidth も同色にし、
+     iOS で画面外に出る下端帯／盤面下端の隙間を盤面と継ぎ目なく見せる */
   --play-bg: #19283f;
   --accent: #ffb347;
   --danger: #e74c3c;
@@ -20,13 +20,22 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  /* 末尾の単色がルート背景色。ルート要素の背景色はビューポート全体へ伝播するため、
-     iOS スタンドアロンでグラデーション画像が届かない下端の余白も同色で埋まる。
-     盤面の実効色 --play-bg を使い、その余白を盤面と同色にして継ぎ目をなくす */
-  background: linear-gradient(var(--bg-top), var(--bg-bottom)) var(--play-bg);
+  /* 末尾の単色がルート背景のフォールバック色。ルート要素(html)の背景はビューポート
+     全体（本文 height:100% より下に出る iOS の下端帯）へ伝播する。タイトル／リザルト
+     ではグラデ末尾色 --bg-bottom を使い、その下端帯をグラデの裾と同色にして帯を消す。
+     ゲーム中だけ html.in-game で盤面色 --play-bg に切り替える（下記） */
+  background: linear-gradient(var(--bg-top), var(--bg-bottom)) var(--bg-bottom);
   color: #fff;
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* ゲーム中はルート背景のフォールバックを盤面色に切り替え、iOS の下端帯を盤面と
+   同色にして版数表示部の継ぎ目（横帯）を消す。クラスは main.ts が <html> に付け外し
+   する（ビューポート帯へ伝播するのは root=html の背景のため body ではなく html） */
+html.in-game,
+html.in-game body {
+  background: linear-gradient(var(--bg-top), var(--bg-bottom)) var(--play-bg);
 }
 
 #app { height: 100%; position: relative; }

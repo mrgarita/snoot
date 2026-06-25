@@ -476,8 +476,10 @@ export class Game {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.W, this.H);
 
-    // 盤面背景
-    ctx.fillStyle = "rgba(0,0,0,0.25)";
+    // 盤面背景：背後の #canvas-wrap 色に依存しないよう不透明の盤面色 --play-bg で塗る。
+    // 半透明（rgba 黒×0.25）だと全幅時に wrap 色×0.75 で実効色が変わり、版数表示部の
+    // 下端帯と色差が出てしまうため、実効色を #19283f に固定する（#14 追従）
+    ctx.fillStyle = "#19283f";
     ctx.fillRect(0, 0, this.W, this.H);
 
     // 天井バンド
