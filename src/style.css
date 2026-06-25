@@ -221,6 +221,15 @@ html.in-game body {
 #btn-next  { background: #5cb85c; color: #fff; }
 #btn-title { background: #ddd; color: #333; }
 
+/* クリア時の主要アクション「次のレベルへ」は誤タップを防ぐため一回り大きく強調する
+   （フィードバック #17）。順序・他ボタンのサイズは変えず、このボタンだけ拡大する。
+   ゲームオーバー時は #btn-next が hidden になるためこの強調は影響しない。 */
+#btn-next {
+  font-size: 1.3rem;
+  padding: 0.95rem 0.6rem;
+  box-shadow: 0 3px 0 #3d8b3d;
+}
+
 /* ---- タイトルのハイスコアボタン ---- */
 #btn-highscore {
   font-size: 1rem;

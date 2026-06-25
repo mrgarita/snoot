@@ -168,7 +168,7 @@ function showResult(info: GameEndInfo): void {
 
   btnNext.classList.toggle("hidden", info.kind !== "clear");
   // 次に挑む難易度（レベル）を明示して進行が分かるようにする
-  btnNext.textContent = `次のレベルへ（Lv.${info.level + 1}）`;
+  btnNext.textContent = `▶ 次のレベルへ（Lv.${info.level + 1}）`;
   btnRetry.textContent = info.kind === "clear" ? "同じレベルをもう一度" : "もう一度";
   resultOverlay.classList.remove("hidden");
 }
