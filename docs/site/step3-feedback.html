@@ -48,9 +48,9 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>2026-06-22</td>
     <td>14</td>
     <td>iPhone でバージョン表示下の横線が v0.9.4 でも残る（v0.9.2 と大差ない）</td>
-    <td>v0.9.5</td>
+    <td>v0.9.5 → v0.9.10</td>
     <td><a class="detail-link" href="#fb14">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.5/">▶ プレイ</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.10/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>2026-06-21</td>
@@ -322,6 +322,77 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     左：対応前（v0.9.4）は盤面（<code>#19283f</code>）の下端に、キャンバスを覆い切れない隙間から明るい枠色 <code>#213654</code> が細く覗き、横線として残っていた。
     右：対応後（v0.9.5）は盤面が全幅のとき（スマホ）だけ <code>#canvas-wrap</code> も盤面色 <code>--play-bg</code>（<code>#19283f</code>）に揃え、覗く色を盤面と同色にして横線を消した。
     左右余白が出る PC では <code>#213654</code> の跳ね返り壁の目印をそのまま維持している。
+  </figcaption>
+</figure>
+<p><strong>追記（v0.9.10・真因の根治）：</strong>v0.9.5 の対症（盤面が全幅のとき枠 <code>#canvas-wrap</code> を盤面色に揃える）でゲーム画面の横線は消えたが、iPhone 8 実機で再確認したところ、今度は<strong>タイトル画面</strong>の下端（版数表示部）に盤面色 <code>#19283f</code> の<strong>暗い帯</strong>が新たに出る regression が残っていた。<br>
+真因＝2 つ。(1) <strong>ルート背景のフォールバック単色を常時 <code>--play-bg</code>（<code>#19283f</code>）にしていた</strong>ため、iOS で本文（<code>height:100%</code>）より下に生じる下端帯がビューポート全体へ伝播し、グラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）より暗い <code>#19283f</code> がタイトルで「暗い帯」として露出していた。(2) <strong>盤面（キャンバス）背景が半透明 <code>rgba(0,0,0,0.25)</code></strong> で、全幅時に背後 <code>#canvas-wrap</code> 色×0.75 となり、実効色がルート帯の <code>#19283f</code> と微妙にずれていた。<br>
+対応＝(1) ルート背景の<strong>既定フォールバックをグラデ裾 <code>--bg-bottom</code> に戻し、ゲーム中だけ <code>&lt;html&gt;</code> に <code>in-game</code> クラスを付けて <code>--play-bg</code>（<code>#19283f</code>）へ切り替える</strong>（<code>src/style.css</code>。付け外しは <code>src/main.ts</code> の <code>startGame()</code>／<code>showTitle()</code>）。これでタイトルの下端帯はグラデ裾と同色、ゲーム画面の下端帯は盤面色と同色になり、両画面とも帯が消える。(2) <strong>盤面を不透明 <code>#19283f</code> で直接塗り</strong>、背後色依存をなくした（<code>src/game.ts</code> の <code>render()</code>）。PC の見た目（左右の壁マーカー・盤面色）は不変。<strong>iPhone 8 実機で帯が消えたことを確認済み（2026-06-25）</strong>。<code>src/style.css</code>・<code>src/main.ts</code>・<code>src/game.ts</code> を修正。</p>
+<figure>
+  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.5)はルート背景のフォールバックが常時盤面色 #19283f のため、タイトル画面の下端にグラデ裾 #2c4870 より暗い帯が出る。対応後(v0.9.10)は既定フォールバックを裾色に戻しゲーム中のみ盤面色へ切り替え、盤面も不透明 #19283f で塗ることで両画面とも帯が消える。">
+    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
+    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.10</text>
+    <defs>
+      <linearGradient id="ttl-bg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1b2a4a"/>
+        <stop offset="1" stop-color="#2c4870"/>
+      </linearGradient>
+      <clipPath id="ttl-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+      <clipPath id="ttl-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+    </defs>
+
+    <!-- 対応前：常時フォールバック #19283f がタイトル下端で暗い帯になる -->
+    <g clip-path="url(#ttl-clipA)">
+      <rect x="45" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
+      <!-- ロゴ（スマイル） -->
+      <circle cx="135" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
+      <circle cx="127" cy="99" r="3.2" fill="#222"/>
+      <circle cx="143" cy="99" r="3.2" fill="#222"/>
+      <path d="M125 112 Q135 121 145 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <text x="135" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
+      <!-- ボタン -->
+      <rect x="80" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
+      <text x="135" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
+      <rect x="80" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+      <text x="135" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
+      <rect x="80" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+      <text x="135" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
+      <!-- 版数表示 -->
+      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
+      <!-- 不具合：下端にグラデ裾より暗い #19283f の帯 -->
+      <rect x="45" y="352" width="180" height="12" fill="#19283f"/>
+    </g>
+    <rect x="45" y="349" width="180" height="17" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">タイトル下端に暗い帯が出る</text>
+    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">グラデ裾 #2c4870 / 帯 #19283f</text>
+
+    <!-- 対応後：フォールバックを裾色に戻し、ゲーム中のみ盤面色へ。タイトルは均一 -->
+    <g clip-path="url(#ttl-clipB)">
+      <rect x="315" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
+      <circle cx="405" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
+      <circle cx="397" cy="99" r="3.2" fill="#222"/>
+      <circle cx="413" cy="99" r="3.2" fill="#222"/>
+      <path d="M395 112 Q405 121 415 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <text x="405" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
+      <rect x="350" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
+      <text x="405" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
+      <rect x="350" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+      <text x="405" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
+      <rect x="350" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+      <text x="405" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
+      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.10</text>
+      <!-- 下端帯もグラデ裾と同色（#2c4870）で帯が見えない -->
+      <rect x="315" y="352" width="180" height="12" fill="#2c4870"/>
+    </g>
+    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで均一で帯なし</text>
+    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">既定は裾色／ゲーム中のみ盤面色</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.5）はルート背景のフォールバックを常時盤面色 <code>#19283f</code> にしていたため、iOS でタイトル画面の下端（版数表示部）に、グラデ裾 <code>#2c4870</code> より暗い <code>#19283f</code> の帯が露出していた。
+    右：対応後（v0.9.10）は既定のフォールバックをグラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）に戻し、ゲーム中だけ <code>html.in-game</code> で盤面色 <code>--play-bg</code>（<code>#19283f</code>）へ切り替える。あわせて盤面を不透明 <code>#19283f</code> で塗ることで、タイトル・ゲームのどちらも下端帯が背景と同色になり帯が消える。PC の見た目は不変。
   </figcaption>
 </figure>
 
