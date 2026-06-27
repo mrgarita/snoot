@@ -23,3 +23,6 @@ Thumbs.db
 
 # 個人運用ガイド（非公開リポジトリで管理。公開リポジトリには置かない）
 docs/claude-code-guide.md
+
+# 未着手項目ログ（内部運用。GitHub には置かない）
+.todo/
