@@ -56,6 +56,12 @@
     <div id="result-overlay" class="hidden">
       <div id="result-box">
         <h2 id="result-title"></h2>
+        <!-- クリア時の段階表示（②b）。ショット数→スコア→ボーナスの順に出して盛り上げる -->
+        <div id="result-stats" class="hidden">
+          <p class="stat-row" id="stat-shots"></p>
+          <p class="stat-row" id="stat-score"></p>
+          <p class="stat-row stat-bonus" id="stat-bonus"></p>
+        </div>
         <p id="result-score"></p>
         <p id="result-best"></p>
         <div id="result-buttons">

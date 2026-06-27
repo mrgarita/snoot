@@ -12,6 +12,9 @@ import {
   SCORE_POP,
   SCORE_DROP,
   SCORE_LEVEL_BONUS,
+  SHOT_BONUS_PAR_DIV,
+  SHOT_BONUS_PER,
+  SHOT_BONUS_CAP,
   effectiveConfig,
 } from "./config";
 import { Board, Cell } from "./grid";
@@ -50,6 +53,10 @@ export interface GameEndInfo {
   kind: "clear" | "gameover";
   score: number;
   level: number;
+  /** このレベルでの発射回数 */
+  shots: number;
+  /** クリア時のショットボーナス（少ない発射数で加点。gameover 時は 0） */
+  bonus: number;
 }
 
 export class Game {
@@ -63,6 +70,10 @@ export class Game {
   private score = 0;
   private level = 1;
   private danger = 0;
+  /** このレベルでの発射回数（ショットボーナス算出に使う） */
+  private shots = 0;
+  /** このレベル開始時のピース数（ショットボーナスの par 算出に使う） */
+  private initialCount = 0;
 
   // 描画メトリクス（論理 px）
   private W = 0;
@@ -128,6 +139,7 @@ export class Game {
     this.level = level;
     this.score = carriedScore;
     this.danger = 0;
+    this.shots = 0;
     this.board = new Board(this.cfg.cols);
     this.projectile = null;
     this.pops = [];
@@ -144,6 +156,8 @@ export class Game {
         this.board.set(r, c, this.randomType());
       }
     }
+    // 初期ピース数を記録（ショットボーナスの par 算出に使う）
+    this.initialCount = this.board.count;
     this.currentType = this.pickShotType();
     this.nextType = this.pickShotType();
 
@@ -273,6 +287,7 @@ export class Game {
       type: this.currentType,
     };
     this.state = "flying";
+    this.shots++;
     sound.play("shoot");
   }
 
@@ -480,14 +495,24 @@ export class Game {
       this.state = "clear";
       // クリアボーナス：基本点＋残ゲージ余裕＋レベルが上がるほど増える加点
       this.score += 500 + this.cfg.dangerCap * 20 + (this.level - 1) * SCORE_LEVEL_BONUS;
+      // ショットボーナス（②b）：par より少ない発射数でクリアするほど加点
+      const par = Math.ceil(this.initialCount / SHOT_BONUS_PAR_DIV);
+      const bonus = Math.min(SHOT_BONUS_CAP, Math.max(0, par - this.shots) * SHOT_BONUS_PER);
+      this.score += bonus;
       this.updateHud();
       sound.play("clear");
-      this.onEnd({ kind: "clear", score: this.score, level: this.level });
+      this.onEnd({ kind: "clear", score: this.score, level: this.level, shots: this.shots, bonus });
       return;
     }
     if (this.board.maxVisualRow() >= ROWS_LIMIT) {
       this.state = "over";
-      this.pendingEnd = { kind: "gameover", score: this.score, level: this.level };
+      this.pendingEnd = {
+        kind: "gameover",
+        score: this.score,
+        level: this.level,
+        shots: this.shots,
+        bonus: 0,
+      };
       // 即・結果画面ではなく、骸骨化ウェーブ（②a）を見せ切ってから onEnd で通知する。
       // 天井降下中なら、まずスライドを見せ切ってから（update 内で）シーケンスを開始する。
       if (this.dropAnim === 0) this.startGameoverSequence();

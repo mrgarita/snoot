@@ -56,6 +56,14 @@ export const SCORE_DROP = 30;
 /** クリア時の追加ボーナス（レベルが上がるほど増える） */
 export const SCORE_LEVEL_BONUS = 100;
 
+// ---- ショットボーナス（②b）：少ない発射数でクリアするほど加点 ----
+/** 目安ショット数 par = ceil(初期ピース数 / この値)。par より少なく撃つと加点 */
+export const SHOT_BONUS_PAR_DIV = 3;
+/** par より 1 発少ないごとの加点 */
+export const SHOT_BONUS_PER = 100;
+/** ショットボーナスの上限 */
+export const SHOT_BONUS_CAP = 1000;
+
 // ---- レベルアップによる段階的難化（Snoot 独自仕様） ----
 // 原作 Snood の Classic は面を進めても難易度が固定（難化するのは Journey モード）だが、
 // Snoot では「選んだ難易度を起点に、レベルが上がるほど少しずつ難しくする」現代的な

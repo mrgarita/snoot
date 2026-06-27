@@ -206,6 +206,29 @@ html.in-game body {
 #result-best { margin: 0 0 1.2rem; font-size: 0.95rem; color: #666; }
 #result-best.new-record { color: #e67e22; font-weight: bold; }
 
+/* ②b クリア演出：プレイ情報の段階表示。各行は最初 .revealed なしで隠れ、
+   順に付与してフェードイン＋せり上がりで現れる（盛り上げの「間」をつくる）。 */
+#result-stats { margin: 0 0 1rem; min-height: 4.2rem; }
+#result-stats .stat-row {
+  margin: 0.25rem 0;
+  font-size: 1.15rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+#result-stats .stat-row.revealed { opacity: 1; transform: none; }
+#result-stats .stat-bonus {
+  color: #e67e22;
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+#result-stats .stat-bonus.revealed { animation: bonus-pop 0.45s ease; }
+@keyframes bonus-pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
 #result-buttons { display: flex; flex-direction: column; gap: 0.6rem; }
 
 #result-buttons button {

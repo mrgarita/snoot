@@ -2,7 +2,17 @@
 // v0.1 はフリー素材を使わずコード生成の簡易 SE とする（ゼロコスト・ライセンス確認不要）。
 // step3 のフィードバック次第でフリー素材の BGM/SE への差し替えを検討する。
 
-type SeName = "shoot" | "stick" | "pop" | "drop" | "quake" | "clear" | "gameover" | "doom";
+type SeName =
+  | "shoot"
+  | "stick"
+  | "pop"
+  | "drop"
+  | "quake"
+  | "clear"
+  | "gameover"
+  | "doom"
+  | "tally"
+  | "bonus";
 
 class SoundPlayer {
   private ctx: AudioContext | null = null;
@@ -73,6 +83,21 @@ class SoundPlayer {
         this.tone(95, t, 1.3, "sawtooth", 0.3, 38);
         this.tone(70, t, 1.3, "triangle", 0.22, 30);
         this.tone(140, t + 0.05, 1.0, "sine", 0.14, 50);
+        break;
+      }
+      case "tally": {
+        // クリア演出の段階表示：1 行ごとに音程を少し上げ、期待感を出す軽いブリップ
+        const f = 660 + intensity * 120;
+        this.tone(f, t, 0.12, "triangle", 0.22);
+        this.tone(f * 1.5, t + 0.02, 0.08, "sine", 0.12);
+        break;
+      }
+      case "bonus": {
+        // ショットボーナスのご褒美：上昇アルペジオ＋主和音の小ファンファーレ
+        [659, 880, 1175].forEach((f, i) => this.tone(f, t + i * 0.07, 0.14, "square", 0.22));
+        const c = t + 0.21;
+        [1175, 1568].forEach((f) => this.tone(f, c, 0.4, "square", 0.2));
+        this.tone(587, c, 0.4, "triangle", 0.16);
         break;
       }
     }

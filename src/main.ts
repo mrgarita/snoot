@@ -27,6 +27,8 @@ if (import.meta.env.DEV) {
     TYPE_COLORS,
     TYPE_NAMES,
     startGame: (difficulty: DifficultyId, level = 1) => startGame(difficulty, level),
+    // ②b クリア演出の段階表示を検証するための DEV 専用フック
+    showResult: (info: GameEndInfo) => showResult(info),
   };
 }
 
@@ -36,6 +38,11 @@ const resultOverlay = document.getElementById("result-overlay")!;
 const resultTitle = document.getElementById("result-title")!;
 const resultScore = document.getElementById("result-score")!;
 const resultBest = document.getElementById("result-best")!;
+const resultStats = document.getElementById("result-stats")!;
+const statShots = document.getElementById("stat-shots")!;
+const statScore = document.getElementById("stat-score")!;
+const statBonus = document.getElementById("stat-bonus")!;
+const resultButtons = document.getElementById("result-buttons")!;
 const btnRetry = document.getElementById("btn-retry")!;
 const btnNext = document.getElementById("btn-next")!;
 const btnTitle = document.getElementById("btn-title")!;
@@ -152,9 +159,13 @@ function showResult(info: GameEndInfo): void {
   // レベルが意味を持つようになったので、到達レベルを見出しに明示する
   resultTitle.textContent =
     info.kind === "clear" ? `Lv.${info.level} クリア！` : `Lv.${info.level} でゲームオーバー`;
-  resultScore.textContent = `スコア：${info.score.toLocaleString()}`;
 
-  // ベスト／新記録の表示
+  // ボタンの内容は共通で設定（表示タイミングだけ種類別に制御する）
+  btnNext.classList.toggle("hidden", info.kind !== "clear");
+  btnNext.textContent = `▶ 次のレベルへ（Lv.${info.level + 1}）`;
+  btnRetry.textContent = info.kind === "clear" ? "同じレベルをもう一度" : "もう一度";
+
+  // ベスト／新記録の文字を用意（表示は種類別タイミング）
   const label = DIFFICULTIES[currentDifficulty].label;
   if (lastRank && lastRank > 0) {
     resultBest.textContent = `新記録！ ${label} ${lastRank}位`;
@@ -167,11 +178,69 @@ function showResult(info: GameEndInfo): void {
     resultBest.classList.remove("new-record");
   }
 
-  btnNext.classList.toggle("hidden", info.kind !== "clear");
-  // 次に挑む難易度（レベル）を明示して進行が分かるようにする
-  btnNext.textContent = `▶ 次のレベルへ（Lv.${info.level + 1}）`;
-  btnRetry.textContent = info.kind === "clear" ? "同じレベルをもう一度" : "もう一度";
+  if (info.kind === "clear") {
+    // ②b：ボタンの前にプレイ情報を順に見せて余韻と達成感をつくる
+    revealClearResult(info);
+  } else {
+    // ゲームオーバーは骸骨化演出（②a）を Game 側で見せ切った後なので、即時に表示する
+    resultStats.classList.add("hidden");
+    resultScore.classList.remove("hidden");
+    resultScore.textContent = `スコア：${info.score.toLocaleString()}`;
+    resultBest.classList.remove("hidden");
+    resultButtons.classList.remove("hidden");
+    resultOverlay.classList.remove("hidden");
+  }
+}
+
+/** タイマー id を保持し、連続クリア時に前回の段階表示が残らないようにする */
+let clearRevealTimers: number[] = [];
+
+/**
+ * ②b クリア演出：ショット数→スコア→（少発時）ショットボーナス を順に表示し、
+ * 表示ごとに SE で盛り上げる。出し切ってから「次のレベルへ」等のボタンを見せる。
+ */
+function revealClearResult(info: GameEndInfo): void {
+  // 前回の段階表示が進行中なら止める
+  for (const id of clearRevealTimers) clearTimeout(id);
+  clearRevealTimers = [];
+
+  // 静的スコア行は使わず、段階表示の #result-stats を使う
+  resultScore.classList.add("hidden");
+  resultBest.classList.add("hidden");
+  resultButtons.classList.add("hidden");
+  for (const el of [statShots, statScore, statBonus]) el.classList.remove("revealed");
+
+  statShots.textContent = `ショット数：${info.shots}`;
+  statScore.textContent = `スコア：${info.score.toLocaleString()}`;
+  const rows: { el: HTMLElement; se: "tally" | "bonus" }[] = [
+    { el: statShots, se: "tally" },
+    { el: statScore, se: "tally" },
+  ];
+  if (info.bonus > 0) {
+    statBonus.textContent = `ショットボーナス ＋${info.bonus.toLocaleString()}！`;
+    statBonus.classList.remove("hidden");
+    rows.push({ el: statBonus, se: "bonus" });
+  } else {
+    statBonus.classList.add("hidden");
+  }
+
+  resultStats.classList.remove("hidden");
   resultOverlay.classList.remove("hidden");
+
+  // 1 行ずつ間を置いて表示（表示ごとに SE）。最後に少し溜めてからボタンを出す
+  const STEP_MS = 600;
+  rows.forEach((row, i) => {
+    const id = window.setTimeout(() => {
+      row.el.classList.add("revealed");
+      sound.play(row.se, i);
+    }, 350 + i * STEP_MS);
+    clearRevealTimers.push(id);
+  });
+  const endId = window.setTimeout(() => {
+    resultBest.classList.remove("hidden");
+    resultButtons.classList.remove("hidden");
+  }, 350 + rows.length * STEP_MS + 250);
+  clearRevealTimers.push(endId);
 }
 
 /** 難易度別 Top5 の表を描画する。highlight 指定時は該当行を強調 */
