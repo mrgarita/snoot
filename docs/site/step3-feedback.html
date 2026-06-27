@@ -32,9 +32,9 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
     <td>2026-06-27</td>
     <td>20</td>
     <td>クリア時、ボタン表示の前にプレイ情報を順に見せて余韻と達成感を演出してほしい（②b・ショットボーナス＝仕様追加）</td>
-    <td>v0.9.15</td>
+    <td>v0.9.15 → v0.9.16</td>
     <td><a class="detail-link" href="#fb20">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.15/">▶ プレイ</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.16/">▶ プレイ</a></td>
   </tr>
   <tr>
     <td>2026-06-27</td>
@@ -200,6 +200,7 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 (2) <strong>ショットボーナス（仕様追加）</strong>：レベル開始時のピース数から目安 <code>par = ceil(初期ピース数 / 3)</code> を求め、<code>bonus = clamp(max(0, par − shots) × 100, 0, 1000)</code> を加点。少ない発射数でクリアするほど高い（係数・上限は <code>src/config.ts</code> で調整可能）。<br>
 (3) <strong>段階表示</strong>：クリア時はボタンを一旦隠し、<code>#result-stats</code> に「ショット数 → スコア → （加点があれば）ショットボーナス」を <code>setTimeout</code> で 1 行ずつフェードイン。各行で SE（<code>tally</code> は行ごとに音程上昇、ボーナスは専用ファンファーレ <code>bonus</code>）を鳴らし、出し切ってからベスト表示とボタンを見せる（誤タップ防止の #17 とも整合）。ゲームオーバーは ②a の骸骨化を見せた後なので従来どおり即表示。<br>
 修正ファイル：<code>src/game.ts</code>・<code>src/main.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>・<code>index.html</code>・<code>src/style.css</code>。</p>
+<p><strong>追記（v0.9.16・テンポ調整）：</strong>プレイ確認で「段階表示が<strong>速すぎて目で追えない</strong>」とフィードバック。<code>revealClearResult</code> のタイマーを緩め、行ごとの間隔を <code>600ms → 1000ms</code>（最初の行までを 350→450ms、最終行からボタンまでを 250→450ms）にして、各情報を約 1 秒間隔で読めるようにした。表示順・SE・ボーナス計算は不変。</p>
 <figure>
   <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
        aria-label="対応前後の比較。対応前(v0.9.14)はクリアで即ボタンが出て余韻がない。対応後(v0.9.15)はショット数→スコア→ショットボーナスを順に表示し、SEで盛り上げてからボタンを出す。">
