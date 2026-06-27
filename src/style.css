@@ -290,7 +290,9 @@ html.in-game body {
   padding: 1.4rem 1.6rem;
   text-align: center;
   min-width: min(86vw, 360px);
-  max-height: 88vh;
+  /* オーバーレイ高さ（可視領域へ縮めた高さを含む）に対する割合。
+     キーボード表示時はオーバーレイが visualViewport に縮むので、その中に収まる */
+  max-height: 90%;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }

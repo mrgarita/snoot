@@ -132,6 +132,42 @@ function finalizeRun(then: () => void): void {
   }
 }
 
+/**
+ * 名前入力オーバーレイを、ソフトキーボードを除いた可視領域（visualViewport）に合わせる。
+ * Android は既定でキーボード表示時もレイアウトビューポートが縮まらず、中央寄せのボックスが
+ * キーボードに隠れてしまう。開いている間だけ可視領域にオーバーレイを縮め、その中で中央寄せする。
+ */
+let nameViewportFit: (() => void) | null = null;
+
+function attachNameViewportFit(): void {
+  const vv = window.visualViewport;
+  if (!vv) return; // 非対応環境は CSS フォールバックに任せる
+  const fit = () => {
+    nameEntryOverlay.style.top = `${vv.offsetTop}px`;
+    nameEntryOverlay.style.height = `${vv.height}px`;
+    nameEntryOverlay.style.bottom = "auto"; // inset:0 の bottom を無効化し height を効かせる
+  };
+  nameViewportFit = fit;
+  vv.addEventListener("resize", fit);
+  vv.addEventListener("scroll", fit);
+  fit();
+  // キーボードの表示アニメ完了後にも合わせ直す
+  window.setTimeout(fit, 300);
+}
+
+function detachNameViewportFit(): void {
+  const vv = window.visualViewport;
+  if (vv && nameViewportFit) {
+    vv.removeEventListener("resize", nameViewportFit);
+    vv.removeEventListener("scroll", nameViewportFit);
+  }
+  nameViewportFit = null;
+  // インラインスタイルを戻して CSS（absolute; inset:0）の中央寄せに復帰させる
+  nameEntryOverlay.style.top = "";
+  nameEntryOverlay.style.height = "";
+  nameEntryOverlay.style.bottom = "";
+}
+
 /** 新記録達成時の名前入力。前回名を既定表示し、登録/Enter で onDone(name) */
 function openNameEntry(score: number, onDone: (name: string) => void): void {
   const label = DIFFICULTIES[currentDifficulty].label;
@@ -140,9 +176,12 @@ function openNameEntry(score: number, onDone: (name: string) => void): void {
   nameEntryOverlay.classList.remove("hidden");
   nameInput.focus();
   nameInput.select();
+  // キーボード表示後も「登録」ボタンまで見えるよう、可視領域に追従させる
+  attachNameViewportFit();
 
   const submit = () => {
     const name = (nameInput.value.trim() || DEFAULT_NAME).slice(0, 8);
+    detachNameViewportFit();
     nameEntryOverlay.classList.add("hidden");
     btnNameOk.removeEventListener("click", submit);
     nameInput.removeEventListener("keydown", onKey);
