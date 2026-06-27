@@ -29,6 +29,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 <table>
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
+    <td>2026-06-27</td>
+    <td>19</td>
+    <td>状態切り替えに「間」がない。ゲームオーバー時に失敗の余韻を演出してほしい（②a）</td>
+    <td>v0.9.14</td>
+    <td><a class="detail-link" href="#fb19">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.14/">▶ プレイ</a></td>
+  </tr>
+  <tr>
     <td>2026-06-25</td>
     <td>18</td>
     <td>降りてくる天井を岩っぽくし、降下をアニメ＋低音で「怖さ」を演出してほしい（②c）</td>
@@ -176,6 +184,71 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb19">#19：ゲームオーバー時、盤面を下→上に骸骨化させて失敗の余韻を演出（v0.9.14・演出②a） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>ゲームの状態が切り替わる際に「間」がない。失敗してもすぐに結果画面とボタンが出るため、<strong>失敗した余韻にプレイヤーが浸る気持ちの間</strong>がない（ゲームとして大事）。例として、ゲームオーバー時は即表示せず、<strong>埋まったキャラをステージの下方から上方へ順に骸骨風のキャラへ変化させていく</strong>（その際の音は暗い重低音のイメージ）。プレイ演出フィードバック②のうち ②a。</p>
+<p><strong>原因・対応：</strong>従来はデッドライン到達でただちに <code>onEnd</code> を呼び、結果画面（リザルト）を即表示していた。対応は天井降下（②c）と同じ「<strong>描画で演出を見せ切ってから <code>onEnd</code> を呼ぶ</strong>」遅延パターンを流用して 3 点。<br>
+(1) <strong>骸骨化ウェーブ</strong>：ゲームオーバー確定時に結果通知を <code>pendingEnd</code> に保留し、<code>gameoverSeq</code>（経過秒）を走らせる。描画では各セルの<strong>画面下ほど早く</strong>骸骨へ切り替わるしきい値を計算し、<strong>下→上の波</strong>でキャラを <code>drawSkull</code>（コード描画の骸骨）へ変化させる。変化直後だけ軽くスケールポップさせる。<br>
+(2) <strong>暗い重低音</strong>：開始時に新 SE <code>doom</code>（低い下降ドローン＋地鳴り）を鳴らす。<br>
+(3) <strong>見せ切ってから結果へ</strong>：所要 <code>GAMEOVER_SEQ_DUR = 1.6</code> 秒のウェーブを見せ切ってから <code>onEnd</code> を 1 回だけ呼ぶ。天井降下でのゲームオーバーは、降下スライド→骸骨化→結果の順に自然につながる。骸骨化した盤面は結果画面の背後に残す。<br>
+修正ファイル：<code>src/game.ts</code>・<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</p>
+<figure>
+  <svg viewBox="0 0 540 460" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.13)はゲームオーバーで即結果画面が出て余韻がない。対応後(v0.9.14)は盤面のキャラが下から上へ順に骸骨へ変化し、暗い重低音とともに失敗の余韻を見せてから結果画面を出す。">
+    <rect x="0" y="0" width="540" height="460" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.13</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.14</text>
+
+    <!-- 対応前：盤面に普通のキャラ → 即・結果画面（余韻なし） -->
+    <rect x="45" y="40" width="180" height="360" rx="12" fill="#19283f"/>
+    <g>
+      <circle cx="85"  cy="80"  r="16" fill="#4a90d9"/>
+      <circle cx="120" cy="80"  r="16" fill="#5cb85c"/>
+      <circle cx="155" cy="80"  r="16" fill="#e74c3c"/>
+      <circle cx="190" cy="80"  r="16" fill="#f5a623"/>
+      <circle cx="100" cy="112" r="16" fill="#9b59b6"/>
+      <circle cx="135" cy="112" r="16" fill="#45c4c8"/>
+      <circle cx="170" cy="112" r="16" fill="#8d8d8d"/>
+    </g>
+    <!-- 即時に出る結果ボックス -->
+    <rect x="62" y="150" width="146" height="120" rx="10" fill="#0e1830" stroke="#33507e"/>
+    <text x="135" y="186" fill="#fff" font-size="15" font-weight="bold" text-anchor="middle">ゲームオーバー</text>
+    <rect x="80" y="205" width="110" height="22" rx="6" fill="#2b3f63"/>
+    <text x="135" y="221" fill="#cfe0ff" font-size="11" text-anchor="middle">もう一度</text>
+    <rect x="80" y="233" width="110" height="22" rx="6" fill="#2b3f63"/>
+    <text x="135" y="249" fill="#cfe0ff" font-size="11" text-anchor="middle">タイトルへ</text>
+    <text x="135" y="382" fill="#ff9a9a" font-size="11" text-anchor="middle">即・結果表示（余韻なし）</text>
+
+    <!-- 対応後：下から骸骨化していく途中＋暗い重低音 -->
+    <rect x="315" y="40" width="180" height="360" rx="12" fill="#19283f"/>
+    <!-- 上段：まだキャラ -->
+    <circle cx="355" cy="80"  r="16" fill="#4a90d9"/>
+    <circle cx="390" cy="80"  r="16" fill="#5cb85c"/>
+    <circle cx="425" cy="80"  r="16" fill="#e74c3c"/>
+    <circle cx="460" cy="80"  r="16" fill="#f5a623"/>
+    <!-- 下段：骸骨化済み（白い頭蓋＋眼窩＋歯） -->
+    <g fill="#e9e6da">
+      <g><circle cx="370" cy="120" r="16"/><circle cx="365" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="375" cy="117" r="3.5" fill="#1a1a1a"/><rect x="364" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+      <g><circle cx="405" cy="120" r="16"/><circle cx="400" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="410" cy="117" r="3.5" fill="#1a1a1a"/><rect x="399" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+      <g><circle cx="440" cy="120" r="16"/><circle cx="435" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="445" cy="117" r="3.5" fill="#1a1a1a"/><rect x="434" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+    </g>
+    <!-- 下→上の波を示す矢印 -->
+    <line x1="405" y1="300" x2="405" y2="150" stroke="#8ce6a6" stroke-width="3" marker-end="url(#fb19arrow)"/>
+    <defs>
+      <marker id="fb19arrow" markerWidth="9" markerHeight="9" refX="4" refY="4" orient="auto">
+        <path d="M0,0 L9,4 L0,8 z" fill="#8ce6a6"/>
+      </marker>
+    </defs>
+    <text x="405" y="330" fill="#8ce6a6" font-size="11" text-anchor="middle">下 → 上へ骸骨化</text>
+    <text x="405" y="360" fill="#cfe0ff" font-size="12" text-anchor="middle">♪ 暗い重低音（doom）</text>
+    <text x="405" y="382" fill="#8ce6a6" font-size="11" text-anchor="middle">見せ切ってから結果へ</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.13）はゲームオーバーで<strong>即・結果画面</strong>が出て、失敗の余韻がない。
+    右：対応後（v0.9.14）は盤面のキャラを<strong>下→上の波で骸骨化</strong>させ、<code>doom</code>（暗い重低音）とともに
+    <code>GAMEOVER_SEQ_DUR=1.6</code> 秒の演出を見せ切ってから結果画面を出す。当たり判定や得点は不変で、演出だけを追加している。
+  </figcaption>
+</figure>
 
 <h3 id="fb18">#18：降りてくる天井を岩肌にし、降下をアニメ＋低音で怖く演出（v0.9.13・演出②c） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>危険ゲージが満タンになると降りてくる天井について、(1) 見た目を<strong>岩っぽく</strong>し、(2) 降りるときも<strong>すぐに下げず、アニメーションさせて「怖さ」を演出</strong>してほしい（BGM は低い音源）。プレイ演出フィードバック②のうち ②c。</p>
