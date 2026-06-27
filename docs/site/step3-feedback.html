@@ -30,6 +30,14 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
   <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
   <tr>
     <td>2026-06-27</td>
+    <td>20</td>
+    <td>クリア時、ボタン表示の前にプレイ情報を順に見せて余韻と達成感を演出してほしい（②b・ショットボーナス＝仕様追加）</td>
+    <td>v0.9.15</td>
+    <td><a class="detail-link" href="#fb20">詳細 →</a></td>
+    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.15/">▶ プレイ</a></td>
+  </tr>
+  <tr>
+    <td>2026-06-27</td>
     <td>19</td>
     <td>状態切り替えに「間」がない。ゲームオーバー時に失敗の余韻を演出してほしい（②a）</td>
     <td>v0.9.14</td>
@@ -184,6 +192,59 @@ step3（人間によるプレイ確認）で挙がったフィードバックと
 
 <h2>対応の詳細</h2>
 <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+<h3 id="fb20">#20：クリア時、ボタンの前にプレイ情報を順に見せて達成感を演出＋ショットボーナス（v0.9.15・演出②b） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
+<p><strong>指摘：</strong>状態切り替えに「間」がなく、成功の余韻に浸れない。クリア時は「次のレベルへ」などのボタンを出す前に、ゲーム画面に重ねて<strong>そのステージのプレイ情報</strong>（「何回ショットしたか？」「スコアは何点だったか？」）を<strong>順に表示</strong>してほしい（表示ごとに SE で盛り上げる）。あわせて、<strong>ショット数が少なくクリアした際は「ボーナススコア」を加点</strong>する（仕様追加）。プレイ演出フィードバック②のうち ②b。</p>
+<p><strong>原因・対応：</strong>従来はクリア確定で即 <code>onEnd</code> → 結果ボタンを表示していた。対応は 3 点。<br>
+(1) <strong>ショット数の計測</strong>：レベル開始（<code>start</code>）で 0 にリセットし、発射（<code>fire</code>）ごとに <code>shots</code> を +1。<br>
+(2) <strong>ショットボーナス（仕様追加）</strong>：レベル開始時のピース数から目安 <code>par = ceil(初期ピース数 / 3)</code> を求め、<code>bonus = clamp(max(0, par − shots) × 100, 0, 1000)</code> を加点。少ない発射数でクリアするほど高い（係数・上限は <code>src/config.ts</code> で調整可能）。<br>
+(3) <strong>段階表示</strong>：クリア時はボタンを一旦隠し、<code>#result-stats</code> に「ショット数 → スコア → （加点があれば）ショットボーナス」を <code>setTimeout</code> で 1 行ずつフェードイン。各行で SE（<code>tally</code> は行ごとに音程上昇、ボーナスは専用ファンファーレ <code>bonus</code>）を鳴らし、出し切ってからベスト表示とボタンを見せる（誤タップ防止の #17 とも整合）。ゲームオーバーは ②a の骸骨化を見せた後なので従来どおり即表示。<br>
+修正ファイル：<code>src/game.ts</code>・<code>src/main.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>・<code>index.html</code>・<code>src/style.css</code>。</p>
+<figure>
+  <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="対応前後の比較。対応前(v0.9.14)はクリアで即ボタンが出て余韻がない。対応後(v0.9.15)はショット数→スコア→ショットボーナスを順に表示し、SEで盛り上げてからボタンを出す。">
+    <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
+    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.14</text>
+    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.15</text>
+
+    <!-- 対応前：クリア → 即ボタン（余韻・情報なし） -->
+    <rect x="45" y="40" width="180" height="390" rx="12" fill="#19283f"/>
+    <rect x="62" y="70" width="146" height="150" rx="10" fill="#fff"/>
+    <text x="135" y="104" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
+    <rect x="80" y="120" width="110" height="26" rx="6" fill="#4a90d9"/>
+    <text x="135" y="138" fill="#fff" font-size="11" text-anchor="middle">もう一度</text>
+    <rect x="80" y="150" width="110" height="30" rx="6" fill="#5cb85c"/>
+    <text x="135" y="170" fill="#fff" font-size="11" text-anchor="middle">次のレベルへ</text>
+    <rect x="80" y="184" width="110" height="26" rx="6" fill="#cccccc"/>
+    <text x="135" y="202" fill="#333" font-size="11" text-anchor="middle">タイトルへ</text>
+    <text x="135" y="250" fill="#ff9a9a" font-size="11" text-anchor="middle">即・ボタン表示</text>
+    <text x="135" y="268" fill="#ff9a9a" font-size="11" text-anchor="middle">（情報も余韻もなし）</text>
+
+    <!-- 対応後：情報を順に表示 → ボタン -->
+    <rect x="315" y="40" width="180" height="390" rx="12" fill="#19283f"/>
+    <rect x="332" y="64" width="146" height="246" rx="10" fill="#fff"/>
+    <text x="405" y="92" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
+    <!-- 段階表示の行（番号で順番を示す） -->
+    <text x="405" y="120" fill="#555" font-size="12" text-anchor="middle">① ショット数：12</text>
+    <text x="405" y="144" fill="#555" font-size="12" text-anchor="middle">② スコア：3,200</text>
+    <text x="405" y="170" fill="#e67e22" font-size="14" font-weight="bold" text-anchor="middle">③ ボーナス ＋400！</text>
+    <text x="405" y="190" fill="#8ce6a6" font-size="10" text-anchor="middle">♪ 表示ごとに SE</text>
+    <!-- 出し切ってからボタン -->
+    <rect x="350" y="206" width="110" height="22" rx="6" fill="#4a90d9"/>
+    <text x="405" y="221" fill="#fff" font-size="10" text-anchor="middle">もう一度</text>
+    <rect x="350" y="232" width="110" height="28" rx="6" fill="#5cb85c"/>
+    <text x="405" y="250" fill="#fff" font-size="10" text-anchor="middle">次のレベルへ</text>
+    <rect x="350" y="264" width="110" height="22" rx="6" fill="#cccccc"/>
+    <text x="405" y="279" fill="#333" font-size="10" text-anchor="middle">タイトルへ</text>
+    <text x="405" y="340" fill="#8ce6a6" font-size="11" text-anchor="middle">①→②→③ の後にボタン</text>
+  </svg>
+  <figcaption>
+    左：対応前（v0.9.14）はクリアで<strong>即・ボタン</strong>が出て、情報も余韻もない。
+    右：対応後（v0.9.15）は<strong>ショット数 → スコア → ショットボーナス</strong>を 1 行ずつ SE 付きで見せ、
+    出し切ってからボタンを出す。<code>par = ceil(初期ピース数 / 3)</code> より少ない発射数でクリアするほど
+    <code>ボーナス（最大 +1000）</code>が増える（仕様追加）。
+  </figcaption>
+</figure>
 
 <h3 id="fb19">#19：ゲームオーバー時、盤面を下→上に骸骨化させて失敗の余韻を演出（v0.9.14・演出②a） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
 <p><strong>指摘：</strong>ゲームの状態が切り替わる際に「間」がない。失敗してもすぐに結果画面とボタンが出るため、<strong>失敗した余韻にプレイヤーが浸る気持ちの間</strong>がない（ゲームとして大事）。例として、ゲームオーバー時は即表示せず、<strong>埋まったキャラをステージの下方から上方へ順に骸骨風のキャラへ変化させていく</strong>（その際の音は暗い重低音のイメージ）。プレイ演出フィードバック②のうち ②a。</p>
