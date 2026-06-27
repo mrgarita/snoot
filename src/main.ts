@@ -227,19 +227,22 @@ function revealClearResult(info: GameEndInfo): void {
   resultStats.classList.remove("hidden");
   resultOverlay.classList.remove("hidden");
 
-  // 1 行ずつ間を置いて表示（表示ごとに SE）。最後に少し溜めてからボタンを出す
-  const STEP_MS = 600;
+  // 1 行ずつ間を置いて表示（表示ごとに SE）。最後に少し溜めてからボタンを出す。
+  // 目で追えるよう各行は約 1 秒間隔にする（プレイ感調整・v0.9.16）。
+  const FIRST_MS = 450; // 最初の行までの待ち
+  const STEP_MS = 1000; // 行ごとの間隔
+  const BUTTON_GAP_MS = 450; // 最終行からボタン表示までの間
   rows.forEach((row, i) => {
     const id = window.setTimeout(() => {
       row.el.classList.add("revealed");
       sound.play(row.se, i);
-    }, 350 + i * STEP_MS);
+    }, FIRST_MS + i * STEP_MS);
     clearRevealTimers.push(id);
   });
   const endId = window.setTimeout(() => {
     resultBest.classList.remove("hidden");
     resultButtons.classList.remove("hidden");
-  }, 350 + rows.length * STEP_MS + 250);
+  }, FIRST_MS + rows.length * STEP_MS + BUTTON_GAP_MS);
   clearRevealTimers.push(endId);
 }
 
