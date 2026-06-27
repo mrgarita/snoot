@@ -8,6 +8,7 @@ import {
   ROW_H,
   SHOT_SPEED,
   CEILING_DROP_DUR,
+  GAMEOVER_SEQ_DUR,
   SCORE_POP,
   SCORE_DROP,
   SCORE_LEVEL_BONUS,
@@ -15,7 +16,7 @@ import {
 } from "./config";
 import { Board, Cell } from "./grid";
 import { nearestEmptyCell, resolveLanding } from "./placement";
-import { drawSnoot } from "./characters";
+import { drawSnoot, drawSkull } from "./characters";
 import { sound } from "./audio";
 
 type GameState = "aim" | "flying" | "over" | "clear";
@@ -79,8 +80,16 @@ export class Game {
   private falls: FallAnim[] = [];
   /** 天井降下アニメの残量（1→0 に減衰。1 のとき論理位置より 1 行ぶん上に描画＝降りる前） */
   private dropAnim = 0;
-  /** 降下アニメ中に確定した終了情報の保留（降下を見せ切ってから onEnd で通知する） */
+  /**
+   * 終了情報の保留。降下アニメ・骸骨化シーケンスを見せ切ってから onEnd で通知するために使う。
+   */
   private pendingEnd: GameEndInfo | null = null;
+  /**
+   * ゲームオーバー演出（骸骨化ウェーブ）の経過秒。0=非実行。
+   * GAMEOVER_SEQ_DUR に達すると pendingEnd を onEnd で通知する。以降は DUR で据え置き、
+   * 結果画面の背後に骸骨化した盤面を残す（次の start() で 0 に戻す）。
+   */
+  private gameoverSeq = 0;
   /** 表情アニメーション用の経過時間（秒） */
   private animTime = 0;
   private lastTime = 0;
@@ -125,6 +134,7 @@ export class Game {
     this.falls = [];
     this.dropAnim = 0;
     this.pendingEnd = null;
+    this.gameoverSeq = 0;
     this.state = "aim";
     this.aimAngle = 0;
 
@@ -278,14 +288,21 @@ export class Game {
   private update(dt: number): void {
     this.animTime += dt;
 
-    // 天井降下のスライドを進める。降り切った瞬間に、保留していた終了通知を出す
-    // （降下を見せてからゲームオーバー画面へ）
+    // 天井降下のスライドを進める。降り切った瞬間に、保留していたゲームオーバーがあれば
+    // 骸骨化シーケンスを開始する（降下を見せてから骸骨化→結果画面の順に演出する）。
     if (this.dropAnim > 0) {
       this.dropAnim = Math.max(0, this.dropAnim - dt / CEILING_DROP_DUR);
-      if (this.dropAnim === 0 && this.pendingEnd) {
+      if (this.dropAnim === 0 && this.pendingEnd && this.gameoverSeq === 0) {
+        this.startGameoverSequence();
+      }
+    }
+
+    // ゲームオーバー演出（骸骨化ウェーブ）を進める。見せ切ったら結果画面を通知する。
+    if (this.gameoverSeq > 0) {
+      this.gameoverSeq = Math.min(GAMEOVER_SEQ_DUR, this.gameoverSeq + dt);
+      if (this.gameoverSeq >= GAMEOVER_SEQ_DUR && this.pendingEnd) {
         const end = this.pendingEnd;
         this.pendingEnd = null;
-        sound.play("gameover");
         this.onEnd(end);
       }
     }
@@ -470,14 +487,10 @@ export class Game {
     }
     if (this.board.maxVisualRow() >= ROWS_LIMIT) {
       this.state = "over";
-      // 天井降下の最中なら、スライドを見せ切ってから終了通知する（update で発火）。
-      // それ以外（着弾でデッドライン到達）は従来どおり即時に通知する。
-      if (this.dropAnim > 0) {
-        this.pendingEnd = { kind: "gameover", score: this.score, level: this.level };
-      } else {
-        sound.play("gameover");
-        this.onEnd({ kind: "gameover", score: this.score, level: this.level });
-      }
+      this.pendingEnd = { kind: "gameover", score: this.score, level: this.level };
+      // 即・結果画面ではなく、骸骨化ウェーブ（②a）を見せ切ってから onEnd で通知する。
+      // 天井降下中なら、まずスライドを見せ切ってから（update 内で）シーケンスを開始する。
+      if (this.dropAnim === 0) this.startGameoverSequence();
       return;
     }
 
@@ -496,6 +509,12 @@ export class Game {
     this.elLevel.textContent = `Lv.${this.level}`;
     const pct = Math.min(100, (this.danger / this.cfg.dangerCap) * 100);
     this.elDangerFill.style.width = `${pct}%`;
+  }
+
+  /** ゲームオーバー演出（②a）を開始する。暗い重低音を鳴らし、骸骨化ウェーブを走らせる。 */
+  private startGameoverSequence(): void {
+    this.gameoverSeq = 1e-6; // >0 で実行中（経過は update で加算）
+    sound.play("doom");
   }
 
   // ---------- 描画 ----------
@@ -534,10 +553,25 @@ export class Game {
 
     // 盤面のピース（セルごとに位相をずらし、一斉まばたきを防ぐ）。
     // 天井と一緒に降下スライドさせるため dropPx ぶん上へずらして描く。
+    // ゲームオーバー演出中（②a）は、下のセルほど早く骸骨へ変化させる「下→上のウェーブ」。
+    const deadline = this.deadlineY();
     for (const cell of this.board.all()) {
       const pos = this.cellPos(cell.r, cell.c);
+      const x = pos.x;
+      const y = pos.y - dropPx;
+      if (this.gameoverSeq > 0) {
+        // yNorm: 0=上, 1=下。下（y 大）ほど revealAt が小さく＝先に骸骨化する。
+        const yNorm = Math.max(0, Math.min(1, y / deadline));
+        const revealAt = (1 - yNorm) * GAMEOVER_SEQ_DUR * 0.8;
+        const since = this.gameoverSeq - revealAt;
+        if (since >= 0) {
+          const popK = since < 0.15 ? 1 - since / 0.15 : 0; // 変化直後だけポップ
+          drawSkull(ctx, x, y, this.cell / 2, popK);
+          continue;
+        }
+      }
       const phase = ((cell.r * 7 + cell.c * 13) % 17) * 0.37;
-      drawSnoot(ctx, cell.type, pos.x, pos.y - dropPx, this.cell / 2, this.animTime + phase);
+      drawSnoot(ctx, cell.type, x, y, this.cell / 2, this.animTime + phase);
     }
 
     // 消滅アニメーション（膨らみつつフェードアウト）

@@ -4,7 +4,7 @@ import pkg from "../package.json";
 import { Game, GameEndInfo } from "./game";
 import { DifficultyId, DIFFICULTIES } from "./config";
 import { sound } from "./audio";
-import { drawSnoot, TYPE_COLORS, TYPE_NAMES } from "./characters";
+import { drawSnoot, drawSkull, TYPE_COLORS, TYPE_NAMES } from "./characters";
 import {
   Score,
   MAX_ENTRIES,
@@ -23,6 +23,7 @@ import {
 if (import.meta.env.DEV) {
   (window as unknown as Record<string, unknown>).__snoot = {
     drawSnoot,
+    drawSkull,
     TYPE_COLORS,
     TYPE_NAMES,
     startGame: (difficulty: DifficultyId, level = 1) => startGame(difficulty, level),

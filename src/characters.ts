@@ -194,6 +194,67 @@ export function drawSnoot(
   ctx.restore();
 }
 
+/**
+ * 骸骨（ゲームオーバー演出で全キャラを骸骨へ変化させる）。
+ * 著作権配慮でコード描画（画像なし）。popK（0..1）は変化直後だけ与え、
+ * 軽くスケールポップさせて「ボンッと骸骨化した」感を出す。決定論的で乱数を使わない。
+ */
+export function drawSkull(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  popK = 0,
+): void {
+  ctx.save();
+  ctx.translate(cx, cy);
+  const s = 1 + 0.25 * popK; // 変化直後にふくらむ
+  ctx.scale(s, s);
+
+  // 頭蓋（骨色）：上半分のドーム＋下すぼまりのあご
+  ctx.fillStyle = "#e9e6da";
+  ctx.strokeStyle = "rgba(0,0,0,0.4)";
+  ctx.lineWidth = Math.max(1, r * 0.08);
+  ctx.beginPath();
+  ctx.arc(0, -r * 0.1, r * 0.9, Math.PI, 0);
+  ctx.lineTo(r * 0.5, r * 0.55);
+  ctx.quadraticCurveTo(0, r * 0.82, -r * 0.5, r * 0.55);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  // 眼窩（落ちくぼんだ黒い穴）
+  ctx.fillStyle = "#1a1a1a";
+  ctx.beginPath();
+  ctx.ellipse(-r * 0.36, -r * 0.12, r * 0.26, r * 0.3, 0, 0, Math.PI * 2);
+  ctx.ellipse(r * 0.36, -r * 0.12, r * 0.26, r * 0.3, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 鼻（逆三角の穴）
+  ctx.beginPath();
+  ctx.moveTo(0, r * 0.06);
+  ctx.lineTo(-r * 0.12, r * 0.34);
+  ctx.lineTo(r * 0.12, r * 0.34);
+  ctx.closePath();
+  ctx.fill();
+
+  // 歯（歯ぐきラインと縦の歯）
+  ctx.strokeStyle = "rgba(0,0,0,0.4)";
+  ctx.lineWidth = Math.max(1, r * 0.05);
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.4, r * 0.5);
+  ctx.lineTo(r * 0.4, r * 0.5);
+  ctx.stroke();
+  for (const tx of [-r * 0.3, -r * 0.1, r * 0.1, r * 0.3]) {
+    ctx.beginPath();
+    ctx.moveTo(tx, r * 0.5);
+    ctx.lineTo(tx, r * 0.72);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
 function dot(ctx: CanvasRenderingContext2D, x: number, y: number, r: number): void {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);

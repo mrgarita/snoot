@@ -2,7 +2,7 @@
 // v0.1 はフリー素材を使わずコード生成の簡易 SE とする（ゼロコスト・ライセンス確認不要）。
 // step3 のフィードバック次第でフリー素材の BGM/SE への差し替えを検討する。
 
-type SeName = "shoot" | "stick" | "pop" | "drop" | "quake" | "clear" | "gameover";
+type SeName = "shoot" | "stick" | "pop" | "drop" | "quake" | "clear" | "gameover" | "doom";
 
 class SoundPlayer {
   private ctx: AudioContext | null = null;
@@ -67,6 +67,14 @@ class SoundPlayer {
           this.tone(f, t + i * 0.18, 0.3, "triangle", 0.25);
         });
         break;
+      case "doom": {
+        // ゲームオーバー演出：暗い重低音の下降ドローン＋地鳴り。
+        // 骸骨化ウェーブに合わせてゆっくり沈み、失敗の余韻（間）をつくる。
+        this.tone(95, t, 1.3, "sawtooth", 0.3, 38);
+        this.tone(70, t, 1.3, "triangle", 0.22, 30);
+        this.tone(140, t + 0.05, 1.0, "sine", 0.14, 50);
+        break;
+      }
     }
   }
 
