@@ -5,287 +5,326 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>step1：Snood 調査結果 | Snoot 開発備忘録</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<header>
-  <h1>step1：Snood とはどんなゲームか（調査結果）</h1>
-  <p>Snoot 開発備忘録 — 2026-06-10（2026-06-16 追記：原作のレベル進行とハイスコアの扱い／2026-06-28 追記：原作のプレイ映像を参考資料に追加） / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SNOOT</div>
+        <div class="brand-sub">開発備忘録</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="index.html#evo">進化の記録</a>
+      <a href="index.html#docs">開発文書</a>
+      <a class="btn btn-play" target="_blank" rel="noopener" href="play/latest/">▶ 遊ぶ</a>
+    </nav>
+  </div>
 </header>
-<main>
 
-<h2>1. Snood の概要</h2>
-<p>
-Snood（スヌード）は、1996 年に David M. Dobson 氏が Apple Macintosh 向けに開発した
-パズルゲーム。いわゆる「バブルシューター（Puzzle Bobble / パズルボブル系）」の
-ゲーム性を持つが、玉の代わりに <strong>「snood」と呼ばれる表情豊かな顔のキャラクター</strong>
-を撃つのが最大の特徴。シェアウェアとして配布され、1990 年代末〜2000 年代前半に
-Mac・PC で絶大な人気を博し、後に Game Boy Advance などにも移植された。
-</p>
+<main class="doc-main">
 
-<figure>
-<div class="video-embed">
-  <iframe src="https://www.youtube-nocookie.com/embed/O3H25cCVca0"
-    title="Snood (Original) - Mac OS 9"
-    loading="lazy"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen></iframe>
-</div>
-<figcaption>動画：原作 Snood の実機プレイ映像（Mac OS 9）。本ページで述べる
-六角格子配置・発射と壁反射・マッチ消去・落下・天井降下を実際の動きで確認できる。<br>
-外部・参考資料 — 出典：<a href="https://www.youtube.com/watch?v=O3H25cCVca0"
-target="_blank" rel="noopener">Joshua Velez 氏「Snood (Original) - Mac OS 9」/
-YouTube</a>（Snoot の素材としては使用せず、開発時の参照用）</figcaption>
-</figure>
+  <div class="doc-head">
+    <h1 class="doc-h1">step1：Snood とはどんなゲームか（調査結果）</h1>
+    <div class="doc-meta">
+      Snoot 開発備忘録 — 2026-06-10（2026-06-16 追記：原作のレベル進行とハイスコアの扱い／2026-06-28 追記：原作のプレイ映像を参考資料に追加）&nbsp;
+      <a class="back-link" href="index.html">← 目次へ戻る</a>
+    </div>
+  </div>
 
-<h2>2. 基本ルール</h2>
-<ul>
-  <li>画面上部に六角格子状（互い違い配置）に snood が並んでいる</li>
-  <li>画面下部中央の <strong>発射台（キャノン）</strong> を左右に回転させ、ランダムに選ばれた snood を撃ち上げる</li>
-  <li>撃った snood は直線に飛び、<strong>左右の壁では反射</strong> する。既存の snood か天井に当たると、その位置の格子に張り付く</li>
-  <li>着弾によって <strong>同じ種類の snood が 3 つ以上つながる</strong> と、そのグループ全体が消滅する</li>
-  <li>消滅の結果、<strong>天井とのつながりを失った snood は落下</strong> して盤面から除去される（落下による除去は得点が高い）</li>
-  <li>盤面の snood をすべて消すとレベルクリア。snood が <strong>画面下端のラインを越えるとゲームオーバー</strong>（ライフ制の場合は 1 ライフ喪失）</li>
-</ul>
+  <h2>1. Snood の概要</h2>
+  <p>
+  Snood（スヌード）は、1996 年に David M. Dobson 氏が Apple Macintosh 向けに開発した
+  パズルゲーム。いわゆる「バブルシューター（Puzzle Bobble / パズルボブル系）」の
+  ゲーム性を持つが、玉の代わりに <strong>「snood」と呼ばれる表情豊かな顔のキャラクター</strong>
+  を撃つのが最大の特徴。シェアウェアとして配布され、1990 年代末〜2000 年代前半に
+  Mac・PC で絶大な人気を博し、後に Game Boy Advance などにも移植された。
+  </p>
 
-<figure>
-<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
-  <rect width="760" height="330" fill="#fff"/>
-  <!-- 盤面 -->
-  <rect x="10" y="10" width="740" height="235" rx="8" fill="#2c4870"/>
-  <!-- 天井の列（中立色） -->
-  <g fill="#8d9bb0">
-    <circle cx="46" cy="46" r="24"/><circle cx="106" cy="46" r="24"/><circle cx="166" cy="46" r="24"/>
-    <circle cx="226" cy="46" r="24"/><circle cx="286" cy="46" r="24"/><circle cx="346" cy="46" r="24"/>
-    <circle cx="406" cy="46" r="24"/><circle cx="466" cy="46" r="24"/><circle cx="526" cy="46" r="24"/>
-    <circle cx="586" cy="46" r="24"/><circle cx="646" cy="46" r="24"/><circle cx="706" cy="46" r="24"/>
-    <circle cx="136" cy="96" r="24"/><circle cx="196" cy="96" r="24"/><circle cx="256" cy="96" r="24"/>
-  </g>
-  <!-- ② マッチする 3 つ（同種） -->
-  <g fill="#e74c3c" stroke="#ffe27a" stroke-width="3" stroke-dasharray="6 4">
-    <circle cx="586" cy="96" r="24"/><circle cx="646" cy="96" r="24"/><circle cx="616" cy="142" r="24"/>
-  </g>
-  <text x="500" y="100" fill="#ffe27a" font-size="15" text-anchor="end">② 同種が 3 つ以上</text>
-  <text x="500" y="119" fill="#ffe27a" font-size="15" text-anchor="end">つながると消える</text>
-  <!-- ③ 落下するピース -->
-  <g fill="#4a90d9">
-    <circle cx="586" cy="190" r="24"/><circle cx="646" cy="190" r="24"/>
-  </g>
-  <g stroke="#9fd0ff" stroke-width="4" fill="none" marker-end="none">
-    <line x1="586" y1="218" x2="586" y2="238"/><line x1="646" y1="218" x2="646" y2="238"/>
-  </g>
-  <g fill="#9fd0ff">
-    <path d="M578 236 l8 12 8-12 z"/><path d="M638 236 l8 12 8-12 z"/>
-  </g>
-  <text x="560" y="195" fill="#9fd0ff" font-size="15" text-anchor="end">③ 支えを失った分は</text>
-  <text x="560" y="214" fill="#9fd0ff" font-size="15" text-anchor="end">落下（高得点）</text>
-  <!-- ① 発射と壁反射 -->
-  <polyline points="380,290 746,170 642,146" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5 7"/>
-  <circle cx="380" cy="295" r="20" fill="#3a4a63" stroke="#b8c4d6" stroke-width="4"/>
-  <text x="360" y="300" fill="#333" font-size="15" text-anchor="end">① ねらって発射</text>
-  <text x="585" y="265" fill="#333" font-size="15">壁で反射する</text>
-</svg>
-<figcaption>図 1：Snood の基本サイクル（①発射 → ②マッチ消去 → ③落下）。図は Snoot のオリジナル素材による概念図</figcaption>
-</figure>
+  <div class="embed">
+    <iframe src="https://www.youtube-nocookie.com/embed/O3H25cCVca0"
+      title="Snood (Original) - Mac OS 9"
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen></iframe>
+  </div>
+  <figcaption>動画：原作 Snood の実機プレイ映像（Mac OS 9）。本ページで述べる
+  六角格子配置・発射と壁反射・マッチ消去・落下・天井降下を実際の動きで確認できる。<br>
+  外部・参考資料 — 出典：<a href="https://www.youtube.com/watch?v=O3H25cCVca0"
+  target="_blank" rel="noopener">Joshua Velez 氏「Snood (Original) - Mac OS 9」/
+  YouTube</a>（Snoot の素材としては使用せず、開発時の参照用）</figcaption>
 
-<h2>3. 危険ゲージ（Danger Meter）— Snood 最大の独自要素</h2>
-<p>
-一般的なバブルシューターとの最大の違いがこの仕組み。
-</p>
-<ul>
-  <li>snood を <strong>1 発撃つたびに危険ゲージが増加</strong> する</li>
-  <li>ゲージが満タンになると <strong>天井が 1 段降下</strong> し、盤面全体が下端に近づく。ゲージはリセットされる</li>
-  <li><strong>snood を消す・落とすとゲージが減少</strong> する。一度に多く消す（特に落下で大量除去する）ほど効果が大きい</li>
-  <li>このため「3 つだけ消して満足する」プレイは危険で、<strong>落下を狙って一度に大量の snood を除去する</strong> 戦略性が生まれる</li>
-</ul>
-<p>
-時間制限は基本的に存在せず（Time Attack 系モードを除く）、「考える時間は無限にあるが、
-無駄撃ちは確実に死を近づける」という独特の緊張感が Snood の中毒性の核心とされる。
-</p>
+  <h2>2. 基本ルール</h2>
+  <ul>
+    <li>画面上部に六角格子状（互い違い配置）に snood が並んでいる</li>
+    <li>画面下部中央の <strong>発射台（キャノン）</strong> を左右に回転させ、ランダムに選ばれた snood を撃ち上げる</li>
+    <li>撃った snood は直線に飛び、<strong>左右の壁では反射</strong> する。既存の snood か天井に当たると、その位置の格子に張り付く</li>
+    <li>着弾によって <strong>同じ種類の snood が 3 つ以上つながる</strong> と、そのグループ全体が消滅する</li>
+    <li>消滅の結果、<strong>天井とのつながりを失った snood は落下</strong> して盤面から除去される（落下による除去は得点が高い）</li>
+    <li>盤面の snood をすべて消すとレベルクリア。snood が <strong>画面下端のラインを越えるとゲームオーバー</strong>（ライフ制の場合は 1 ライフ喪失）</li>
+  </ul>
 
-<figure>
-<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
-  <rect width="760" height="250" fill="#fff"/>
-  <!-- 左：ゲージ -->
-  <text x="40" y="48" fill="#333" font-size="17" font-weight="bold">DANGER ゲージ</text>
-  <rect x="40" y="65" width="300" height="32" rx="16" fill="#eee" stroke="#999"/>
-  <rect x="40" y="65" width="210" height="32" rx="16" fill="#e8704a"/>
-  <text x="40" y="130" fill="#333" font-size="15">▲ 1 発撃つごとに増える</text>
-  <text x="40" y="155" fill="#333" font-size="15">▼ 消す・落とすと減る（まとめて消すほど効果大）</text>
-  <text x="40" y="195" fill="#b03a2e" font-size="15" font-weight="bold">満タンになると → 天井が 1 段降下してリセット</text>
-  <!-- 右：盤面と天井降下 -->
-  <rect x="430" y="25" width="290" height="190" rx="8" fill="#2c4870"/>
-  <rect x="430" y="25" width="290" height="38" fill="#55432c"/>
-  <text x="575" y="50" fill="#fff" font-size="15" text-anchor="middle">天井（降りてくる）</text>
-  <g stroke="#ffb347" stroke-width="4">
-    <line x1="490" y1="70" x2="490" y2="95"/>
-    <line x1="575" y1="70" x2="575" y2="95"/>
-    <line x1="660" y1="70" x2="660" y2="95"/>
-  </g>
-  <g fill="#ffb347">
-    <path d="M482 93 l8 12 8-12 z"/><path d="M567 93 l8 12 8-12 z"/><path d="M652 93 l8 12 8-12 z"/>
-  </g>
-  <g fill="#8d9bb0">
-    <circle cx="475" cy="130" r="20"/><circle cx="520" cy="130" r="20"/><circle cx="565" cy="130" r="20"/>
-    <circle cx="610" cy="130" r="20"/><circle cx="655" cy="130" r="20"/>
-  </g>
-  <line x1="430" y1="195" x2="720" y2="195" stroke="#e74c3c" stroke-width="2" stroke-dasharray="7 5"/>
-  <text x="575" y="235" fill="#b03a2e" font-size="14" text-anchor="middle">赤線（デッドライン）に達するとゲームオーバー</text>
-</svg>
-<figcaption>図 2：危険ゲージの仕組み。撃つほどゲージが増え、満タンで盤面全体が下端へ押し下げられる</figcaption>
-</figure>
+  <figure>
+  <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+    <rect width="760" height="330" fill="#fff"/>
+    <!-- 盤面 -->
+    <rect x="10" y="10" width="740" height="235" rx="8" fill="#2c4870"/>
+    <!-- 天井の列（中立色） -->
+    <g fill="#8d9bb0">
+      <circle cx="46" cy="46" r="24"/><circle cx="106" cy="46" r="24"/><circle cx="166" cy="46" r="24"/>
+      <circle cx="226" cy="46" r="24"/><circle cx="286" cy="46" r="24"/><circle cx="346" cy="46" r="24"/>
+      <circle cx="406" cy="46" r="24"/><circle cx="466" cy="46" r="24"/><circle cx="526" cy="46" r="24"/>
+      <circle cx="586" cy="46" r="24"/><circle cx="646" cy="46" r="24"/><circle cx="706" cy="46" r="24"/>
+      <circle cx="136" cy="96" r="24"/><circle cx="196" cy="96" r="24"/><circle cx="256" cy="96" r="24"/>
+    </g>
+    <!-- ② マッチする 3 つ（同種） -->
+    <g fill="#e74c3c" stroke="#ffe27a" stroke-width="3" stroke-dasharray="6 4">
+      <circle cx="586" cy="96" r="24"/><circle cx="646" cy="96" r="24"/><circle cx="616" cy="142" r="24"/>
+    </g>
+    <text x="500" y="100" fill="#ffe27a" font-size="15" text-anchor="end">② 同種が 3 つ以上</text>
+    <text x="500" y="119" fill="#ffe27a" font-size="15" text-anchor="end">つながると消える</text>
+    <!-- ③ 落下するピース -->
+    <g fill="#4a90d9">
+      <circle cx="586" cy="190" r="24"/><circle cx="646" cy="190" r="24"/>
+    </g>
+    <g stroke="#9fd0ff" stroke-width="4" fill="none" marker-end="none">
+      <line x1="586" y1="218" x2="586" y2="238"/><line x1="646" y1="218" x2="646" y2="238"/>
+    </g>
+    <g fill="#9fd0ff">
+      <path d="M578 236 l8 12 8-12 z"/><path d="M638 236 l8 12 8-12 z"/>
+    </g>
+    <text x="560" y="195" fill="#9fd0ff" font-size="15" text-anchor="end">③ 支えを失った分は</text>
+    <text x="560" y="214" fill="#9fd0ff" font-size="15" text-anchor="end">落下（高得点）</text>
+    <!-- ① 発射と壁反射 -->
+    <polyline points="380,290 746,170 642,146" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5 7"/>
+    <circle cx="380" cy="295" r="20" fill="#3a4a63" stroke="#b8c4d6" stroke-width="4"/>
+    <text x="360" y="300" fill="#333" font-size="15" text-anchor="end">① ねらって発射</text>
+    <text x="585" y="265" fill="#333" font-size="15">壁で反射する</text>
+  </svg>
+  <figcaption>図 1：Snood の基本サイクル（①発射 → ②マッチ消去 → ③落下）。図は Snoot のオリジナル素材による概念図</figcaption>
+  </figure>
 
-<h2>4. キャラクター（snood の種類）</h2>
-<p>通常の snood は 7 種類。色と形・表情で見分ける。</p>
-<table>
-  <tr><th>名前</th><th>色</th></tr>
-  <tr><td>Jake</td><td>青</td></tr>
-  <tr><td>Midoribe</td><td>緑</td></tr>
-  <tr><td>Mildred</td><td>灰色</td></tr>
-  <tr><td>Spike</td><td>紫</td></tr>
-  <tr><td>Zod</td><td>赤</td></tr>
-  <tr><td>Geji</td><td>水色</td></tr>
-  <tr><td>Sunny</td><td>オレンジ</td></tr>
-</table>
-<p>特殊ピースも存在する：</p>
-<ul>
-  <li><strong>Numbskull（ドクロ）</strong>：発射されることがなく、何ともマッチしない。周囲を消して「落とす」ことでしか除去できない</li>
-  <li><strong>Stone（石）</strong>：着弾時に隣接する snood を消す</li>
-  <li><strong>Wildcard</strong>：どの種類ともマッチする</li>
-  <li><strong>Rowbuilder</strong>：横一列を埋める</li>
-</ul>
+  <h2>3. 危険ゲージ（Danger Meter）— Snood 最大の独自要素</h2>
+  <p>
+  一般的なバブルシューターとの最大の違いがこの仕組み。
+  </p>
+  <ul>
+    <li>snood を <strong>1 発撃つたびに危険ゲージが増加</strong> する</li>
+    <li>ゲージが満タンになると <strong>天井が 1 段降下</strong> し、盤面全体が下端に近づく。ゲージはリセットされる</li>
+    <li><strong>snood を消す・落とすとゲージが減少</strong> する。一度に多く消す（特に落下で大量除去する）ほど効果が大きい</li>
+    <li>このため「3 つだけ消して満足する」プレイは危険で、<strong>落下を狙って一度に大量の snood を除去する</strong> 戦略性が生まれる</li>
+  </ul>
+  <p>
+  時間制限は基本的に存在せず（Time Attack 系モードを除く）、「考える時間は無限にあるが、
+  無駄撃ちは確実に死を近づける」という独特の緊張感が Snood の中毒性の核心とされる。
+  </p>
 
-<h2>5. 難易度</h2>
-<p>
-ランダム生成盤面で遊ぶ標準モードには <strong>Child / Easy / Medium / Hard / Evil</strong> の
-5 段階がある。難易度は次の要素で差が付けられている。
-</p>
-<ul>
-  <li>盤面の広さ（snood の総数）と snood の表示サイズ</li>
-  <li>初期配置の行数</li>
-  <li>危険ゲージの容量（満タンまでの発射数）</li>
-  <li>ドクロ（Numbskull）の出現有無</li>
-</ul>
-<p>判明している具体値（GBA 版攻略情報より）：</p>
-<table>
-  <tr><th>難易度</th><th>盤面（幅×高さ）</th><th>初期行数</th><th>危険ゲージ容量</th></tr>
-  <tr><td>Medium</td><td>17 × 14</td><td>8 行</td><td>8 発</td></tr>
-  <tr><td>Hard</td><td>14 × 14</td><td>8 行</td><td>7 発</td></tr>
-  <tr><td>Evil</td><td>17 × 14</td><td>9 行</td><td>6 発</td></tr>
-</table>
+  <figure>
+  <svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+    <rect width="760" height="250" fill="#fff"/>
+    <!-- 左：ゲージ -->
+    <text x="40" y="48" fill="#333" font-size="17" font-weight="bold">DANGER ゲージ</text>
+    <rect x="40" y="65" width="300" height="32" rx="16" fill="#eee" stroke="#999"/>
+    <rect x="40" y="65" width="210" height="32" rx="16" fill="#e8704a"/>
+    <text x="40" y="130" fill="#333" font-size="15">▲ 1 発撃つごとに増える</text>
+    <text x="40" y="155" fill="#333" font-size="15">▼ 消す・落とすと減る（まとめて消すほど効果大）</text>
+    <text x="40" y="195" fill="#b03a2e" font-size="15" font-weight="bold">満タンになると → 天井が 1 段降下してリセット</text>
+    <!-- 右：盤面と天井降下 -->
+    <rect x="430" y="25" width="290" height="190" rx="8" fill="#2c4870"/>
+    <rect x="430" y="25" width="290" height="38" fill="#55432c"/>
+    <text x="575" y="50" fill="#fff" font-size="15" text-anchor="middle">天井（降りてくる）</text>
+    <g stroke="#ffb347" stroke-width="4">
+      <line x1="490" y1="70" x2="490" y2="95"/>
+      <line x1="575" y1="70" x2="575" y2="95"/>
+      <line x1="660" y1="70" x2="660" y2="95"/>
+    </g>
+    <g fill="#ffb347">
+      <path d="M482 93 l8 12 8-12 z"/><path d="M567 93 l8 12 8-12 z"/><path d="M652 93 l8 12 8-12 z"/>
+    </g>
+    <g fill="#8d9bb0">
+      <circle cx="475" cy="130" r="20"/><circle cx="520" cy="130" r="20"/><circle cx="565" cy="130" r="20"/>
+      <circle cx="610" cy="130" r="20"/><circle cx="655" cy="130" r="20"/>
+    </g>
+    <line x1="430" y1="195" x2="720" y2="195" stroke="#e74c3c" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="575" y="235" fill="#b03a2e" font-size="14" text-anchor="middle">赤線（デッドライン）に達するとゲームオーバー</text>
+  </svg>
+  <figcaption>図 2：危険ゲージの仕組み。撃つほどゲージが増え、満タンで盤面全体が下端へ押し下げられる</figcaption>
+  </figure>
 
-<h2>6. ゲームモード</h2>
-<ul>
-  <li><strong>Classic</strong>：難易度を選んでランダム生成盤面をクリアしていく基本モード</li>
-  <li><strong>Journey</strong>：低難易度から高難易度へ 1 レベルずつ続けて挑戦するモード</li>
-  <li><strong>Puzzle</strong>：あらかじめデザインされた 50 面の固定配置を解くモード</li>
-  <li><strong>Time Attack / Armageddon</strong>：危険ゲージが時間経過で自動上昇するモード</li>
-</ul>
+  <h2>4. キャラクター（snood の種類）</h2>
+  <p>通常の snood は 7 種類。色と形・表情で見分ける。</p>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>名前</th><th>色</th></tr></thead>
+      <tbody>
+        <tr><td>Jake</td><td>青</td></tr>
+        <tr><td>Midoribe</td><td>緑</td></tr>
+        <tr><td>Mildred</td><td>灰色</td></tr>
+        <tr><td>Spike</td><td>紫</td></tr>
+        <tr><td>Zod</td><td>赤</td></tr>
+        <tr><td>Geji</td><td>水色</td></tr>
+        <tr><td>Sunny</td><td>オレンジ</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>特殊ピースも存在する：</p>
+  <ul>
+    <li><strong>Numbskull（ドクロ）</strong>：発射されることがなく、何ともマッチしない。周囲を消して「落とす」ことでしか除去できない</li>
+    <li><strong>Stone（石）</strong>：着弾時に隣接する snood を消す</li>
+    <li><strong>Wildcard</strong>：どの種類ともマッチする</li>
+    <li><strong>Rowbuilder</strong>：横一列を埋める</li>
+  </ul>
 
-<h3>レベルはどう進むか（Classic と Journey）<span style="font-size:0.7em;opacity:0.7;">（2026-06-16 追記）</span></h3>
-<p>原作で「レベル」がどう進むかはモードによって異なる。</p>
-<ul>
-  <li><strong>Classic</strong>：最初に難易度（Child / Easy / Medium / Hard / Evil）を 1 つ選ぶと、
-      盤面サイズ・初期行数・危険ゲージ容量はその難易度で<strong>固定</strong>。盤面を全消しすると
-      「レベルが進む（the level advances）」が、<strong>次の面も同じ難易度のランダム新盤面</strong>で、
-      面を進めても難化はしない。snood が画面下端のラインを越えるとライフを 1 つ失い、
-      尽きるとゲームオーバー（ライフ制）。</li>
-  <li><strong>Journey</strong>：Child から始まり、<strong>1 レベルごとに難易度を 1 段ずつ上げていく</strong>
-      （Child→Easy→Medium→Hard→Evil）。負けるまで続く。
-      <strong>「レベルアップ＝難化」を体感できるのはこのモード</strong>。</li>
-</ul>
-<p>
-つまり原作で“レベルが上がると難しくなる”のは Journey 系の仕組みであって、Classic は
-難易度据え置き。<em>（Snoot では、選んだ難易度を起点にレベルで段階的に難化させる現代的な
-方式を採用した。詳細は <a href="step3-feedback.html">step3 のフィードバック #6</a> を参照）</em>
-</p>
+  <h2>5. 難易度</h2>
+  <p>
+  ランダム生成盤面で遊ぶ標準モードには <strong>Child / Easy / Medium / Hard / Evil</strong> の
+  5 段階がある。難易度は次の要素で差が付けられている。
+  </p>
+  <ul>
+    <li>盤面の広さ（snood の総数）と snood の表示サイズ</li>
+    <li>初期配置の行数</li>
+    <li>危険ゲージの容量（満タンまでの発射数）</li>
+    <li>ドクロ（Numbskull）の出現有無</li>
+  </ul>
+  <p>判明している具体値（GBA 版攻略情報より）：</p>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>難易度</th><th>盤面（幅×高さ）</th><th>初期行数</th><th>危険ゲージ容量</th></tr></thead>
+      <tbody>
+        <tr><td>Medium</td><td>17 × 14</td><td>8 行</td><td>8 発</td></tr>
+        <tr><td>Hard</td><td>14 × 14</td><td>8 行</td><td>7 発</td></tr>
+        <tr><td>Evil</td><td>17 × 14</td><td>9 行</td><td>6 発</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<figure>
-<svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
-  <rect width="760" height="240" fill="#fff"/>
-  <!-- Classic -->
-  <text x="20" y="38" fill="#333" font-size="16" font-weight="bold">Classic：難易度は据え置き（面を進めても難化しない）</text>
-  <rect x="40" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
-  <rect x="200" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
-  <rect x="360" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
-  <text x="100" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.1 Easy</text>
-  <text x="260" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.2 Easy</text>
-  <text x="420" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.3 Easy</text>
-  <text x="180" y="84" fill="#333" font-size="20" text-anchor="middle">→</text>
-  <text x="340" y="84" fill="#333" font-size="20" text-anchor="middle">→</text>
-  <text x="500" y="83" fill="#333" font-size="14">… 同じ難易度の新盤面が続く</text>
-  <!-- Journey -->
-  <text x="20" y="150" fill="#333" font-size="16" font-weight="bold">Journey：1 レベルごとに難易度が 1 段ずつ上がる</text>
-  <rect x="40"  y="167" width="118" height="44" rx="8" fill="#7fc97f"/>
-  <rect x="168" y="167" width="118" height="44" rx="8" fill="#5cb85c"/>
-  <rect x="296" y="167" width="118" height="44" rx="8" fill="#4a90d9"/>
-  <rect x="424" y="167" width="118" height="44" rx="8" fill="#e67e22"/>
-  <rect x="552" y="167" width="118" height="44" rx="8" fill="#e74c3c"/>
-  <text x="99"  y="195" fill="#fff" font-size="14" text-anchor="middle">Child</text>
-  <text x="227" y="195" fill="#fff" font-size="14" text-anchor="middle">Easy</text>
-  <text x="355" y="195" fill="#fff" font-size="14" text-anchor="middle">Medium</text>
-  <text x="483" y="195" fill="#fff" font-size="14" text-anchor="middle">Hard</text>
-  <text x="611" y="195" fill="#fff" font-size="14" text-anchor="middle">Evil</text>
-  <text x="690" y="195" fill="#333" font-size="18">→</text>
-</svg>
-<figcaption>図 4：原作のレベル進行。Classic は選んだ難易度のまま新盤面が続き、Journey は難易度ラダーを上る（Snoot のオリジナル素材による概念図）</figcaption>
-</figure>
+  <h2>6. ゲームモード</h2>
+  <ul>
+    <li><strong>Classic</strong>：難易度を選んでランダム生成盤面をクリアしていく基本モード</li>
+    <li><strong>Journey</strong>：低難易度から高難易度へ 1 レベルずつ続けて挑戦するモード</li>
+    <li><strong>Puzzle</strong>：あらかじめデザインされた 50 面の固定配置を解くモード</li>
+    <li><strong>Time Attack / Armageddon</strong>：危険ゲージが時間経過で自動上昇するモード</li>
+  </ul>
 
-<h2>7. スコアリング</h2>
-<ul>
-  <li>消した snood の数に応じて得点が入る</li>
-  <li><strong>マッチで消すより「落として」除去する方が高得点</strong>（一度に大量落下させるほどボーナスが大きい）</li>
-  <li>クリア時には残りの危険ゲージ等に応じたボーナスが入る</li>
-</ul>
+  <h3><span>レベルはどう進むか（Classic と Journey）</span><span style="font-weight:400;font-size:0.7em;opacity:0.7;">（2026-06-16 追記）</span></h3>
+  <p>原作で「レベル」がどう進むかはモードによって異なる。</p>
+  <ul>
+    <li><strong>Classic</strong>：最初に難易度（Child / Easy / Medium / Hard / Evil）を 1 つ選ぶと、
+        盤面サイズ・初期行数・危険ゲージ容量はその難易度で<strong>固定</strong>。盤面を全消しすると
+        「レベルが進む（the level advances）」が、<strong>次の面も同じ難易度のランダム新盤面</strong>で、
+        面を進めても難化はしない。snood が画面下端のラインを越えるとライフを 1 つ失い、
+        尽きるとゲームオーバー（ライフ制）。</li>
+    <li><strong>Journey</strong>：Child から始まり、<strong>1 レベルごとに難易度を 1 段ずつ上げていく</strong>
+        （Child→Easy→Medium→Hard→Evil）。負けるまで続く。
+        <strong>「レベルアップ＝難化」を体感できるのはこのモード</strong>。</li>
+  </ul>
+  <p>
+  つまり原作で“レベルが上がると難しくなる”のは Journey 系の仕組みであって、Classic は
+  難易度据え置き。<em>（Snoot では、選んだ難易度を起点にレベルで段階的に難化させる現代的な
+  方式を採用した。詳細は <a href="step3-feedback.html">step3 のフィードバック #6</a> を参照）</em>
+  </p>
 
-<h3>ハイスコアの扱い<span style="font-size:0.7em;opacity:0.7;">（2026-06-16 追記）</span></h3>
-<p>原作のハイスコアは「ローカル」と「オンライン」の二層構造だった。</p>
-<ul>
-  <li><strong>難易度別のベストスコア表</strong>：Child / Easy / Medium / Hard / Evil / Custom /
-      Puzzle / Journey / Armageddon それぞれに<strong>別々の</strong>ハイスコア一覧を持つ
-      （得点は難易度・モードでスケールが違うため）。</li>
-  <li><strong>名前入力</strong>：ゲーム内にローカル保存され、新記録時にプレイヤー名（Snooder 名）を入力する。</li>
-  <li><strong>オンライン世界ランキング</strong>：SnoodWorld.com（旧 snood.net）の World Score list へ
-      提出できる。不正対策として<strong>スコア検証コード（Score Verification Code）</strong>が付き、
-      mulligan（撃ち直し）を使うと提出スコアにチーズ印が付く、といったディテールもあった。</li>
-</ul>
-<p>
-<em>（Snoot は「ブラウザ完結・ゼロコスト・オフライン」の方針のため、オンライン世界ランキングは
-採用せず、ローカルの難易度別ベスト表だけを localStorage で再現した。詳細は
-<a href="step3-feedback.html">step3 のフィードバック #7</a> を参照）</em>
-</p>
+  <figure>
+  <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+    <rect width="760" height="240" fill="#fff"/>
+    <!-- Classic -->
+    <text x="20" y="38" fill="#333" font-size="16" font-weight="bold">Classic：難易度は据え置き（面を進めても難化しない）</text>
+    <rect x="40" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
+    <rect x="200" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
+    <rect x="360" y="55" width="120" height="44" rx="8" fill="#5cb85c"/>
+    <text x="100" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.1 Easy</text>
+    <text x="260" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.2 Easy</text>
+    <text x="420" y="83" fill="#fff" font-size="15" text-anchor="middle">Lv.3 Easy</text>
+    <text x="180" y="84" fill="#333" font-size="20" text-anchor="middle">→</text>
+    <text x="340" y="84" fill="#333" font-size="20" text-anchor="middle">→</text>
+    <text x="500" y="83" fill="#333" font-size="14">… 同じ難易度の新盤面が続く</text>
+    <!-- Journey -->
+    <text x="20" y="150" fill="#333" font-size="16" font-weight="bold">Journey：1 レベルごとに難易度が 1 段ずつ上がる</text>
+    <rect x="40"  y="167" width="118" height="44" rx="8" fill="#7fc97f"/>
+    <rect x="168" y="167" width="118" height="44" rx="8" fill="#5cb85c"/>
+    <rect x="296" y="167" width="118" height="44" rx="8" fill="#4a90d9"/>
+    <rect x="424" y="167" width="118" height="44" rx="8" fill="#e67e22"/>
+    <rect x="552" y="167" width="118" height="44" rx="8" fill="#e74c3c"/>
+    <text x="99"  y="195" fill="#fff" font-size="14" text-anchor="middle">Child</text>
+    <text x="227" y="195" fill="#fff" font-size="14" text-anchor="middle">Easy</text>
+    <text x="355" y="195" fill="#fff" font-size="14" text-anchor="middle">Medium</text>
+    <text x="483" y="195" fill="#fff" font-size="14" text-anchor="middle">Hard</text>
+    <text x="611" y="195" fill="#fff" font-size="14" text-anchor="middle">Evil</text>
+    <text x="690" y="195" fill="#333" font-size="18">→</text>
+  </svg>
+  <figcaption>図 4：原作のレベル進行。Classic は選んだ難易度のまま新盤面が続き、Journey は難易度ラダーを上る（Snoot のオリジナル素材による概念図）</figcaption>
+  </figure>
 
-<h2>8. Snoot（本プロジェクト）への反映方針</h2>
-<div class="note">
-著作権上の制約（project.txt）により、Snood のキャラクター画像・名称はそのまま使わず、
-<strong>オリジナルの顔キャラクターをコード描画で自作</strong> する。再現するのは
-「ゲームメカニクス（六角格子・発射・マッチ 3・落下・危険ゲージ）」であり、
-ビジュアルは Snoot 独自のものとする。
-</div>
-<ul>
-  <li>難易度は project.txt の指定どおり <strong>Easy / Normal / Hard の 3 段階</strong> とし、
-      Snood の Easy / Medium / Hard 相当のパラメータ（キャラ種類数・初期行数・危険ゲージ容量）で差を付ける</li>
-  <li>スマホ縦持ちでも遊べるよう、盤面の列数は原作（14〜17 列)より抑えめに調整する
-      （原作の列数はスマホでは 1 個あたりが小さくなりすぎるため）</li>
-  <li>v0.1.0 では Classic 相当の 1 モードのみ実装。Journey / Puzzle / 特殊ピースは
-      フィードバック（step3〜4）を見て検討する</li>
-  <li>危険ゲージ・落下ボーナスの仕組みは Snood の中毒性の核心なので初版から必ず実装する</li>
-</ul>
+  <h2>7. スコアリング</h2>
+  <ul>
+    <li>消した snood の数に応じて得点が入る</li>
+    <li><strong>マッチで消すより「落として」除去する方が高得点</strong>（一度に大量落下させるほどボーナスが大きい）</li>
+    <li>クリア時には残りの危険ゲージ等に応じたボーナスが入る</li>
+  </ul>
 
-<h2>9. 参考資料</h2>
-<ul>
-  <li><a href="https://en.wikipedia.org/wiki/Snood_(video_game)">Snood (video game) - Wikipedia</a></li>
-  <li><a href="https://atpm.com/9.12/snood.shtml">ATPM 9.12 - Review: Snood 3.0</a></li>
-  <li><a href="https://gamefaqs.gamespot.com/gba/565768-snood/faqs/28188">Snood - Guide and Walkthrough (GBA) - GameFAQs</a></li>
-  <li><a href="https://www.neoseeker.com/snood/faqs/102294-walkthrough.html">Snood FAQ/Strategy Guide - Neoseeker</a></li>
-  <li><a href="https://tvtropes.org/pmwiki/pmwiki.php/VideoGame/Snood">Snood (Video Game) - TV Tropes</a></li>
-  <li><a href="http://snood.net/snoodscores/">Snood World High Score Lists（難易度別スコア一覧。2026-06-16 参照）</a></li>
-  <li><a href="https://gamicus.fandom.com/wiki/Snood">Snood - Codex Gamicus（モード・難易度の解説。2026-06-16 参照）</a></li>
-  <li><a href="https://www.youtube.com/watch?v=O3H25cCVca0">Snood (Original) - Mac OS 9 — Joshua Velez 氏のプレイ動画（原作の挙動確認用。2026-06-28 参照）</a></li>
-</ul>
+  <h3><span>ハイスコアの扱い</span><span style="font-weight:400;font-size:0.7em;opacity:0.7;">（2026-06-16 追記）</span></h3>
+  <p>原作のハイスコアは「ローカル」と「オンライン」の二層構造だった。</p>
+  <ul>
+    <li><strong>難易度別のベストスコア表</strong>：Child / Easy / Medium / Hard / Evil / Custom /
+        Puzzle / Journey / Armageddon それぞれに<strong>別々の</strong>ハイスコア一覧を持つ
+        （得点は難易度・モードでスケールが違うため）。</li>
+    <li><strong>名前入力</strong>：ゲーム内にローカル保存され、新記録時にプレイヤー名（Snooder 名）を入力する。</li>
+    <li><strong>オンライン世界ランキング</strong>：SnoodWorld.com（旧 snood.net）の World Score list へ
+        提出できる。不正対策として<strong>スコア検証コード（Score Verification Code）</strong>が付き、
+        mulligan（撃ち直し）を使うと提出スコアにチーズ印が付く、といったディテールもあった。</li>
+  </ul>
+  <p>
+  <em>（Snoot は「ブラウザ完結・ゼロコスト・オフライン」の方針のため、オンライン世界ランキングは
+  採用せず、ローカルの難易度別ベスト表だけを localStorage で再現した。詳細は
+  <a href="step3-feedback.html">step3 のフィードバック #7</a> を参照）</em>
+  </p>
+
+  <h2>8. Snoot（本プロジェクト）への反映方針</h2>
+  <div class="callout">
+  <span class="ct">著作権への配慮と再現方針</span>
+  著作権上の制約（project.txt）により、Snood のキャラクター画像・名称はそのまま使わず、
+  <strong>オリジナルの顔キャラクターをコード描画で自作</strong> する。再現するのは
+  「ゲームメカニクス（六角格子・発射・マッチ 3・落下・危険ゲージ）」であり、
+  ビジュアルは Snoot 独自のものとする。
+  </div>
+  <ul>
+    <li>難易度は project.txt の指定どおり <strong>Easy / Normal / Hard の 3 段階</strong> とし、
+        Snood の Easy / Medium / Hard 相当のパラメータ（キャラ種類数・初期行数・危険ゲージ容量）で差を付ける</li>
+    <li>スマホ縦持ちでも遊べるよう、盤面の列数は原作（14〜17 列)より抑えめに調整する
+        （原作の列数はスマホでは 1 個あたりが小さくなりすぎるため）</li>
+    <li>v0.1.0 では Classic 相当の 1 モードのみ実装。Journey / Puzzle / 特殊ピースは
+        フィードバック（step3〜4）を見て検討する</li>
+    <li>危険ゲージ・落下ボーナスの仕組みは Snood の中毒性の核心なので初版から必ず実装する</li>
+  </ul>
+
+  <h2>9. 参考資料</h2>
+  <ul class="ref-list">
+    <li><a href="https://en.wikipedia.org/wiki/Snood_(video_game)">Snood (video game) - Wikipedia</a></li>
+    <li><a href="https://atpm.com/9.12/snood.shtml">ATPM 9.12 - Review: Snood 3.0</a></li>
+    <li><a href="https://gamefaqs.gamespot.com/gba/565768-snood/faqs/28188">Snood - Guide and Walkthrough (GBA) - GameFAQs</a></li>
+    <li><a href="https://www.neoseeker.com/snood/faqs/102294-walkthrough.html">Snood FAQ/Strategy Guide - Neoseeker</a></li>
+    <li><a href="https://tvtropes.org/pmwiki/pmwiki.php/VideoGame/Snood">Snood (Video Game) - TV Tropes</a></li>
+    <li><a href="http://snood.net/snoodscores/">Snood World High Score Lists（難易度別スコア一覧。2026-06-16 参照）</a></li>
+    <li><a href="https://gamicus.fandom.com/wiki/Snood">Snood - Codex Gamicus（モード・難易度の解説。2026-06-16 参照）</a></li>
+    <li><a href="https://www.youtube.com/watch?v=O3H25cCVca0">Snood (Original) - Mac OS 9 — Joshua Velez 氏のプレイ動画（原作の挙動確認用。2026-06-28 参照）</a></li>
+  </ul>
 
 </main>
-<footer>Snoot 開発備忘録 — step1</footer>
+
+<footer class="ftr">
+  <div class="ftr-in">
+    <div class="ftr-name">SNOOT 開発備忘録 — step1</div>
+    <div class="ftr-note">Snood 風ブラウザゲーム ・ 開発中につき随時更新</div>
+  </div>
+</footer>
+
 </body>
 </html>

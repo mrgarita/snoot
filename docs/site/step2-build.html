@@ -5,26 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>step2：Snoot v0.1.0 制作記録 | Snoot 開発備忘録</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<header>
-  <h1>step2：Snoot v0.1.0 制作記録</h1>
-  <p>Snoot 開発備忘録 — 2026-06-10 / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SNOOT</div>
+        <div class="brand-sub">開発備忘録</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="index.html#evo">進化の記録</a>
+      <a href="index.html#docs">開発文書</a>
+      <a class="btn btn-play" target="_blank" rel="noopener" href="play/latest/">▶ 遊ぶ</a>
+    </nav>
+  </div>
 </header>
-<main>
 
-<h2>1. 技術構成</h2>
-<table>
-  <tr><th>項目</th><th>採用</th><th>理由</th></tr>
-  <tr><td>ビルド</td><td>Vite + TypeScript</td><td>静的ビルドのみで動く（ゼロコスト・サーバ不要）。<code>base: "./"</code> でサブディレクトリ配置にも対応</td></tr>
-  <tr><td>描画</td><td>Canvas 2D（フレームワークなし）</td><td>ゲーム盤面の自由な描画とスマホ性能の両立。依存を最小にする</td></tr>
-  <tr><td>キャラ画像</td><td>コード描画（自作）</td><td>著作権配慮：Snood の画像は使わず、Canvas でオリジナルキャラを描画。素材ファイル不要</td></tr>
-  <tr><td>効果音</td><td>Web Audio API（コード生成）</td><td>v0.1 はフリー素材を使わずライセンス確認不要の合成音。BGM はフィードバック後に検討</td></tr>
-  <tr><td>入力</td><td>Pointer Events</td><td>マウス（PC）とタッチ（スマホ）を同一コードで処理。<code>touch-action: none</code> でスクロール抑止</td></tr>
-</table>
+<main class="doc-main">
 
-<div class="shot-grid">
+  <div class="doc-head">
+    <h1 class="doc-h1">step2：Snoot v0.1.0 制作記録</h1>
+    <div class="doc-meta">
+      Snoot 開発備忘録 — 2026-06-10&nbsp;
+      <a class="back-link" href="index.html">← 目次へ戻る</a>
+    </div>
+  </div>
+
+  <h2>1. 技術構成</h2>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>項目</th><th>採用</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>ビルド</td><td>Vite + TypeScript</td><td>静的ビルドのみで動く（ゼロコスト・サーバ不要）。<code>base: "./"</code> でサブディレクトリ配置にも対応</td></tr>
+        <tr><td>描画</td><td>Canvas 2D（フレームワークなし）</td><td>ゲーム盤面の自由な描画とスマホ性能の両立。依存を最小にする</td></tr>
+        <tr><td>キャラ画像</td><td>コード描画（自作）</td><td>著作権配慮：Snood の画像は使わず、Canvas でオリジナルキャラを描画。素材ファイル不要</td></tr>
+        <tr><td>効果音</td><td>Web Audio API（コード生成）</td><td>v0.1 はフリー素材を使わずライセンス確認不要の合成音。BGM はフィードバック後に検討</td></tr>
+        <tr><td>入力</td><td>Pointer Events</td><td>マウス（PC）とタッチ（スマホ）を同一コードで処理。<code>touch-action: none</code> でスクロール抑止</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <figure>
     <img src="img/title-pc.png" alt="タイトル画面（PC）">
     <figcaption>タイトル画面（PC）。Easy / Normal / Hard を選んで開始</figcaption>
@@ -33,65 +61,75 @@
     <img src="img/game-easy-pc.png" alt="ゲーム画面（PC・Easy）">
     <figcaption>ゲーム画面（PC・Easy）。上部に DANGER ゲージとスコア、右下にバージョン表示</figcaption>
   </figure>
-</div>
-<p class="note">掲載スクリーンショットは v0.3.0 時点の画面（フィードバック反映後）。</p>
+  <div class="callout"><span class="ct">補足</span>掲載スクリーンショットは v0.3.0 時点の画面（フィードバック反映後）。</div>
 
-<h2>2. 実装したゲーム仕様</h2>
-<ul>
-  <li><strong>タイトル画面</strong>：Easy / Normal / Hard の 3 レベル選択（project.txt の要件）</li>
-  <li><strong>盤面</strong>：六角格子（odd-r オフセット）。撃った snoot は壁で反射し、格子に吸着</li>
-  <li><strong>マッチ消去</strong>：同種 3 つ以上で消滅。天井から切り離されたピースは落下（落下除去は高得点）</li>
-  <li><strong>危険ゲージ</strong>：1 発撃つごとに +1、消した数だけ減少。満タンで天井が 1 段降下（Snood の核心要素を簡略化して再現）</li>
-  <li><strong>終了判定</strong>：全消しでクリア（クリアボーナスあり）／ピースが赤い点線（デッドライン）に達するとゲームオーバー</li>
-  <li><strong>連続プレイ</strong>：クリア後「次のレベルへ」でスコアを引き継いで再生成盤面に挑戦</li>
-  <li><strong>次弾予告</strong>：NEXT 表示。発射弾は盤面に現存する種類のみから抽選（無駄弾を減らす原作後期版の仕様）</li>
-  <li><strong>バージョン表示</strong>：画面右下に常時表示（step4 の「今プレイ中のバージョンが分かる仕組み」）</li>
-</ul>
+  <h2>2. 実装したゲーム仕様</h2>
+  <ul>
+    <li><strong>タイトル画面</strong>：Easy / Normal / Hard の 3 レベル選択（project.txt の要件）</li>
+    <li><strong>盤面</strong>：六角格子（odd-r オフセット）。撃った snoot は壁で反射し、格子に吸着</li>
+    <li><strong>マッチ消去</strong>：同種 3 つ以上で消滅。天井から切り離されたピースは落下（落下除去は高得点）</li>
+    <li><strong>危険ゲージ</strong>：1 発撃つごとに +1、消した数だけ減少。満タンで天井が 1 段降下（Snood の核心要素を簡略化して再現）</li>
+    <li><strong>終了判定</strong>：全消しでクリア（クリアボーナスあり）／ピースが赤い点線（デッドライン）に達するとゲームオーバー</li>
+    <li><strong>連続プレイ</strong>：クリア後「次のレベルへ」でスコアを引き継いで再生成盤面に挑戦</li>
+    <li><strong>次弾予告</strong>：NEXT 表示。発射弾は盤面に現存する種類のみから抽選（無駄弾を減らす原作後期版の仕様）</li>
+    <li><strong>バージョン表示</strong>：画面右下に常時表示（step4 の「今プレイ中のバージョンが分かる仕組み」）</li>
+  </ul>
 
-<h3>難易度パラメータ</h3>
-<p>step1 の調査値をスマホ画面向けに列数を抑えて調整した。</p>
-<table>
-  <tr><th>難易度</th><th>列数</th><th>初期行数</th><th>キャラ種類</th><th>危険ゲージ容量</th></tr>
-  <tr><td>Easy</td><td>9</td><td>5</td><td>4</td><td>10 発</td></tr>
-  <tr><td>Normal</td><td>11</td><td>7</td><td>6</td><td>8 発</td></tr>
-  <tr><td>Hard</td><td>13</td><td>8</td><td>7</td><td>6 発</td></tr>
-</table>
+  <h3>難易度パラメータ</h3>
+  <p>step1 の調査値をスマホ画面向けに列数を抑えて調整した。</p>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>難易度</th><th>列数</th><th>初期行数</th><th>キャラ種類</th><th>危険ゲージ容量</th></tr></thead>
+      <tbody>
+        <tr><td>Easy</td><td>9</td><td>5</td><td>4</td><td>10 発</td></tr>
+        <tr><td>Normal</td><td>11</td><td>7</td><td>6</td><td>8 発</td></tr>
+        <tr><td>Hard</td><td>13</td><td>8</td><td>7</td><td>6 発</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<h3>オリジナルキャラクター（7 種）</h3>
-<figure>
-  <img src="img/characters.png" alt="Snoot オリジナルキャラクター 7 種の一覧">
-  <figcaption>全 7 種。ゲーム本体と同じ描画コード（src/characters.ts）で生成した画像</figcaption>
-</figure>
-<table>
-  <tr><th>名前</th><th>色</th><th>特徴</th></tr>
-  <tr><td>マルオ</td><td>青</td><td>丸目のにっこり顔</td></tr>
-  <tr><td>ハッパ</td><td>緑</td><td>頭に葉っぱ</td></tr>
-  <tr><td>プンタ</td><td>赤</td><td>怒り眉とへの字口</td></tr>
-  <tr><td>ヒナタ</td><td>オレンジ</td><td>星の目と大笑い</td></tr>
-  <tr><td>ネムリ</td><td>紫</td><td>ねむり目と寝息</td></tr>
-  <tr><td>ビック</td><td>水色</td><td>白目と驚き口</td></tr>
-  <tr><td>イシゴロ</td><td>灰色</td><td>四角い体に半目</td></tr>
-</table>
-<p class="note">
-色覚にかかわらず見分けられるよう、色だけでなく表情・形・付属パーツも種類ごとに変えている。
-</p>
+  <h3>オリジナルキャラクター（7 種）</h3>
+  <figure>
+    <img src="img/characters.png" alt="Snoot オリジナルキャラクター 7 種の一覧">
+    <figcaption>全 7 種。ゲーム本体と同じ描画コード（src/characters.ts）で生成した画像</figcaption>
+  </figure>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>名前</th><th>色</th><th>特徴</th></tr></thead>
+      <tbody>
+        <tr><td>マルオ</td><td>青</td><td>丸目のにっこり顔</td></tr>
+        <tr><td>ハッパ</td><td>緑</td><td>頭に葉っぱ</td></tr>
+        <tr><td>プンタ</td><td>赤</td><td>怒り眉とへの字口</td></tr>
+        <tr><td>ヒナタ</td><td>オレンジ</td><td>星の目と大笑い</td></tr>
+        <tr><td>ネムリ</td><td>紫</td><td>ねむり目と寝息</td></tr>
+        <tr><td>ビック</td><td>水色</td><td>白目と驚き口</td></tr>
+        <tr><td>イシゴロ</td><td>灰色</td><td>四角い体に半目</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><span class="ct">補足</span>
+  色覚にかかわらず見分けられるよう、色だけでなく表情・形・付属パーツも種類ごとに変えている。
+  </div>
 
-<h2>3. ファイル構成</h2>
-<table>
-  <tr><th>ファイル</th><th>役割</th></tr>
-  <tr><td><code>index.html</code></td><td>ゲームページ（タイトル／ゲーム／リザルトの DOM）</td></tr>
-  <tr><td><code>src/main.ts</code></td><td>エントリポイント。画面遷移とバージョン表示</td></tr>
-  <tr><td><code>src/game.ts</code></td><td>ゲーム本体（ループ・発射・着弾・描画・入力・HUD）</td></tr>
-  <tr><td><code>src/grid.ts</code></td><td>六角格子の盤面ロジック（隣接・マッチ・浮き判定・天井降下）</td></tr>
-  <tr><td><code>src/characters.ts</code></td><td>オリジナルキャラ 7 種の Canvas 描画</td></tr>
-  <tr><td><code>src/audio.ts</code></td><td>Web Audio による効果音</td></tr>
-  <tr><td><code>src/config.ts</code></td><td>難易度設定・定数</td></tr>
-  <tr><td><code>scripts/screenshot.mjs</code></td><td>動作確認用（ヘッドレスブラウザでスクリーンショット撮影）</td></tr>
-  <tr><td><code>scripts/make-doc-images.mjs</code></td><td>備忘録掲載用の画像（画面写真・キャラ一覧）を docs/site/img/ に一括生成</td></tr>
-</table>
+  <h2>3. ファイル構成</h2>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>ファイル</th><th>役割</th></tr></thead>
+      <tbody>
+        <tr><td><code>index.html</code></td><td>ゲームページ（タイトル／ゲーム／リザルトの DOM）</td></tr>
+        <tr><td><code>src/main.ts</code></td><td>エントリポイント。画面遷移とバージョン表示</td></tr>
+        <tr><td><code>src/game.ts</code></td><td>ゲーム本体（ループ・発射・着弾・描画・入力・HUD）</td></tr>
+        <tr><td><code>src/grid.ts</code></td><td>六角格子の盤面ロジック（隣接・マッチ・浮き判定・天井降下）</td></tr>
+        <tr><td><code>src/characters.ts</code></td><td>オリジナルキャラ 7 種の Canvas 描画</td></tr>
+        <tr><td><code>src/audio.ts</code></td><td>Web Audio による効果音</td></tr>
+        <tr><td><code>src/config.ts</code></td><td>難易度設定・定数</td></tr>
+        <tr><td><code>scripts/screenshot.mjs</code></td><td>動作確認用（ヘッドレスブラウザでスクリーンショット撮影）</td></tr>
+        <tr><td><code>scripts/make-doc-images.mjs</code></td><td>備忘録掲載用の画像（画面写真・キャラ一覧）を docs/site/img/ に一括生成</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<h3>スマホ・PC 両対応</h3>
-<div class="shot-grid">
+  <h3>スマホ・PC 両対応</h3>
   <figure>
     <img src="img/game-easy-mobile.png" alt="ゲーム画面（スマホ・Easy）">
     <figcaption>スマホ縦持ち（Easy）。点線下の広い空間が照準操作エリア</figcaption>
@@ -100,33 +138,39 @@
     <img src="img/game-hard-mobile.png" alt="ゲーム画面（スマホ・Hard）">
     <figcaption>スマホ縦持ち（Hard）。列数が増えキャラが小さくなる</figcaption>
   </figure>
-</div>
 
-<h2>4. 遊び方</h2>
-<ol>
-  <li><code>npm install</code> →（開発時）<code>npm run dev</code> でローカルサーバー起動、表示された URL を開く</li>
-  <li>タイトルで難易度を選ぶ</li>
-  <li>画面をなぞって（PC はマウス移動で）ねらいを定め、タップ／クリックで発射</li>
-  <li>同じ顔を 3 つ以上つなげて消す。上手く「落とす」と高得点</li>
-  <li>撃つほど DANGER ゲージが増え、満タンになると天井が降りてくる。全部消せばクリア</li>
-</ol>
+  <h2>4. 遊び方</h2>
+  <ol>
+    <li><code>npm install</code> →（開発時）<code>npm run dev</code> でローカルサーバー起動、表示された URL を開く</li>
+    <li>タイトルで難易度を選ぶ</li>
+    <li>画面をなぞって（PC はマウス移動で）ねらいを定め、タップ／クリックで発射</li>
+    <li>同じ顔を 3 つ以上つなげて消す。上手く「落とす」と高得点</li>
+    <li>撃つほど DANGER ゲージが増え、満タンになると天井が降りてくる。全部消せばクリア</li>
+  </ol>
 
-<h2>5. 動作確認の記録（v0.1.0）</h2>
-<ul>
-  <li><code>npm run build</code>（tsc 型チェック + Vite ビルド）成功</li>
-  <li>ヘッドレスブラウザ（PC 1024×768／スマホ 390×844 タッチ）で確認：
-    タイトル表示 → Easy 開始 → 発射 → マッチ消去とスコア加算 → DANGER 増加、を確認済み</li>
-  <li>コンソールエラーなし（ファビコン 404 は v0.1.0 で修正済み）</li>
-</ul>
+  <h2>5. 動作確認の記録（v0.1.0）</h2>
+  <ul>
+    <li><code>npm run build</code>（tsc 型チェック + Vite ビルド）成功</li>
+    <li>ヘッドレスブラウザ（PC 1024×768／スマホ 390×844 タッチ）で確認：
+      タイトル表示 → Easy 開始 → 発射 → マッチ消去とスコア加算 → DANGER 増加、を確認済み</li>
+    <li>コンソールエラーなし（ファビコン 404 は v0.1.0 で修正済み）</li>
+  </ul>
 
-<h2>6. 既知の課題・次への持ち越し</h2>
-<ul>
-  <li>BGM 未実装（フリー素材の選定・ライセンス確認はフィードバック後）</li>
-  <li>特殊ピース（ドクロ等の原作要素）は未実装。step3 の感想を見て検討</li>
-  <li>難易度バランスは机上値。<strong>step3 の人間プレイで要調整</strong></li>
-</ul>
+  <h2>6. 既知の課題・次への持ち越し</h2>
+  <ul>
+    <li>BGM 未実装（フリー素材の選定・ライセンス確認はフィードバック後）</li>
+    <li>特殊ピース（ドクロ等の原作要素）は未実装。step3 の感想を見て検討</li>
+    <li>難易度バランスは机上値。<strong>step3 の人間プレイで要調整</strong></li>
+  </ul>
 
 </main>
-<footer>Snoot 開発備忘録 — step2（v0.1.0）</footer>
+
+<footer class="ftr">
+  <div class="ftr-in">
+    <div class="ftr-name">SNOOT 開発備忘録 — step2（v0.1.0）</div>
+    <div class="ftr-note">Snood 風ブラウザゲーム ・ 開発中につき随時更新</div>
+  </div>
+</footer>
+
 </body>
 </html>

@@ -5,1152 +5,1198 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>step3：プレイフィードバック記録 | Snoot 開発備忘録</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<header>
-  <h1>step3：プレイフィードバック記録</h1>
-  <p>Snoot 開発備忘録 — 開始 2026-06-13 / <a href="index.html" style="color:#cde">← 目次へ戻る</a></p>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SNOOT</div>
+        <div class="brand-sub">開発備忘録</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="index.html#evo">進化の記録</a>
+      <a href="index.html#docs">開発文書</a>
+      <a class="btn btn-play" target="_blank" rel="noopener" href="play/latest/">▶ 遊ぶ</a>
+    </nav>
+  </div>
 </header>
-<main>
 
-<h2>このページについて</h2>
-<p>
-step3（人間によるプレイ確認）で挙がったフィードバックと、その対応（step4 → step2 反復）を
-時系列で記録する。project.txt の規定により、対応のたびにゲームのバージョンを上げる。
-フィードバックが 0 になった時点で step5（一般公開）へ遷移する。
-</p>
-<p>
-下の一覧は<strong>新しい順</strong>に並べている。各行の「詳細 →」から、その対応の
-<strong>原因・対応の詳しい説明とスクリーンショット</strong>（ページ下部「対応の詳細」）へ飛べる。
-</p>
+<main class="doc-main">
 
-<h2 id="list">フィードバック一覧</h2>
-<table>
-  <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
-  <tr>
-    <td>2026-06-27</td>
-    <td>21</td>
-    <td>Android で新記録の名前入力画面がソフトキーボードに隠れ「登録」が押せない</td>
-    <td>v0.9.17</td>
-    <td><a class="detail-link" href="#fb21">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.17/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-27</td>
-    <td>20</td>
-    <td>クリア時、ボタン表示の前にプレイ情報を順に見せて余韻と達成感を演出してほしい（②b・ショットボーナス＝仕様追加）</td>
-    <td>v0.9.15 → v0.9.16</td>
-    <td><a class="detail-link" href="#fb20">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.16/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-27</td>
-    <td>19</td>
-    <td>状態切り替えに「間」がない。ゲームオーバー時に失敗の余韻を演出してほしい（②a）</td>
-    <td>v0.9.14</td>
-    <td><a class="detail-link" href="#fb19">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.14/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-25</td>
-    <td>18</td>
-    <td>降りてくる天井を岩っぽくし、降下をアニメ＋低音で「怖さ」を演出してほしい（②c）</td>
-    <td>v0.9.13</td>
-    <td><a class="detail-link" href="#fb18">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.13/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-25</td>
-    <td>17</td>
-    <td>クリア時の「次のレベルへ」が他ボタンと同サイズで、押し間違えやすい</td>
-    <td>v0.9.11 → v0.9.12</td>
-    <td><a class="detail-link" href="#fb17">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.12/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-24</td>
-    <td>16</td>
-    <td>原作のように、ねらった角度で奥のくぼみへ撃ち込みたい（手前で止まる）</td>
-    <td>v0.9.9</td>
-    <td><a class="detail-link" href="#fb16">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.9/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-22</td>
-    <td>15</td>
-    <td>キャラのセット位置に奥行きの許容範囲が無い（奥の空きに入れられない）</td>
-    <td>v0.9.6 → v0.9.8</td>
-    <td><a class="detail-link" href="#fb15">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.8/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-22</td>
-    <td>14</td>
-    <td>iPhone でバージョン表示下の横線が v0.9.4 でも残る（v0.9.2 と大差ない）</td>
-    <td>v0.9.5 → v0.9.10</td>
-    <td><a class="detail-link" href="#fb14">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.10/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-21</td>
-    <td>13</td>
-    <td>iPhone でバージョン表示下の帯が盤面と違う色（PC の左右余白と同色）になる</td>
-    <td>v0.9.4</td>
-    <td><a class="detail-link" href="#fb13">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.4/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-20</td>
-    <td>12</td>
-    <td>iPhone 画面下端の背景継ぎ目（バージョン表示下の横線）が残る</td>
-    <td>v0.9.3</td>
-    <td><a class="detail-link" href="#fb12">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.3/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-19</td>
-    <td>11</td>
-    <td>iPhone のスタンドアロン起動時、画面下端に白い余白が出る</td>
-    <td>v0.9.2</td>
-    <td><a class="detail-link" href="#fb11">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.2/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-19</td>
-    <td>10</td>
-    <td>iPhone でステータスバー（時刻・電池）と HUD が重なり「タイトルへ」が押せない</td>
-    <td>v0.9.1</td>
-    <td><a class="detail-link" href="#fb10">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.1/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-17</td>
-    <td>9</td>
-    <td>テストしやすいよう PWA 化したい＋アイコンを「ネムリ」に変更したい</td>
-    <td>v0.9.0</td>
-    <td><a class="detail-link" href="#fb9">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.9.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-16</td>
-    <td>8</td>
-    <td>ハイスコア画面を枠外タップ／クリックでも閉じたい</td>
-    <td>v0.8.1</td>
-    <td><a class="detail-link" href="#fb8">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.8.1/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-16</td>
-    <td>7</td>
-    <td>得点が毎回リセットされる。ハイスコアの保存機能がほしい</td>
-    <td>v0.8.0</td>
-    <td><a class="detail-link" href="#fb7">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.8.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-16</td>
-    <td>6</td>
-    <td>レベルアップで何が変わるのか分からない。仕様を決めたい</td>
-    <td>v0.7.0</td>
-    <td><a class="detail-link" href="#fb6">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.7.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-13</td>
-    <td>5</td>
-    <td>落下キャラも驚き顔に。大量落下はファンファーレ風の SE にしたい</td>
-    <td>v0.6.0</td>
-    <td><a class="detail-link" href="#fb5">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.6.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-13</td>
-    <td>4</td>
-    <td>消滅キャラを驚き顔に。消滅数が多いほど SE を盛大にしたい</td>
-    <td>v0.5.0</td>
-    <td><a class="detail-link" href="#fb4">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.5.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-13</td>
-    <td>3</td>
-    <td>キャラの表情をゲーム中に変化させたい（NEXT は除く）</td>
-    <td>v0.4.0</td>
-    <td><a class="detail-link" href="#fb3">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.4.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-13</td>
-    <td>2</td>
-    <td>スマホの操作エリアが狭く、指がキャラ・砲台にかぶる</td>
-    <td>v0.3.0</td>
-    <td><a class="detail-link" href="#fb2">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.3.0/">▶ プレイ</a></td>
-  </tr>
-  <tr>
-    <td>2026-06-13</td>
-    <td>1</td>
-    <td>PC ではキャラサイズが難易度で変わらず、スマホと挙動が違う</td>
-    <td>v0.2.0</td>
-    <td><a class="detail-link" href="#fb1">詳細 →</a></td>
-    <td><a class="play-link" target="_blank" rel="noopener" href="play/v0.2.0/">▶ プレイ</a></td>
-  </tr>
-</table>
+  <div class="doc-head">
+    <h1 class="doc-h1">step3：プレイフィードバック記録</h1>
+    <div class="doc-meta">
+      Snoot 開発備忘録 — 開始 2026-06-13&nbsp;
+      <a class="back-link" href="index.html">← 目次へ戻る</a>
+    </div>
+  </div>
 
-<h2>対応の詳細</h2>
-<p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+  <h2>このページについて</h2>
+  <p>
+  step3（人間によるプレイ確認）で挙がったフィードバックと、その対応（step4 → step2 反復）を
+  時系列で記録する。<code>project.txt</code> の規定により、対応のたびにゲームのバージョンを上げる。
+  フィードバックが 0 になった時点で step5（一般公開）へ遷移する。
+  </p>
+  <p>
+  下の一覧は<strong>新しい順</strong>に並べている。各行の「詳細 →」から、その対応の
+  <strong>原因・対応の詳しい説明とスクリーンショット</strong>（ページ下部「対応の詳細」）へ飛べる。
+  </p>
 
-<h3 id="fb21">#21：Android で名前入力（新記録）画面がソフトキーボードに隠れる問題を解消（v0.9.17） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>ハイスコア更新時の名前入力画面について、iPhone では自動的にソフトキーボードの上に画面全体が配置されるが、<strong>Android では「登録」ボタンが切れて</strong>画面全体が見えない。画面を手で上にずらせば押せるが、かなり使い勝手が悪い。Android でも名前入力画面全体をキーボードの上に表示したい。</p>
-<p><strong>原因・対応：</strong>名前入力オーバーレイ <code>#name-entry-overlay</code> は画面全体（<code>position:absolute; inset:0</code>）に対して<strong>中央寄せ</strong>している。Android は既定（<code>interactive-widget=resizes-visual</code>）でキーボード表示時もレイアウトビューポート（<code>#app</code> の <code>height:100%</code>）が縮まないため、中央のボックスがキーボードに覆われていた（iOS は Safari が可視領域を保つので見えていた）。<br>
-対応は、名前入力を開いている間だけ <code>window.visualViewport</code>（＝ソフトキーボードを除いた<strong>可視領域</strong>）を購読し、オーバーレイの表示領域を可視領域（<code>top = offsetTop</code>／<code>height = visualViewport.height</code>）に合わせて縮める。これでボックスは可視領域の中央＝<strong>キーボードの上</strong>に収まる。閉じるときはリスナとインラインスタイルを戻して元の中央寄せに復帰。あわせてボックスの <code>max-height</code> を <code>88vh → 90%</code>（オーバーレイ高さ基準）にして、縮めた領域内に必ず収める。グローバルな viewport 設定（<code>meta</code>）は変更せず、ゲーム描画に副作用は出さない。非対応環境は従来の CSS 中央寄せにフォールバック。<br>
-修正ファイル：<code>src/main.ts</code>・<code>src/style.css</code>。</p>
-<figure>
-  <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(Android)は名前入力ボックスが画面中央に置かれ、下半分のキーボードに登録ボタンが隠れる。対応後は visualViewport に合わせてボックスをキーボードの上の可視領域に収め、登録ボタンまで表示する。">
-    <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前（Android）</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後（Android）</text>
+  <h2 id="list">フィードバック一覧</h2>
+  <div class="table-scroll">
+    <table class="doc-table">
+      <thead>
+        <tr><th>日付</th><th>#</th><th>指摘内容（概要）</th><th>対応版</th><th>詳細</th><th>プレイ</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026-06-27</td><td class="num">21</td>
+          <td>Android で新記録の名前入力画面がソフトキーボードに隠れ「登録」が押せない</td>
+          <td><span class="ver-pill">v0.9.17</span></td>
+          <td><a class="lk-detail" href="#fb21">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.17/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-27</td><td class="num">20</td>
+          <td>クリア時、ボタン表示の前にプレイ情報を順に見せて余韻と達成感を演出してほしい（②b・ショットボーナス＝仕様追加）</td>
+          <td><span class="ver-pill">v0.9.15 → v0.9.16</span></td>
+          <td><a class="lk-detail" href="#fb20">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.16/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-27</td><td class="num">19</td>
+          <td>状態切り替えに「間」がない。ゲームオーバー時に失敗の余韻を演出してほしい（②a）</td>
+          <td><span class="ver-pill">v0.9.14</span></td>
+          <td><a class="lk-detail" href="#fb19">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.14/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-25</td><td class="num">18</td>
+          <td>降りてくる天井を岩っぽくし、降下をアニメ＋低音で「怖さ」を演出してほしい（②c）</td>
+          <td><span class="ver-pill">v0.9.13</span></td>
+          <td><a class="lk-detail" href="#fb18">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.13/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-25</td><td class="num">17</td>
+          <td>クリア時の「次のレベルへ」が他ボタンと同サイズで、押し間違えやすい</td>
+          <td><span class="ver-pill">v0.9.11 → v0.9.12</span></td>
+          <td><a class="lk-detail" href="#fb17">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.12/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-24</td><td class="num">16</td>
+          <td>原作のように、ねらった角度で奥のくぼみへ撃ち込みたい（手前で止まる）</td>
+          <td><span class="ver-pill">v0.9.9</span></td>
+          <td><a class="lk-detail" href="#fb16">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.9/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-22</td><td class="num">15</td>
+          <td>キャラのセット位置に奥行きの許容範囲が無い（奥の空きに入れられない）</td>
+          <td><span class="ver-pill">v0.9.6 → v0.9.8</span></td>
+          <td><a class="lk-detail" href="#fb15">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.8/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-22</td><td class="num">14</td>
+          <td>iPhone でバージョン表示下の横線が v0.9.4 でも残る（v0.9.2 と大差ない）</td>
+          <td><span class="ver-pill">v0.9.5 → v0.9.10</span></td>
+          <td><a class="lk-detail" href="#fb14">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.10/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-21</td><td class="num">13</td>
+          <td>iPhone でバージョン表示下の帯が盤面と違う色（PC の左右余白と同色）になる</td>
+          <td><span class="ver-pill">v0.9.4</span></td>
+          <td><a class="lk-detail" href="#fb13">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.4/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-20</td><td class="num">12</td>
+          <td>iPhone 画面下端の背景継ぎ目（バージョン表示下の横線）が残る</td>
+          <td><span class="ver-pill">v0.9.3</span></td>
+          <td><a class="lk-detail" href="#fb12">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.3/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-19</td><td class="num">11</td>
+          <td>iPhone のスタンドアロン起動時、画面下端に白い余白が出る</td>
+          <td><span class="ver-pill">v0.9.2</span></td>
+          <td><a class="lk-detail" href="#fb11">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.2/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-19</td><td class="num">10</td>
+          <td>iPhone でステータスバー（時刻・電池）と HUD が重なり「タイトルへ」が押せない</td>
+          <td><span class="ver-pill">v0.9.1</span></td>
+          <td><a class="lk-detail" href="#fb10">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.1/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-17</td><td class="num">9</td>
+          <td>テストしやすいよう PWA 化したい＋アイコンを「ネムリ」に変更したい</td>
+          <td><span class="ver-pill">v0.9.0</span></td>
+          <td><a class="lk-detail" href="#fb9">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-16</td><td class="num">8</td>
+          <td>ハイスコア画面を枠外タップ／クリックでも閉じたい</td>
+          <td><span class="ver-pill">v0.8.1</span></td>
+          <td><a class="lk-detail" href="#fb8">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.8.1/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-16</td><td class="num">7</td>
+          <td>得点が毎回リセットされる。ハイスコアの保存機能がほしい</td>
+          <td><span class="ver-pill">v0.8.0</span></td>
+          <td><a class="lk-detail" href="#fb7">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.8.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-16</td><td class="num">6</td>
+          <td>レベルアップで何が変わるのか分からない。仕様を決めたい</td>
+          <td><span class="ver-pill">v0.7.0</span></td>
+          <td><a class="lk-detail" href="#fb6">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.7.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-13</td><td class="num">5</td>
+          <td>落下キャラも驚き顔に。大量落下はファンファーレ風の SE にしたい</td>
+          <td><span class="ver-pill">v0.6.0</span></td>
+          <td><a class="lk-detail" href="#fb5">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.6.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-13</td><td class="num">4</td>
+          <td>消滅キャラを驚き顔に。消滅数が多いほど SE を盛大にしたい</td>
+          <td><span class="ver-pill">v0.5.0</span></td>
+          <td><a class="lk-detail" href="#fb4">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.5.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-13</td><td class="num">3</td>
+          <td>キャラの表情をゲーム中に変化させたい（NEXT は除く）</td>
+          <td><span class="ver-pill">v0.4.0</span></td>
+          <td><a class="lk-detail" href="#fb3">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.4.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-13</td><td class="num">2</td>
+          <td>スマホの操作エリアが狭く、指がキャラ・砲台にかぶる</td>
+          <td><span class="ver-pill">v0.3.0</span></td>
+          <td><a class="lk-detail" href="#fb2">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.3.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-13</td><td class="num">1</td>
+          <td>PC ではキャラサイズが難易度で変わらず、スマホと挙動が違う</td>
+          <td><span class="ver-pill">v0.2.0</span></td>
+          <td><a class="lk-detail" href="#fb1">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.2.0/">▶ プレイ</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- 対応前：中央寄せのボックスがキーボードに隠れる -->
-    <rect x="45" y="40" width="180" height="390" rx="10" fill="#19283f"/>
-    <!-- 名前入力ボックス（画面中央） -->
-    <rect x="62" y="150" width="146" height="150" rx="10" fill="#fff"/>
-    <text x="135" y="180" fill="#e67e22" font-size="13" font-weight="bold" text-anchor="middle">新記録！</text>
-    <rect x="78" y="196" width="114" height="26" rx="5" fill="#fff" stroke="#4a90d9"/>
-    <text x="135" y="214" fill="#333" font-size="11" text-anchor="middle">たけ</text>
-    <rect x="105" y="234" width="60" height="22" rx="5" fill="#5cb85c"/>
-    <text x="135" y="249" fill="#fff" font-size="10" text-anchor="middle">登録</text>
-    <!-- キーボード（下半分・登録ボタンを覆う） -->
-    <rect x="45" y="250" width="180" height="180" rx="0" fill="#0a0f1c" opacity="0.92"/>
-    <line x1="45" y1="250" x2="225" y2="250" stroke="#ff6b6b" stroke-width="2"/>
-    <g fill="#33425f">
-      <rect x="58" y="262" width="36" height="22" rx="3"/><rect x="100" y="262" width="36" height="22" rx="3"/><rect x="142" y="262" width="36" height="22" rx="3"/><rect x="184" y="262" width="28" height="22" rx="3"/>
-      <rect x="58" y="290" width="36" height="22" rx="3"/><rect x="100" y="290" width="36" height="22" rx="3"/><rect x="142" y="290" width="36" height="22" rx="3"/><rect x="184" y="290" width="28" height="22" rx="3"/>
-      <rect x="58" y="318" width="36" height="22" rx="3"/><rect x="100" y="318" width="36" height="22" rx="3"/><rect x="142" y="318" width="36" height="22" rx="3"/><rect x="184" y="318" width="28" height="22" rx="3"/>
-    </g>
-    <text x="135" y="372" fill="#ff9a9a" font-size="11" text-anchor="middle">「登録」がキーボードに</text>
-    <text x="135" y="388" fill="#ff9a9a" font-size="11" text-anchor="middle">隠れて押せない</text>
+  <h2>対応の詳細</h2>
+  <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
 
-    <!-- 対応後：可視領域に合わせてキーボードの上に全体表示 -->
-    <rect x="315" y="40" width="180" height="390" rx="10" fill="#19283f"/>
-    <!-- 可視領域（キーボードの上）を示す枠 -->
-    <rect x="323" y="48" width="164" height="186" rx="8" fill="none" stroke="#8ce6a6" stroke-dasharray="5 4"/>
-    <text x="405" y="64" fill="#8ce6a6" font-size="9" text-anchor="middle">visualViewport（可視領域）</text>
-    <!-- 名前入力ボックス（可視領域の中央＝キーボードの上） -->
-    <rect x="332" y="80" width="146" height="130" rx="10" fill="#fff"/>
-    <text x="405" y="108" fill="#e67e22" font-size="13" font-weight="bold" text-anchor="middle">新記録！</text>
-    <rect x="348" y="122" width="114" height="26" rx="5" fill="#fff" stroke="#4a90d9"/>
-    <text x="405" y="140" fill="#333" font-size="11" text-anchor="middle">たけ</text>
-    <rect x="375" y="160" width="60" height="24" rx="5" fill="#5cb85c"/>
-    <text x="405" y="176" fill="#fff" font-size="10" text-anchor="middle">登録</text>
-    <!-- キーボード -->
-    <rect x="315" y="250" width="180" height="180" fill="#0a0f1c" opacity="0.92"/>
-    <g fill="#33425f">
-      <rect x="328" y="262" width="36" height="22" rx="3"/><rect x="370" y="262" width="36" height="22" rx="3"/><rect x="412" y="262" width="36" height="22" rx="3"/><rect x="454" y="262" width="28" height="22" rx="3"/>
-      <rect x="328" y="290" width="36" height="22" rx="3"/><rect x="370" y="290" width="36" height="22" rx="3"/><rect x="412" y="290" width="36" height="22" rx="3"/><rect x="454" y="290" width="28" height="22" rx="3"/>
-      <rect x="328" y="318" width="36" height="22" rx="3"/><rect x="370" y="318" width="36" height="22" rx="3"/><rect x="412" y="318" width="36" height="22" rx="3"/><rect x="454" y="318" width="28" height="22" rx="3"/>
-    </g>
-    <text x="405" y="372" fill="#8ce6a6" font-size="11" text-anchor="middle">全体がキーボードの上に</text>
-    <text x="405" y="388" fill="#8ce6a6" font-size="11" text-anchor="middle">収まり「登録」を押せる</text>
-  </svg>
-  <figcaption>
-    左：対応前は名前入力ボックスを<strong>画面中央</strong>に置くため、Android ではキーボードが「登録」ボタンを覆っていた。
-    右：対応後は <code>window.visualViewport</code> に合わせてオーバーレイを<strong>可視領域</strong>に縮め、その中で中央寄せするので、
-    ボックス全体（「登録」含む）が<strong>キーボードの上</strong>に収まる。iPhone は従来どおり全体が見える。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb21">
+    <h3><span>#21：Android で名前入力（新記録）画面がソフトキーボードに隠れる問題を解消（v0.9.17）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>ハイスコア更新時の名前入力画面について、iPhone では自動的にソフトキーボードの上に画面全体が配置されるが、<strong>Android では「登録」ボタンが切れて</strong>画面全体が見えない。画面を手で上にずらせば押せるが、かなり使い勝手が悪い。Android でも名前入力画面全体をキーボードの上に表示したい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>名前入力オーバーレイ <code>#name-entry-overlay</code> は画面全体（<code>position:absolute; inset:0</code>）に対して<strong>中央寄せ</strong>している。Android は既定（<code>interactive-widget=resizes-visual</code>）でキーボード表示時もレイアウトビューポート（<code>#app</code> の <code>height:100%</code>）が縮まないため、中央のボックスがキーボードに覆われていた（iOS は Safari が可視領域を保つので見えていた）。<br>
+    対応は、名前入力を開いている間だけ <code>window.visualViewport</code>（＝ソフトキーボードを除いた<strong>可視領域</strong>）を購読し、オーバーレイの表示領域を可視領域（<code>top = offsetTop</code>／<code>height = visualViewport.height</code>）に合わせて縮める。これでボックスは可視領域の中央＝<strong>キーボードの上</strong>に収まる。閉じるときはリスナとインラインスタイルを戻して元の中央寄せに復帰。あわせてボックスの <code>max-height</code> を <code>88vh → 90%</code>（オーバーレイ高さ基準）にして、縮めた領域内に必ず収める。グローバルな viewport 設定（<code>meta</code>）は変更せず、ゲーム描画に副作用は出さない。非対応環境は従来の CSS 中央寄せにフォールバック。<br>
+    修正ファイル：<code>src/main.ts</code>・<code>src/style.css</code>。</div>
+    <figure>
+      <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(Android)は名前入力ボックスが画面中央に置かれ、下半分のキーボードに登録ボタンが隠れる。対応後は visualViewport に合わせてボックスをキーボードの上の可視領域に収め、登録ボタンまで表示する。">
+        <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前（Android）</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後（Android）</text>
 
-<h3 id="fb20">#20：クリア時、ボタンの前にプレイ情報を順に見せて達成感を演出＋ショットボーナス（v0.9.15・演出②b） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>状態切り替えに「間」がなく、成功の余韻に浸れない。クリア時は「次のレベルへ」などのボタンを出す前に、ゲーム画面に重ねて<strong>そのステージのプレイ情報</strong>（「何回ショットしたか？」「スコアは何点だったか？」）を<strong>順に表示</strong>してほしい（表示ごとに SE で盛り上げる）。あわせて、<strong>ショット数が少なくクリアした際は「ボーナススコア」を加点</strong>する（仕様追加）。プレイ演出フィードバック②のうち ②b。</p>
-<p><strong>原因・対応：</strong>従来はクリア確定で即 <code>onEnd</code> → 結果ボタンを表示していた。対応は 3 点。<br>
-(1) <strong>ショット数の計測</strong>：レベル開始（<code>start</code>）で 0 にリセットし、発射（<code>fire</code>）ごとに <code>shots</code> を +1。<br>
-(2) <strong>ショットボーナス（仕様追加）</strong>：レベル開始時のピース数から目安 <code>par = ceil(初期ピース数 / 3)</code> を求め、<code>bonus = clamp(max(0, par − shots) × 100, 0, 1000)</code> を加点。少ない発射数でクリアするほど高い（係数・上限は <code>src/config.ts</code> で調整可能）。<br>
-(3) <strong>段階表示</strong>：クリア時はボタンを一旦隠し、<code>#result-stats</code> に「ショット数 → スコア → （加点があれば）ショットボーナス」を <code>setTimeout</code> で 1 行ずつフェードイン。各行で SE（<code>tally</code> は行ごとに音程上昇、ボーナスは専用ファンファーレ <code>bonus</code>）を鳴らし、出し切ってからベスト表示とボタンを見せる（誤タップ防止の #17 とも整合）。ゲームオーバーは ②a の骸骨化を見せた後なので従来どおり即表示。<br>
-修正ファイル：<code>src/game.ts</code>・<code>src/main.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>・<code>index.html</code>・<code>src/style.css</code>。</p>
-<p><strong>追記（v0.9.16・テンポ調整）：</strong>プレイ確認で「段階表示が<strong>速すぎて目で追えない</strong>」とフィードバック。<code>revealClearResult</code> のタイマーを緩め、行ごとの間隔を <code>600ms → 1000ms</code>（最初の行までを 350→450ms、最終行からボタンまでを 250→450ms）にして、各情報を約 1 秒間隔で読めるようにした。表示順・SE・ボーナス計算は不変。</p>
-<figure>
-  <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.14)はクリアで即ボタンが出て余韻がない。対応後(v0.9.15)はショット数→スコア→ショットボーナスを順に表示し、SEで盛り上げてからボタンを出す。">
-    <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.14</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.15</text>
+        <!-- 対応前：中央寄せのボックスがキーボードに隠れる -->
+        <rect x="45" y="40" width="180" height="390" rx="10" fill="#19283f"/>
+        <!-- 名前入力ボックス（画面中央） -->
+        <rect x="62" y="150" width="146" height="150" rx="10" fill="#fff"/>
+        <text x="135" y="180" fill="#e67e22" font-size="13" font-weight="bold" text-anchor="middle">新記録！</text>
+        <rect x="78" y="196" width="114" height="26" rx="5" fill="#fff" stroke="#4a90d9"/>
+        <text x="135" y="214" fill="#333" font-size="11" text-anchor="middle">たけ</text>
+        <rect x="105" y="234" width="60" height="22" rx="5" fill="#5cb85c"/>
+        <text x="135" y="249" fill="#fff" font-size="10" text-anchor="middle">登録</text>
+        <!-- キーボード（下半分・登録ボタンを覆う） -->
+        <rect x="45" y="250" width="180" height="180" rx="0" fill="#0a0f1c" opacity="0.92"/>
+        <line x1="45" y1="250" x2="225" y2="250" stroke="#ff6b6b" stroke-width="2"/>
+        <g fill="#33425f">
+          <rect x="58" y="262" width="36" height="22" rx="3"/><rect x="100" y="262" width="36" height="22" rx="3"/><rect x="142" y="262" width="36" height="22" rx="3"/><rect x="184" y="262" width="28" height="22" rx="3"/>
+          <rect x="58" y="290" width="36" height="22" rx="3"/><rect x="100" y="290" width="36" height="22" rx="3"/><rect x="142" y="290" width="36" height="22" rx="3"/><rect x="184" y="290" width="28" height="22" rx="3"/>
+          <rect x="58" y="318" width="36" height="22" rx="3"/><rect x="100" y="318" width="36" height="22" rx="3"/><rect x="142" y="318" width="36" height="22" rx="3"/><rect x="184" y="318" width="28" height="22" rx="3"/>
+        </g>
+        <text x="135" y="372" fill="#ff9a9a" font-size="11" text-anchor="middle">「登録」がキーボードに</text>
+        <text x="135" y="388" fill="#ff9a9a" font-size="11" text-anchor="middle">隠れて押せない</text>
 
-    <!-- 対応前：クリア → 即ボタン（余韻・情報なし） -->
-    <rect x="45" y="40" width="180" height="390" rx="12" fill="#19283f"/>
-    <rect x="62" y="70" width="146" height="150" rx="10" fill="#fff"/>
-    <text x="135" y="104" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
-    <rect x="80" y="120" width="110" height="26" rx="6" fill="#4a90d9"/>
-    <text x="135" y="138" fill="#fff" font-size="11" text-anchor="middle">もう一度</text>
-    <rect x="80" y="150" width="110" height="30" rx="6" fill="#5cb85c"/>
-    <text x="135" y="170" fill="#fff" font-size="11" text-anchor="middle">次のレベルへ</text>
-    <rect x="80" y="184" width="110" height="26" rx="6" fill="#cccccc"/>
-    <text x="135" y="202" fill="#333" font-size="11" text-anchor="middle">タイトルへ</text>
-    <text x="135" y="250" fill="#ff9a9a" font-size="11" text-anchor="middle">即・ボタン表示</text>
-    <text x="135" y="268" fill="#ff9a9a" font-size="11" text-anchor="middle">（情報も余韻もなし）</text>
+        <!-- 対応後：可視領域に合わせてキーボードの上に全体表示 -->
+        <rect x="315" y="40" width="180" height="390" rx="10" fill="#19283f"/>
+        <!-- 可視領域（キーボードの上）を示す枠 -->
+        <rect x="323" y="48" width="164" height="186" rx="8" fill="none" stroke="#8ce6a6" stroke-dasharray="5 4"/>
+        <text x="405" y="64" fill="#8ce6a6" font-size="9" text-anchor="middle">visualViewport（可視領域）</text>
+        <!-- 名前入力ボックス（可視領域の中央＝キーボードの上） -->
+        <rect x="332" y="80" width="146" height="130" rx="10" fill="#fff"/>
+        <text x="405" y="108" fill="#e67e22" font-size="13" font-weight="bold" text-anchor="middle">新記録！</text>
+        <rect x="348" y="122" width="114" height="26" rx="5" fill="#fff" stroke="#4a90d9"/>
+        <text x="405" y="140" fill="#333" font-size="11" text-anchor="middle">たけ</text>
+        <rect x="375" y="160" width="60" height="24" rx="5" fill="#5cb85c"/>
+        <text x="405" y="176" fill="#fff" font-size="10" text-anchor="middle">登録</text>
+        <!-- キーボード -->
+        <rect x="315" y="250" width="180" height="180" fill="#0a0f1c" opacity="0.92"/>
+        <g fill="#33425f">
+          <rect x="328" y="262" width="36" height="22" rx="3"/><rect x="370" y="262" width="36" height="22" rx="3"/><rect x="412" y="262" width="36" height="22" rx="3"/><rect x="454" y="262" width="28" height="22" rx="3"/>
+          <rect x="328" y="290" width="36" height="22" rx="3"/><rect x="370" y="290" width="36" height="22" rx="3"/><rect x="412" y="290" width="36" height="22" rx="3"/><rect x="454" y="290" width="28" height="22" rx="3"/>
+          <rect x="328" y="318" width="36" height="22" rx="3"/><rect x="370" y="318" width="36" height="22" rx="3"/><rect x="412" y="318" width="36" height="22" rx="3"/><rect x="454" y="318" width="28" height="22" rx="3"/>
+        </g>
+        <text x="405" y="372" fill="#8ce6a6" font-size="11" text-anchor="middle">全体がキーボードの上に</text>
+        <text x="405" y="388" fill="#8ce6a6" font-size="11" text-anchor="middle">収まり「登録」を押せる</text>
+      </svg>
+      <figcaption>
+        左：対応前は名前入力ボックスを<strong>画面中央</strong>に置くため、Android ではキーボードが「登録」ボタンを覆っていた。
+        右：対応後は <code>window.visualViewport</code> に合わせてオーバーレイを<strong>可視領域</strong>に縮め、その中で中央寄せするので、
+        ボックス全体（「登録」含む）が<strong>キーボードの上</strong>に収まる。iPhone は従来どおり全体が見える。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：情報を順に表示 → ボタン -->
-    <rect x="315" y="40" width="180" height="390" rx="12" fill="#19283f"/>
-    <rect x="332" y="64" width="146" height="246" rx="10" fill="#fff"/>
-    <text x="405" y="92" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
-    <!-- 段階表示の行（番号で順番を示す） -->
-    <text x="405" y="120" fill="#555" font-size="12" text-anchor="middle">① ショット数：12</text>
-    <text x="405" y="144" fill="#555" font-size="12" text-anchor="middle">② スコア：3,200</text>
-    <text x="405" y="170" fill="#e67e22" font-size="14" font-weight="bold" text-anchor="middle">③ ボーナス ＋400！</text>
-    <text x="405" y="190" fill="#8ce6a6" font-size="10" text-anchor="middle">♪ 表示ごとに SE</text>
-    <!-- 出し切ってからボタン -->
-    <rect x="350" y="206" width="110" height="22" rx="6" fill="#4a90d9"/>
-    <text x="405" y="221" fill="#fff" font-size="10" text-anchor="middle">もう一度</text>
-    <rect x="350" y="232" width="110" height="28" rx="6" fill="#5cb85c"/>
-    <text x="405" y="250" fill="#fff" font-size="10" text-anchor="middle">次のレベルへ</text>
-    <rect x="350" y="264" width="110" height="22" rx="6" fill="#cccccc"/>
-    <text x="405" y="279" fill="#333" font-size="10" text-anchor="middle">タイトルへ</text>
-    <text x="405" y="340" fill="#8ce6a6" font-size="11" text-anchor="middle">①→②→③ の後にボタン</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.14）はクリアで<strong>即・ボタン</strong>が出て、情報も余韻もない。
-    右：対応後（v0.9.15）は<strong>ショット数 → スコア → ショットボーナス</strong>を 1 行ずつ SE 付きで見せ、
-    出し切ってからボタンを出す。<code>par = ceil(初期ピース数 / 3)</code> より少ない発射数でクリアするほど
-    <code>ボーナス（最大 +1000）</code>が増える（仕様追加）。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb20">
+    <h3><span>#20：クリア時、ボタンの前にプレイ情報を順に見せて達成感を演出＋ショットボーナス（v0.9.15・演出②b）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>状態切り替えに「間」がなく、成功の余韻に浸れない。クリア時は「次のレベルへ」などのボタンを出す前に、ゲーム画面に重ねて<strong>そのステージのプレイ情報</strong>（「何回ショットしたか？」「スコアは何点だったか？」）を<strong>順に表示</strong>してほしい（表示ごとに SE で盛り上げる）。あわせて、<strong>ショット数が少なくクリアした際は「ボーナススコア」を加点</strong>する（仕様追加）。プレイ演出フィードバック②のうち ②b。</div>
+    <div class="note fix"><span class="k">原因・対応</span>従来はクリア確定で即 <code>onEnd</code> → 結果ボタンを表示していた。対応は 3 点。<br>
+    (1) <strong>ショット数の計測</strong>：レベル開始（<code>start</code>）で 0 にリセットし、発射（<code>fire</code>）ごとに <code>shots</code> を +1。<br>
+    (2) <strong>ショットボーナス（仕様追加）</strong>：レベル開始時のピース数から目安 <code>par = ceil(初期ピース数 / 3)</code> を求め、<code>bonus = clamp(max(0, par − shots) × 100, 0, 1000)</code> を加点。少ない発射数でクリアするほど高い（係数・上限は <code>src/config.ts</code> で調整可能）。<br>
+    (3) <strong>段階表示</strong>：クリア時はボタンを一旦隠し、<code>#result-stats</code> に「ショット数 → スコア → （加点があれば）ショットボーナス」を <code>setTimeout</code> で 1 行ずつフェードイン。各行で SE（<code>tally</code> は行ごとに音程上昇、ボーナスは専用ファンファーレ <code>bonus</code>）を鳴らし、出し切ってからベスト表示とボタンを見せる（誤タップ防止の #17 とも整合）。ゲームオーバーは ②a の骸骨化を見せた後なので従来どおり即表示。<br>
+    修正ファイル：<code>src/game.ts</code>・<code>src/main.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>・<code>index.html</code>・<code>src/style.css</code>。</div>
+    <div class="callout"><span class="ct">追記（v0.9.16・テンポ調整）</span>プレイ確認で「段階表示が<strong>速すぎて目で追えない</strong>」とフィードバック。<code>revealClearResult</code> のタイマーを緩め、行ごとの間隔を <code>600ms → 1000ms</code>（最初の行までを 350→450ms、最終行からボタンまでを 250→450ms）にして、各情報を約 1 秒間隔で読めるようにした。表示順・SE・ボーナス計算は不変。</div>
+    <figure>
+      <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.14)はクリアで即ボタンが出て余韻がない。対応後(v0.9.15)はショット数→スコア→ショットボーナスを順に表示し、SEで盛り上げてからボタンを出す。">
+        <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.14</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.15</text>
 
-<h3 id="fb19">#19：ゲームオーバー時、盤面を下→上に骸骨化させて失敗の余韻を演出（v0.9.14・演出②a） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>ゲームの状態が切り替わる際に「間」がない。失敗してもすぐに結果画面とボタンが出るため、<strong>失敗した余韻にプレイヤーが浸る気持ちの間</strong>がない（ゲームとして大事）。例として、ゲームオーバー時は即表示せず、<strong>埋まったキャラをステージの下方から上方へ順に骸骨風のキャラへ変化させていく</strong>（その際の音は暗い重低音のイメージ）。プレイ演出フィードバック②のうち ②a。</p>
-<p><strong>原因・対応：</strong>従来はデッドライン到達でただちに <code>onEnd</code> を呼び、結果画面（リザルト）を即表示していた。対応は天井降下（②c）と同じ「<strong>描画で演出を見せ切ってから <code>onEnd</code> を呼ぶ</strong>」遅延パターンを流用して 3 点。<br>
-(1) <strong>骸骨化ウェーブ</strong>：ゲームオーバー確定時に結果通知を <code>pendingEnd</code> に保留し、<code>gameoverSeq</code>（経過秒）を走らせる。描画では各セルの<strong>画面下ほど早く</strong>骸骨へ切り替わるしきい値を計算し、<strong>下→上の波</strong>でキャラを <code>drawSkull</code>（コード描画の骸骨）へ変化させる。変化直後だけ軽くスケールポップさせる。<br>
-(2) <strong>暗い重低音</strong>：開始時に新 SE <code>doom</code>（低い下降ドローン＋地鳴り）を鳴らす。<br>
-(3) <strong>見せ切ってから結果へ</strong>：所要 <code>GAMEOVER_SEQ_DUR = 1.6</code> 秒のウェーブを見せ切ってから <code>onEnd</code> を 1 回だけ呼ぶ。天井降下でのゲームオーバーは、降下スライド→骸骨化→結果の順に自然につながる。骸骨化した盤面は結果画面の背後に残す。<br>
-修正ファイル：<code>src/game.ts</code>・<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</p>
-<figure>
-  <svg viewBox="0 0 540 460" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.13)はゲームオーバーで即結果画面が出て余韻がない。対応後(v0.9.14)は盤面のキャラが下から上へ順に骸骨へ変化し、暗い重低音とともに失敗の余韻を見せてから結果画面を出す。">
-    <rect x="0" y="0" width="540" height="460" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.13</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.14</text>
+        <!-- 対応前：クリア → 即ボタン（余韻・情報なし） -->
+        <rect x="45" y="40" width="180" height="390" rx="12" fill="#19283f"/>
+        <rect x="62" y="70" width="146" height="150" rx="10" fill="#fff"/>
+        <text x="135" y="104" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
+        <rect x="80" y="120" width="110" height="26" rx="6" fill="#4a90d9"/>
+        <text x="135" y="138" fill="#fff" font-size="11" text-anchor="middle">もう一度</text>
+        <rect x="80" y="150" width="110" height="30" rx="6" fill="#5cb85c"/>
+        <text x="135" y="170" fill="#fff" font-size="11" text-anchor="middle">次のレベルへ</text>
+        <rect x="80" y="184" width="110" height="26" rx="6" fill="#cccccc"/>
+        <text x="135" y="202" fill="#333" font-size="11" text-anchor="middle">タイトルへ</text>
+        <text x="135" y="250" fill="#ff9a9a" font-size="11" text-anchor="middle">即・ボタン表示</text>
+        <text x="135" y="268" fill="#ff9a9a" font-size="11" text-anchor="middle">（情報も余韻もなし）</text>
 
-    <!-- 対応前：盤面に普通のキャラ → 即・結果画面（余韻なし） -->
-    <rect x="45" y="40" width="180" height="360" rx="12" fill="#19283f"/>
-    <g>
-      <circle cx="85"  cy="80"  r="16" fill="#4a90d9"/>
-      <circle cx="120" cy="80"  r="16" fill="#5cb85c"/>
-      <circle cx="155" cy="80"  r="16" fill="#e74c3c"/>
-      <circle cx="190" cy="80"  r="16" fill="#f5a623"/>
-      <circle cx="100" cy="112" r="16" fill="#9b59b6"/>
-      <circle cx="135" cy="112" r="16" fill="#45c4c8"/>
-      <circle cx="170" cy="112" r="16" fill="#8d8d8d"/>
-    </g>
-    <!-- 即時に出る結果ボックス -->
-    <rect x="62" y="150" width="146" height="120" rx="10" fill="#0e1830" stroke="#33507e"/>
-    <text x="135" y="186" fill="#fff" font-size="15" font-weight="bold" text-anchor="middle">ゲームオーバー</text>
-    <rect x="80" y="205" width="110" height="22" rx="6" fill="#2b3f63"/>
-    <text x="135" y="221" fill="#cfe0ff" font-size="11" text-anchor="middle">もう一度</text>
-    <rect x="80" y="233" width="110" height="22" rx="6" fill="#2b3f63"/>
-    <text x="135" y="249" fill="#cfe0ff" font-size="11" text-anchor="middle">タイトルへ</text>
-    <text x="135" y="382" fill="#ff9a9a" font-size="11" text-anchor="middle">即・結果表示（余韻なし）</text>
+        <!-- 対応後：情報を順に表示 → ボタン -->
+        <rect x="315" y="40" width="180" height="390" rx="12" fill="#19283f"/>
+        <rect x="332" y="64" width="146" height="246" rx="10" fill="#fff"/>
+        <text x="405" y="92" fill="#333" font-size="15" font-weight="bold" text-anchor="middle">クリア！</text>
+        <!-- 段階表示の行（番号で順番を示す） -->
+        <text x="405" y="120" fill="#555" font-size="12" text-anchor="middle">① ショット数：12</text>
+        <text x="405" y="144" fill="#555" font-size="12" text-anchor="middle">② スコア：3,200</text>
+        <text x="405" y="170" fill="#e67e22" font-size="14" font-weight="bold" text-anchor="middle">③ ボーナス ＋400！</text>
+        <text x="405" y="190" fill="#8ce6a6" font-size="10" text-anchor="middle">♪ 表示ごとに SE</text>
+        <!-- 出し切ってからボタン -->
+        <rect x="350" y="206" width="110" height="22" rx="6" fill="#4a90d9"/>
+        <text x="405" y="221" fill="#fff" font-size="10" text-anchor="middle">もう一度</text>
+        <rect x="350" y="232" width="110" height="28" rx="6" fill="#5cb85c"/>
+        <text x="405" y="250" fill="#fff" font-size="10" text-anchor="middle">次のレベルへ</text>
+        <rect x="350" y="264" width="110" height="22" rx="6" fill="#cccccc"/>
+        <text x="405" y="279" fill="#333" font-size="10" text-anchor="middle">タイトルへ</text>
+        <text x="405" y="340" fill="#8ce6a6" font-size="11" text-anchor="middle">①→②→③ の後にボタン</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.14）はクリアで<strong>即・ボタン</strong>が出て、情報も余韻もない。
+        右：対応後（v0.9.15）は<strong>ショット数 → スコア → ショットボーナス</strong>を 1 行ずつ SE 付きで見せ、
+        出し切ってからボタンを出す。<code>par = ceil(初期ピース数 / 3)</code> より少ない発射数でクリアするほど
+        <code>ボーナス（最大 +1000）</code>が増える（仕様追加）。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：下から骸骨化していく途中＋暗い重低音 -->
-    <rect x="315" y="40" width="180" height="360" rx="12" fill="#19283f"/>
-    <!-- 上段：まだキャラ -->
-    <circle cx="355" cy="80"  r="16" fill="#4a90d9"/>
-    <circle cx="390" cy="80"  r="16" fill="#5cb85c"/>
-    <circle cx="425" cy="80"  r="16" fill="#e74c3c"/>
-    <circle cx="460" cy="80"  r="16" fill="#f5a623"/>
-    <!-- 下段：骸骨化済み（白い頭蓋＋眼窩＋歯） -->
-    <g fill="#e9e6da">
-      <g><circle cx="370" cy="120" r="16"/><circle cx="365" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="375" cy="117" r="3.5" fill="#1a1a1a"/><rect x="364" y="128" width="12" height="4" fill="#1a1a1a"/></g>
-      <g><circle cx="405" cy="120" r="16"/><circle cx="400" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="410" cy="117" r="3.5" fill="#1a1a1a"/><rect x="399" y="128" width="12" height="4" fill="#1a1a1a"/></g>
-      <g><circle cx="440" cy="120" r="16"/><circle cx="435" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="445" cy="117" r="3.5" fill="#1a1a1a"/><rect x="434" y="128" width="12" height="4" fill="#1a1a1a"/></g>
-    </g>
-    <!-- 下→上の波を示す矢印 -->
-    <line x1="405" y1="300" x2="405" y2="150" stroke="#8ce6a6" stroke-width="3" marker-end="url(#fb19arrow)"/>
-    <defs>
-      <marker id="fb19arrow" markerWidth="9" markerHeight="9" refX="4" refY="4" orient="auto">
-        <path d="M0,0 L9,4 L0,8 z" fill="#8ce6a6"/>
-      </marker>
-    </defs>
-    <text x="405" y="330" fill="#8ce6a6" font-size="11" text-anchor="middle">下 → 上へ骸骨化</text>
-    <text x="405" y="360" fill="#cfe0ff" font-size="12" text-anchor="middle">♪ 暗い重低音（doom）</text>
-    <text x="405" y="382" fill="#8ce6a6" font-size="11" text-anchor="middle">見せ切ってから結果へ</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.13）はゲームオーバーで<strong>即・結果画面</strong>が出て、失敗の余韻がない。
-    右：対応後（v0.9.14）は盤面のキャラを<strong>下→上の波で骸骨化</strong>させ、<code>doom</code>（暗い重低音）とともに
-    <code>GAMEOVER_SEQ_DUR=1.6</code> 秒の演出を見せ切ってから結果画面を出す。当たり判定や得点は不変で、演出だけを追加している。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb19">
+    <h3><span>#19：ゲームオーバー時、盤面を下→上に骸骨化させて失敗の余韻を演出（v0.9.14・演出②a）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>ゲームの状態が切り替わる際に「間」がない。失敗してもすぐに結果画面とボタンが出るため、<strong>失敗した余韻にプレイヤーが浸る気持ちの間</strong>がない（ゲームとして大事）。例として、ゲームオーバー時は即表示せず、<strong>埋まったキャラをステージの下方から上方へ順に骸骨風のキャラへ変化させていく</strong>（その際の音は暗い重低音のイメージ）。プレイ演出フィードバック②のうち ②a。</div>
+    <div class="note fix"><span class="k">原因・対応</span>従来はデッドライン到達でただちに <code>onEnd</code> を呼び、結果画面（リザルト）を即表示していた。対応は天井降下（②c）と同じ「<strong>描画で演出を見せ切ってから <code>onEnd</code> を呼ぶ</strong>」遅延パターンを流用して 3 点。<br>
+    (1) <strong>骸骨化ウェーブ</strong>：ゲームオーバー確定時に結果通知を <code>pendingEnd</code> に保留し、<code>gameoverSeq</code>（経過秒）を走らせる。描画では各セルの<strong>画面下ほど早く</strong>骸骨へ切り替わるしきい値を計算し、<strong>下→上の波</strong>でキャラを <code>drawSkull</code>（コード描画の骸骨）へ変化させる。変化直後だけ軽くスケールポップさせる。<br>
+    (2) <strong>暗い重低音</strong>：開始時に新 SE <code>doom</code>（低い下降ドローン＋地鳴り）を鳴らす。<br>
+    (3) <strong>見せ切ってから結果へ</strong>：所要 <code>GAMEOVER_SEQ_DUR = 1.6</code> 秒のウェーブを見せ切ってから <code>onEnd</code> を 1 回だけ呼ぶ。天井降下でのゲームオーバーは、降下スライド→骸骨化→結果の順に自然につながる。骸骨化した盤面は結果画面の背後に残す。<br>
+    修正ファイル：<code>src/game.ts</code>・<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</div>
+    <figure>
+      <svg viewBox="0 0 540 460" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.13)はゲームオーバーで即結果画面が出て余韻がない。対応後(v0.9.14)は盤面のキャラが下から上へ順に骸骨へ変化し、暗い重低音とともに失敗の余韻を見せてから結果画面を出す。">
+        <rect x="0" y="0" width="540" height="460" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.13</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.14</text>
 
-<h3 id="fb18">#18：降りてくる天井を岩肌にし、降下をアニメ＋低音で怖く演出（v0.9.13・演出②c） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>危険ゲージが満タンになると降りてくる天井について、(1) 見た目を<strong>岩っぽく</strong>し、(2) 降りるときも<strong>すぐに下げず、アニメーションさせて「怖さ」を演出</strong>してほしい（BGM は低い音源）。プレイ演出フィードバック②のうち ②c。</p>
-<p><strong>原因・対応：</strong>従来の天井は茶色の<strong>ベタ塗り（<code>#55432c</code>）＋白い線</strong>で、降下は危険ゲージ満タン時に <code>rowShift</code> を +1 する<strong>一瞬のジャンプ</strong>だった。対応は 3 点。<br>
-(1) <strong>岩肌の描画</strong>：石肌のグラデーション＋地層＋<strong>下端のギザギザ岩（鍾乳石風の歯）</strong>をコードで描画（著作権配慮で画像は使わない）。質感は整数インデックスのハッシュで決定論的に生成し、毎フレームのちらつきを防ぐ（<code>renderRockyCeiling</code>）。<br>
-(2) <strong>降下アニメ</strong>：当たり判定は論理座標のまま据え置き、<strong>描画時だけ</strong>オフセット <code>dropPx</code>（smoothstep で緩急）を当てて、天井と盤面のピースを 1 行ぶん<strong>スライド</strong>させる（所要 <code>CEILING_DROP_DUR = 0.5</code> 秒）。スライド中は誤発射を防ぐため発射をロックする。天井降下でデッドラインに達した場合も、<strong>降下を見せ切ってから</strong>ゲームオーバー画面を出す（<code>pendingEnd</code> で遅延）。<br>
-(3) <strong>低音 SE</strong>：従来の警告音 <code>alarm</code> を、低い地鳴り＋着地の「ドスン」を重ねた <code>quake</code> に差し替えた。<br>
-修正ファイル：<code>src/game.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</p>
-<figure>
-  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.12)は天井が茶色のベタ塗りで、降下は一瞬で1行下がる。対応後(v0.9.13)は天井が岩肌で下端がギザギザになり、低い地鳴りとともにゆっくりスライドして降りる。">
-    <defs>
-      <linearGradient id="c18-stone" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#2c2622"/>
-        <stop offset="1" stop-color="#4a423a"/>
-      </linearGradient>
-    </defs>
-    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.12</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.13</text>
+        <!-- 対応前：盤面に普通のキャラ → 即・結果画面（余韻なし） -->
+        <rect x="45" y="40" width="180" height="360" rx="12" fill="#19283f"/>
+        <g>
+          <circle cx="85"  cy="80"  r="16" fill="#4a90d9"/>
+          <circle cx="120" cy="80"  r="16" fill="#5cb85c"/>
+          <circle cx="155" cy="80"  r="16" fill="#e74c3c"/>
+          <circle cx="190" cy="80"  r="16" fill="#f5a623"/>
+          <circle cx="100" cy="112" r="16" fill="#9b59b6"/>
+          <circle cx="135" cy="112" r="16" fill="#45c4c8"/>
+          <circle cx="170" cy="112" r="16" fill="#8d8d8d"/>
+        </g>
+        <!-- 即時に出る結果ボックス -->
+        <rect x="62" y="150" width="146" height="120" rx="10" fill="#0e1830" stroke="#33507e"/>
+        <text x="135" y="186" fill="#fff" font-size="15" font-weight="bold" text-anchor="middle">ゲームオーバー</text>
+        <rect x="80" y="205" width="110" height="22" rx="6" fill="#2b3f63"/>
+        <text x="135" y="221" fill="#cfe0ff" font-size="11" text-anchor="middle">もう一度</text>
+        <rect x="80" y="233" width="110" height="22" rx="6" fill="#2b3f63"/>
+        <text x="135" y="249" fill="#cfe0ff" font-size="11" text-anchor="middle">タイトルへ</text>
+        <text x="135" y="382" fill="#ff9a9a" font-size="11" text-anchor="middle">即・結果表示（余韻なし）</text>
 
-    <!-- 対応前：茶色ベタ塗りの天井＋一瞬で降下 -->
-    <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
-    <rect x="45" y="40" width="180" height="78" fill="#55432c"/>
-    <line x1="45" y1="118" x2="225" y2="118" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-    <circle cx="95" cy="152" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="135" cy="152" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <circle cx="175" cy="152" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <text x="135" y="250" fill="#ff9a9a" font-size="22" text-anchor="middle">⚡</text>
-    <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">茶色のベタ塗り</text>
-    <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">一瞬で 1 行下がる</text>
+        <!-- 対応後：下から骸骨化していく途中＋暗い重低音 -->
+        <rect x="315" y="40" width="180" height="360" rx="12" fill="#19283f"/>
+        <!-- 上段：まだキャラ -->
+        <circle cx="355" cy="80"  r="16" fill="#4a90d9"/>
+        <circle cx="390" cy="80"  r="16" fill="#5cb85c"/>
+        <circle cx="425" cy="80"  r="16" fill="#e74c3c"/>
+        <circle cx="460" cy="80"  r="16" fill="#f5a623"/>
+        <!-- 下段：骸骨化済み（白い頭蓋＋眼窩＋歯） -->
+        <g fill="#e9e6da">
+          <g><circle cx="370" cy="120" r="16"/><circle cx="365" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="375" cy="117" r="3.5" fill="#1a1a1a"/><rect x="364" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+          <g><circle cx="405" cy="120" r="16"/><circle cx="400" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="410" cy="117" r="3.5" fill="#1a1a1a"/><rect x="399" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+          <g><circle cx="440" cy="120" r="16"/><circle cx="435" cy="117" r="3.5" fill="#1a1a1a"/><circle cx="445" cy="117" r="3.5" fill="#1a1a1a"/><rect x="434" y="128" width="12" height="4" fill="#1a1a1a"/></g>
+        </g>
+        <!-- 下→上の波を示す矢印 -->
+        <line x1="405" y1="300" x2="405" y2="150" stroke="#8ce6a6" stroke-width="3" marker-end="url(#fb19arrow)"/>
+        <defs>
+          <marker id="fb19arrow" markerWidth="9" markerHeight="9" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L9,4 L0,8 z" fill="#8ce6a6"/>
+          </marker>
+        </defs>
+        <text x="405" y="330" fill="#8ce6a6" font-size="11" text-anchor="middle">下 → 上へ骸骨化</text>
+        <text x="405" y="360" fill="#cfe0ff" font-size="12" text-anchor="middle">♪ 暗い重低音（doom）</text>
+        <text x="405" y="382" fill="#8ce6a6" font-size="11" text-anchor="middle">見せ切ってから結果へ</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.13）はゲームオーバーで<strong>即・結果画面</strong>が出て、失敗の余韻がない。
+        右：対応後（v0.9.14）は盤面のキャラを<strong>下→上の波で骸骨化</strong>させ、<code>doom</code>（暗い重低音）とともに
+        <code>GAMEOVER_SEQ_DUR=1.6</code> 秒の演出を見せ切ってから結果画面を出す。当たり判定や得点は不変で、演出だけを追加している。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：岩肌＋ギザギザ下端＋ゆっくり降下＋低音 -->
-    <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
-    <rect x="315" y="40" width="180" height="70" fill="url(#c18-stone)"/>
-    <line x1="315" y1="62" x2="495" y2="62" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
-    <line x1="315" y1="84" x2="495" y2="84" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
-    <path d="M315,110 L327,128 L339,110 L351,132 L363,110 L375,126 L387,110 L399,131 L411,110 L423,127 L435,110 L447,130 L459,110 L471,126 L483,110 L495,129 L495,110 Z" fill="#3b342d" stroke="#1c1814" stroke-width="1.5"/>
-    <circle cx="345" cy="60" r="1.5" fill="rgba(255,255,255,0.25)"/>
-    <circle cx="430" cy="76" r="1.5" fill="rgba(0,0,0,0.3)"/>
-    <circle cx="390" cy="55" r="1.3" fill="rgba(255,255,255,0.2)"/>
-    <circle cx="365" cy="167" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="405" cy="167" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <circle cx="445" cy="167" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <path d="M405,152 l0,40 m-8,-12 l8,12 l8,-12" fill="none" stroke="#8ce6a6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="345" y="214" fill="#8ce6a6" font-size="16" text-anchor="middle">♪</text>
-    <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">岩肌＋下端ギザギザ</text>
-    <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">低い地鳴りでゆっくり降下</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.12）は天井が茶色のベタ塗りで、危険ゲージ満タン時に一瞬で 1 行ぶん下がっていた。
-    右：対応後（v0.9.13）は天井を岩肌（地層・スペックル・下端のギザギザ岩）にし、当たり判定は据え置いたまま描画だけを <code>dropPx</code> でスライドさせて、低い地鳴り（<code>quake</code>）とともにゆっくり降下する。天井降下でデッドラインに達した場合も降下を見せ切ってからゲームオーバー画面を出す。図はコード描画（本家 Snood の画像は使わない）。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb18">
+    <h3><span>#18：降りてくる天井を岩肌にし、降下をアニメ＋低音で怖く演出（v0.9.13・演出②c）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>危険ゲージが満タンになると降りてくる天井について、(1) 見た目を<strong>岩っぽく</strong>し、(2) 降りるときも<strong>すぐに下げず、アニメーションさせて「怖さ」を演出</strong>してほしい（BGM は低い音源）。プレイ演出フィードバック②のうち ②c。</div>
+    <div class="note fix"><span class="k">原因・対応</span>従来の天井は茶色の<strong>ベタ塗り（<code>#55432c</code>）＋白い線</strong>で、降下は危険ゲージ満タン時に <code>rowShift</code> を +1 する<strong>一瞬のジャンプ</strong>だった。対応は 3 点。<br>
+    (1) <strong>岩肌の描画</strong>：石肌のグラデーション＋地層＋<strong>下端のギザギザ岩（鍾乳石風の歯）</strong>をコードで描画（著作権配慮で画像は使わない）。質感は整数インデックスのハッシュで決定論的に生成し、毎フレームのちらつきを防ぐ（<code>renderRockyCeiling</code>）。<br>
+    (2) <strong>降下アニメ</strong>：当たり判定は論理座標のまま据え置き、<strong>描画時だけ</strong>オフセット <code>dropPx</code>（smoothstep で緩急）を当てて、天井と盤面のピースを 1 行ぶん<strong>スライド</strong>させる（所要 <code>CEILING_DROP_DUR = 0.5</code> 秒）。スライド中は誤発射を防ぐため発射をロックする。天井降下でデッドラインに達した場合も、<strong>降下を見せ切ってから</strong>ゲームオーバー画面を出す（<code>pendingEnd</code> で遅延）。<br>
+    (3) <strong>低音 SE</strong>：従来の警告音 <code>alarm</code> を、低い地鳴り＋着地の「ドスン」を重ねた <code>quake</code> に差し替えた。<br>
+    修正ファイル：<code>src/game.ts</code>・<code>src/audio.ts</code>・<code>src/config.ts</code>。</div>
+    <figure>
+      <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.12)は天井が茶色のベタ塗りで、降下は一瞬で1行下がる。対応後(v0.9.13)は天井が岩肌で下端がギザギザになり、低い地鳴りとともにゆっくりスライドして降りる。">
+        <defs>
+          <linearGradient id="c18-stone" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2c2622"/>
+            <stop offset="1" stop-color="#4a423a"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.12</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.13</text>
 
-<h3 id="fb17">#17：クリア時の「次のレベルへ」を大きく強調して誤タップを防ぐ（v0.9.11） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>ステージクリア後のリザルトで<strong>「次のレベルへ」を押したかったのに、誤って「タイトルへ」などを押してしまう</strong>ことがあった。原因は、3 つのボタン（「同じレベルをもう一度」「次のレベルへ」「タイトルへ」）が<strong>すべて同じ大きさ</strong>で縦に並んでおり、いちばん押したい主要アクションが見分けにくく、隣のボタンと押し間違えやすいこと。</p>
-<p><strong>原因・対応：</strong>原因＝リザルトの 3 ボタンが共通スタイル（<code>#result-buttons button</code> の <code>font-size:1rem; padding:0.6rem</code>）で<strong>同サイズ・等間隔</strong>だったこと。<br>
-対応＝<strong>主要アクションの「次のレベルへ」(<code>#btn-next</code>) だけを一回り大きく</strong>した。フォントを大きく（<code>1.3rem</code>）、縦のパディングを増やして<strong>タップ標的を拡大</strong>し、下方向の影（<code>box-shadow: 0 3px 0 #3d8b3d</code>）で押せる感を出した。文言の先頭に主要アクションの目印として <code>▶</code> を付けた。<strong>ボタンの並び順や他 2 つのサイズは変えない</strong>（「次へだけ大きく・順序維持」）。ゲームオーバー時は <code>#btn-next</code> が非表示（「もう一度」＋「タイトルへ」の 2 つ）になるため、この強調はクリア画面にだけ効き、ゲームオーバー画面の見た目は従来どおり。<code>src/style.css</code>・<code>src/main.ts</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.10)はリザルトの3ボタンが同じ大きさで縦に並び、次のレベルへとタイトルへを押し間違えやすい。対応後(v0.9.11)は次のレベルへだけを一回り大きく強調し、押し分けやすくして誤タップを防ぐ。">
-    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.10</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.11</text>
+        <!-- 対応前：茶色ベタ塗りの天井＋一瞬で降下 -->
+        <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+        <rect x="45" y="40" width="180" height="78" fill="#55432c"/>
+        <line x1="45" y1="118" x2="225" y2="118" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+        <circle cx="95" cy="152" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="135" cy="152" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <circle cx="175" cy="152" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <text x="135" y="250" fill="#ff9a9a" font-size="22" text-anchor="middle">⚡</text>
+        <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">茶色のベタ塗り</text>
+        <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">一瞬で 1 行下がる</text>
 
-    <!-- 対応前：3ボタンが同サイズで並び、押し間違えやすい -->
-    <rect x="45" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
-    <text x="135" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
-    <rect x="60" y="88" width="150" height="40" rx="8" fill="#4a90d9"/>
-    <text x="135" y="113" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
-    <rect x="60" y="138" width="150" height="40" rx="8" fill="#5cb85c"/>
-    <text x="135" y="163" fill="#ffffff" font-size="11" text-anchor="middle">次のレベルへ</text>
-    <rect x="60" y="188" width="150" height="40" rx="8" fill="#dddddd"/>
-    <text x="135" y="213" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
-    <!-- 誤タップ注意：同サイズで隣接する2つを赤枠で囲む -->
-    <rect x="53" y="132" width="164" height="102" rx="10" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="5 4"/>
-    <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">3つとも同じ大きさで</text>
-    <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">「次へ」と「タイトルへ」を押し間違える</text>
+        <!-- 対応後：岩肌＋ギザギザ下端＋ゆっくり降下＋低音 -->
+        <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+        <rect x="315" y="40" width="180" height="70" fill="url(#c18-stone)"/>
+        <line x1="315" y1="62" x2="495" y2="62" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+        <line x1="315" y1="84" x2="495" y2="84" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+        <path d="M315,110 L327,128 L339,110 L351,132 L363,110 L375,126 L387,110 L399,131 L411,110 L423,127 L435,110 L447,130 L459,110 L471,126 L483,110 L495,129 L495,110 Z" fill="#3b342d" stroke="#1c1814" stroke-width="1.5"/>
+        <circle cx="345" cy="60" r="1.5" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="430" cy="76" r="1.5" fill="rgba(0,0,0,0.3)"/>
+        <circle cx="390" cy="55" r="1.3" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="365" cy="167" r="18" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="405" cy="167" r="18" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <circle cx="445" cy="167" r="18" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <path d="M405,152 l0,40 m-8,-12 l8,12 l8,-12" fill="none" stroke="#8ce6a6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="345" y="214" fill="#8ce6a6" font-size="16" text-anchor="middle">♪</text>
+        <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">岩肌＋下端ギザギザ</text>
+        <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">低い地鳴りでゆっくり降下</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.12）は天井が茶色のベタ塗りで、危険ゲージ満タン時に一瞬で 1 行ぶん下がっていた。
+        右：対応後（v0.9.13）は天井を岩肌（地層・スペックル・下端のギザギザ岩）にし、当たり判定は据え置いたまま描画だけを <code>dropPx</code> でスライドさせて、低い地鳴り（<code>quake</code>）とともにゆっくり降下する。天井降下でデッドラインに達した場合も降下を見せ切ってからゲームオーバー画面を出す。図はコード描画（本家 Snood の画像は使わない）。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：「次のレベルへ」だけ大きく強調 -->
-    <rect x="315" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
-    <text x="405" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
-    <rect x="330" y="86" width="150" height="34" rx="8" fill="#4a90d9"/>
-    <text x="405" y="108" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
-    <!-- 主要アクション：影＋拡大で目立たせる -->
-    <rect x="322" y="131" width="166" height="56" rx="8" fill="#3d8b3d"/>
-    <rect x="322" y="128" width="166" height="56" rx="8" fill="#5cb85c"/>
-    <text x="405" y="162" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">▶ 次のレベルへ</text>
-    <rect x="330" y="196" width="150" height="34" rx="8" fill="#dddddd"/>
-    <text x="405" y="218" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
-    <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">「次のレベルへ」だけ大きく強調し</text>
-    <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">押し分けやすくして誤タップを防ぐ</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.10）はリザルトの 3 ボタンが同じ大きさで縦に並び、主要アクションが見分けにくく、「次のレベルへ」と「タイトルへ」を押し間違えやすかった（赤枠）。
-    右：対応後（v0.9.11→v0.9.12）は順序を変えず、主要アクションの「次のレベルへ」だけを一回り大きく（フォント拡大・縦パディング増・影）して <code>▶</code> を付け、指で押し分けやすくした。ゲームオーバー時はこのボタンが非表示になるため、強調はクリア画面にだけ効く。
-  </figcaption>
-</figure>
-<p><strong>追記（v0.9.12・拡大が効かない不具合を修正）：</strong>v0.9.11 では実機で「次のレベルへ」が<strong>影が付くだけで大きくならなかった</strong>。原因は CSS の<strong>詳細度（specificity）</strong>で、共通ルール <code>#result-buttons button</code>（id＋要素型）の方が <code>#btn-next</code> 単独より優先され、<code>font-size</code>・<code>padding</code> の拡大指定が上書きされていた（共通ルールに無い <code>box-shadow</code> だけが効いていた＝「影だけ付く」状態）。対応＝セレクタを <code>#result-buttons #btn-next</code>（id 2 つ）に変えて詳細度を上げ、拡大を確実に適用した。これで上図のとおり実際に一回り大きく表示される。<code>src/style.css</code> を修正。</p>
+  <div class="fb-detail" id="fb17">
+    <h3><span>#17：クリア時の「次のレベルへ」を大きく強調して誤タップを防ぐ（v0.9.11）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>ステージクリア後のリザルトで<strong>「次のレベルへ」を押したかったのに、誤って「タイトルへ」などを押してしまう</strong>ことがあった。原因は、3 つのボタン（「同じレベルをもう一度」「次のレベルへ」「タイトルへ」）が<strong>すべて同じ大きさ</strong>で縦に並んでおり、いちばん押したい主要アクションが見分けにくく、隣のボタンと押し間違えやすいこと。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝リザルトの 3 ボタンが共通スタイル（<code>#result-buttons button</code> の <code>font-size:1rem; padding:0.6rem</code>）で<strong>同サイズ・等間隔</strong>だったこと。<br>
+    対応＝<strong>主要アクションの「次のレベルへ」(<code>#btn-next</code>) だけを一回り大きく</strong>した。フォントを大きく（<code>1.3rem</code>）、縦のパディングを増やして<strong>タップ標的を拡大</strong>し、下方向の影（<code>box-shadow: 0 3px 0 #3d8b3d</code>）で押せる感を出した。文言の先頭に主要アクションの目印として <code>▶</code> を付けた。<strong>ボタンの並び順や他 2 つのサイズは変えない</strong>（「次へだけ大きく・順序維持」）。ゲームオーバー時は <code>#btn-next</code> が非表示（「もう一度」＋「タイトルへ」の 2 つ）になるため、この強調はクリア画面にだけ効き、ゲームオーバー画面の見た目は従来どおり。<code>src/style.css</code>・<code>src/main.ts</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.10)はリザルトの3ボタンが同じ大きさで縦に並び、次のレベルへとタイトルへを押し間違えやすい。対応後(v0.9.11)は次のレベルへだけを一回り大きく強調し、押し分けやすくして誤タップを防ぐ。">
+        <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.10</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.11</text>
 
-<h3 id="fb16">#16：ねらった角度で奥のくぼみへ撃ち込めるようにする（v0.9.9・判定モデル刷新） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>Steam で配信中の原作 Snood では、<strong>表示された照準角どおりに撃てば予測枠（奥の深いくぼみ）まで弾が滑り込む</strong>。これは「キャラの幅を通り道では考慮しない計算方法」だからと考えられる。一方 #15（v0.9.6〜v0.9.8）で奥取りに対応した現状の Snoot でも、まだ<strong>赤枠（奥のくぼみ）の手前で止まってしまう</strong>。この原作の挙動を Snoot でも実現したい。</p>
-<p><strong>原因・対応：</strong>原因＝飛行中の当たり判定が、弾の中心を既存キャラ中心から <code>HIT_DIST_RATIO = 0.85×cell</code> 以内で即「衝突」とみなす<strong>円オーバーラップ判定＝通り道全体で弾の幅を考慮</strong>していたこと。これがくぼみ入口の「肩」に引っかかり、奥へ届く前に止まる。その後の前進処理（<code>chooseLandingCell</code>）は <code>SETTLE_FORWARD_MIN_DOT</code> / <code>SETTLE_MAX_PERP</code> という 2 つの感度パラメータで奥へ押し込もうとする方式で、横向き気味の入口には届きにくく、#15 で繰り返し再調整が続いていた。<br>
-対応＝判定を<strong>最近傍セル（ボロノイ）方式</strong>に刷新した。弾の中心を小刻みに進め、各ステップで「いま中心が最も近いセル」だけを見る。最近接の<strong>空きセル</strong>より<strong>埋まりセル</strong>の方が近くなった瞬間＝中心が埋まりセルの領域に入った瞬間に、その直前まで居た空きセル（衝突相手に隣接＝必ず支持済み）へ着地する。<strong>弾の幅は着地先セルでだけ効き、通り道では効かない</strong>ので、ねらった射線どおり奥のくぼみへ滑り込む（＝原作の挙動）。隣り合う 2 つの埋まりセルの境界は両側とも occupied なので、間をすり抜けない（壁抜け防止）。これにより <code>HIT_DIST_RATIO</code>・<code>SETTLE_FORWARD_MIN_DOT</code>・<code>SETTLE_MAX_PERP</code>・<code>SETTLE_MAX_STEPS</code> といった<strong>感度パラメータをすべて廃止</strong>でき、#15 の再調整地獄から抜けられた。配置の純粋ロジックは <code>src/placement.ts</code>（<code>resolveLanding</code> ほか・DOM 非依存）に切り出し、実モジュールをブラウザ内で読み込んで<strong>決定論的に検証</strong>した：ランダム盤面×ランダム角度 600 発がすべて「空き＋支持セル」に着地（重なり 0／浮き 0）、くぼみの無い密な壁は貫通せず手前で停止、1 マスのくぼみには肩で止まらず到達。開発者向けの着地予測表示（<kbd>d</kbd> キー／<code>?debug</code>）も同じ判定を共有するので表示どおりに着地する。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.8)は弾の幅を通り道で考慮する円判定のため、くぼみ入口の肩に当たって手前で止まる。対応後(v0.9.9)は最近傍セル(ボロノイ)方式で中心が最も近い空きセルを辿るため、肩に当たらず奥のくぼみに入る。">
-    <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.8</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.9</text>
+        <!-- 対応前：3ボタンが同サイズで並び、押し間違えやすい -->
+        <rect x="45" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
+        <text x="135" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
+        <rect x="60" y="88" width="150" height="40" rx="8" fill="#4a90d9"/>
+        <text x="135" y="113" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
+        <rect x="60" y="138" width="150" height="40" rx="8" fill="#5cb85c"/>
+        <text x="135" y="163" fill="#ffffff" font-size="11" text-anchor="middle">次のレベルへ</text>
+        <rect x="60" y="188" width="150" height="40" rx="8" fill="#dddddd"/>
+        <text x="135" y="213" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
+        <!-- 誤タップ注意：同サイズで隣接する2つを赤枠で囲む -->
+        <rect x="53" y="132" width="164" height="102" rx="10" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="135" y="404" fill="#ff9a9a" font-size="11" text-anchor="middle">3つとも同じ大きさで</text>
+        <text x="135" y="422" fill="#ff9a9a" font-size="11" text-anchor="middle">「次へ」と「タイトルへ」を押し間違える</text>
 
-    <!-- 対応前：円判定で弾の幅が肩に当たり手前で止まる -->
-    <rect x="45" y="40" width="180" height="335" rx="12" fill="#19283f"/>
-    <!-- くぼみ入口の両脇のキャラ（肩） -->
-    <circle cx="105" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="165" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <!-- 奥の空きくぼみ（入れない） -->
-    <circle cx="135" cy="112" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
-    <!-- 照準線（くぼみまで通っている） -->
-    <line x1="135" y1="355" x2="135" y2="100" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
-    <!-- 手前で止まった弾＋弾幅を表す当たり判定の輪（肩に重なる） -->
-    <circle cx="135" cy="196" r="31" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <circle cx="135" cy="196" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <text x="135" y="402" fill="#ff9a9a" font-size="11" text-anchor="middle">弾の幅(赤い輪)が肩に当たり</text>
-    <text x="135" y="420" fill="#ff9a9a" font-size="11" text-anchor="middle">奥のくぼみの手前で止まる</text>
+        <!-- 対応後：「次のレベルへ」だけ大きく強調 -->
+        <rect x="315" y="40" width="180" height="320" rx="14" fill="#ffffff"/>
+        <text x="405" y="70" fill="#333333" font-size="14" font-weight="bold" text-anchor="middle">Lv.3 クリア！</text>
+        <rect x="330" y="86" width="150" height="34" rx="8" fill="#4a90d9"/>
+        <text x="405" y="108" fill="#ffffff" font-size="11" text-anchor="middle">同じレベルをもう一度</text>
+        <!-- 主要アクション：影＋拡大で目立たせる -->
+        <rect x="322" y="131" width="166" height="56" rx="8" fill="#3d8b3d"/>
+        <rect x="322" y="128" width="166" height="56" rx="8" fill="#5cb85c"/>
+        <text x="405" y="162" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">▶ 次のレベルへ</text>
+        <rect x="330" y="196" width="150" height="34" rx="8" fill="#dddddd"/>
+        <text x="405" y="218" fill="#333333" font-size="11" text-anchor="middle">タイトルへ</text>
+        <text x="405" y="404" fill="#8ce6a6" font-size="11" text-anchor="middle">「次のレベルへ」だけ大きく強調し</text>
+        <text x="405" y="422" fill="#8ce6a6" font-size="11" text-anchor="middle">押し分けやすくして誤タップを防ぐ</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.10）はリザルトの 3 ボタンが同じ大きさで縦に並び、主要アクションが見分けにくく、「次のレベルへ」と「タイトルへ」を押し間違えやすかった（赤枠）。
+        右：対応後（v0.9.11→v0.9.12）は順序を変えず、主要アクションの「次のレベルへ」だけを一回り大きく（フォント拡大・縦パディング増・影）して <code>▶</code> を付け、指で押し分けやすくした。ゲームオーバー時はこのボタンが非表示になるため、強調はクリア画面にだけ効く。
+      </figcaption>
+    </figure>
+    <div class="callout"><span class="ct">追記（v0.9.12・拡大が効かない不具合を修正）</span>v0.9.11 では実機で「次のレベルへ」が<strong>影が付くだけで大きくならなかった</strong>。原因は CSS の<strong>詳細度（specificity）</strong>で、共通ルール <code>#result-buttons button</code>（id＋要素型）の方が <code>#btn-next</code> 単独より優先され、<code>font-size</code>・<code>padding</code> の拡大指定が上書きされていた（共通ルールに無い <code>box-shadow</code> だけが効いていた＝「影だけ付く」状態）。対応＝セレクタを <code>#result-buttons #btn-next</code>（id 2 つ）に変えて詳細度を上げ、拡大を確実に適用した。これで上図のとおり実際に一回り大きく表示される。<code>src/style.css</code> を修正。</div>
+  </div>
 
-    <!-- 対応後：最近傍セルで中心を辿り奥のくぼみに入る -->
-    <rect x="315" y="40" width="180" height="335" rx="12" fill="#19283f"/>
-    <circle cx="375" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="435" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <!-- 弾の中心が辿った経路（点線＋点） -->
-    <line x1="405" y1="355" x2="405" y2="112" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
-    <circle cx="405" cy="300" r="2.5" fill="#00e5ff"/>
-    <circle cx="405" cy="260" r="2.5" fill="#00e5ff"/>
-    <circle cx="405" cy="220" r="2.5" fill="#00e5ff"/>
-    <circle cx="405" cy="180" r="2.5" fill="#00e5ff"/>
-    <!-- くぼみに入った弾 -->
-    <circle cx="405" cy="112" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <circle cx="405" cy="112" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
-    <text x="405" y="402" fill="#8ce6a6" font-size="11" text-anchor="middle">中心が最も近い空きセルを辿り</text>
-    <text x="405" y="420" fill="#8ce6a6" font-size="11" text-anchor="middle">肩に当たらず奥のくぼみに入る</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.8）は飛行中の当たり判定が弾の幅（赤い輪＝<code>0.85×cell</code> の円）を通り道で考慮するため、くぼみ入口の肩に当たって奥のくぼみの手前で止まっていた。
-    右：対応後（v0.9.9）は最近傍セル（ボロノイ）方式に刷新し、弾の中心がいちばん近い空きセルを辿る。弾の幅は着地先でだけ効くので肩に当たらず、ねらった射線どおり奥のくぼみまで滑り込む（原作 Snood 準拠）。隣り合う埋まりセルの間はすり抜けない（壁抜け防止）。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb16">
+    <h3><span>#16：ねらった角度で奥のくぼみへ撃ち込めるようにする（v0.9.9・判定モデル刷新）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>Steam で配信中の原作 Snood では、<strong>表示された照準角どおりに撃てば予測枠（奥の深いくぼみ）まで弾が滑り込む</strong>。これは「キャラの幅を通り道では考慮しない計算方法」だからと考えられる。一方 #15（v0.9.6〜v0.9.8）で奥取りに対応した現状の Snoot でも、まだ<strong>赤枠（奥のくぼみ）の手前で止まってしまう</strong>。この原作の挙動を Snoot でも実現したい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝飛行中の当たり判定が、弾の中心を既存キャラ中心から <code>HIT_DIST_RATIO = 0.85×cell</code> 以内で即「衝突」とみなす<strong>円オーバーラップ判定＝通り道全体で弾の幅を考慮</strong>していたこと。これがくぼみ入口の「肩」に引っかかり、奥へ届く前に止まる。その後の前進処理（<code>chooseLandingCell</code>）は <code>SETTLE_FORWARD_MIN_DOT</code> / <code>SETTLE_MAX_PERP</code> という 2 つの感度パラメータで奥へ押し込もうとする方式で、横向き気味の入口には届きにくく、#15 で繰り返し再調整が続いていた。<br>
+    対応＝判定を<strong>最近傍セル（ボロノイ）方式</strong>に刷新した。弾の中心を小刻みに進め、各ステップで「いま中心が最も近いセル」だけを見る。最近接の<strong>空きセル</strong>より<strong>埋まりセル</strong>の方が近くなった瞬間＝中心が埋まりセルの領域に入った瞬間に、その直前まで居た空きセル（衝突相手に隣接＝必ず支持済み）へ着地する。<strong>弾の幅は着地先セルでだけ効き、通り道では効かない</strong>ので、ねらった射線どおり奥のくぼみへ滑り込む（＝原作の挙動）。隣り合う 2 つの埋まりセルの境界は両側とも occupied なので、間をすり抜けない（壁抜け防止）。これにより <code>HIT_DIST_RATIO</code>・<code>SETTLE_FORWARD_MIN_DOT</code>・<code>SETTLE_MAX_PERP</code>・<code>SETTLE_MAX_STEPS</code> といった<strong>感度パラメータをすべて廃止</strong>でき、#15 の再調整地獄から抜けられた。配置の純粋ロジックは <code>src/placement.ts</code>（<code>resolveLanding</code> ほか・DOM 非依存）に切り出し、実モジュールをブラウザ内で読み込んで<strong>決定論的に検証</strong>した：ランダム盤面×ランダム角度 600 発がすべて「空き＋支持セル」に着地（重なり 0／浮き 0）、くぼみの無い密な壁は貫通せず手前で停止、1 マスのくぼみには肩で止まらず到達。開発者向けの着地予測表示（<kbd>d</kbd> キー／<code>?debug</code>）も同じ判定を共有するので表示どおりに着地する。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.8)は弾の幅を通り道で考慮する円判定のため、くぼみ入口の肩に当たって手前で止まる。対応後(v0.9.9)は最近傍セル(ボロノイ)方式で中心が最も近い空きセルを辿るため、肩に当たらず奥のくぼみに入る。">
+        <rect x="0" y="0" width="540" height="440" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.8</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.9</text>
 
-<h3 id="fb15">#15：キャラのセット位置に奥行きの許容範囲を持たせる（v0.9.6） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>原作 Snood では、発射角度の微調整でキャラを「手前の空きセル」または「その奥（天井側）の空きセル」のどちらにもセットできた。現状の Snoot は、ねらった線の先に空きがあっても<strong>衝突したキャラの手前にしかセットされず、その奥の空きセル（図の青〇）に入れられない</strong>。原作のように配置に許容範囲を持たせるとゲーム性が上がるので取り入れたい。</p>
-<p><strong>原因・対応：</strong>原因＝着弾時、弾は最初に当たったキャラの手前で止まり、その停止座標に<strong>最も近い空きセルを距離だけで選んでいた</strong>ため、停止点が常に手前側に固定され、奥のセルは必ず手前のセルに負けていた（<code>src/game.ts</code> の <code>land()</code>）。<br>
-対応＝着弾後、<strong>進行方向（壁反射後の向き）に沿って空きセルを 1 つずつ前進（グリッド・ウォーク）し、行き止まり手前の最も奥の空き＋支持セルに着地</strong>させるようにした。空きセルだけを辿るのでキャラ群は貫通しない。さらに、斜め狙いのときに弾が横方向へ滑ってしまうのを防ぐため、<strong>ねらった射線から大きく逸れる前進は弾く</strong>（射線からの垂直距離に上限）。これにより、線が通る奥のくぼみまで入れられ、微妙な角度で手前／奥を撃ち分けられる。前進のしきい値などは <code>src/config.ts</code> に定数化（<code>SETTLE_FORWARD_MIN_DOT</code> ほか）。配置の純粋ロジックは <code>src/placement.ts</code> に切り出し、決定論的に動作検証した（奥へ到達／角度で手前に留まる／壁は貫通しない の3ケース）。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.5)は弾が衝突相手の手前(赤〇)で止まり、奥のくぼみ(青〇)に入れない。対応後(v0.9.6)はねらった線に沿って奥のくぼみまで入り、微妙な角度で手前/奥を撃ち分けられる。">
-    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
-    <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
-    <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.6</text>
+        <!-- 対応前：円判定で弾の幅が肩に当たり手前で止まる -->
+        <rect x="45" y="40" width="180" height="335" rx="12" fill="#19283f"/>
+        <!-- くぼみ入口の両脇のキャラ（肩） -->
+        <circle cx="105" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="165" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <!-- 奥の空きくぼみ（入れない） -->
+        <circle cx="135" cy="112" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
+        <!-- 照準線（くぼみまで通っている） -->
+        <line x1="135" y1="355" x2="135" y2="100" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+        <!-- 手前で止まった弾＋弾幅を表す当たり判定の輪（肩に重なる） -->
+        <circle cx="135" cy="196" r="31" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <circle cx="135" cy="196" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <text x="135" y="402" fill="#ff9a9a" font-size="11" text-anchor="middle">弾の幅(赤い輪)が肩に当たり</text>
+        <text x="135" y="420" fill="#ff9a9a" font-size="11" text-anchor="middle">奥のくぼみの手前で止まる</text>
 
-    <!-- 対応前：手前(赤)で止まり、奥(青)に入れない -->
-    <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
-    <!-- くぼみの両脇のキャラ -->
-    <circle cx="105" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="165" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <!-- 奥の空き（青〇・入れない） -->
-    <circle cx="135" cy="128" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
-    <!-- 手前で止まった弾（赤〇） -->
-    <circle cx="135" cy="172" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <circle cx="135" cy="172" r="24" fill="none" stroke="#ff5b5b" stroke-width="3"/>
-    <!-- 照準線 -->
-    <line x1="135" y1="350" x2="135" y2="150" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">手前(赤)で止まり</text>
-    <text x="135" y="408" fill="#ff9a9a" font-size="11" text-anchor="middle">奥(青)に入れない</text>
+        <!-- 対応後：最近傍セルで中心を辿り奥のくぼみに入る -->
+        <rect x="315" y="40" width="180" height="335" rx="12" fill="#19283f"/>
+        <circle cx="375" cy="150" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="435" cy="150" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <!-- 弾の中心が辿った経路（点線＋点） -->
+        <line x1="405" y1="355" x2="405" y2="112" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+        <circle cx="405" cy="300" r="2.5" fill="#00e5ff"/>
+        <circle cx="405" cy="260" r="2.5" fill="#00e5ff"/>
+        <circle cx="405" cy="220" r="2.5" fill="#00e5ff"/>
+        <circle cx="405" cy="180" r="2.5" fill="#00e5ff"/>
+        <!-- くぼみに入った弾 -->
+        <circle cx="405" cy="112" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <circle cx="405" cy="112" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
+        <text x="405" y="402" fill="#8ce6a6" font-size="11" text-anchor="middle">中心が最も近い空きセルを辿り</text>
+        <text x="405" y="420" fill="#8ce6a6" font-size="11" text-anchor="middle">肩に当たらず奥のくぼみに入る</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.8）は飛行中の当たり判定が弾の幅（赤い輪＝<code>0.85×cell</code> の円）を通り道で考慮するため、くぼみ入口の肩に当たって奥のくぼみの手前で止まっていた。
+        右：対応後（v0.9.9）は最近傍セル（ボロノイ）方式に刷新し、弾の中心がいちばん近い空きセルを辿る。弾の幅は着地先でだけ効くので肩に当たらず、ねらった射線どおり奥のくぼみまで滑り込む（原作 Snood 準拠）。隣り合う埋まりセルの間はすり抜けない（壁抜け防止）。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：線に沿って奥(青)まで入る -->
-    <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
-    <circle cx="375" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
-    <circle cx="435" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
-    <!-- 奥のくぼみに入った弾（青〇） -->
-    <circle cx="405" cy="128" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
-    <circle cx="405" cy="128" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
-    <!-- 手前は空き（赤〇） -->
-    <circle cx="405" cy="172" r="20" fill="none" stroke="#ff5b5b" stroke-width="3" stroke-dasharray="5 4"/>
-    <line x1="405" y1="350" x2="405" y2="106" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">線に沿って奥(青)まで入る</text>
-    <text x="405" y="408" fill="#8ce6a6" font-size="11" text-anchor="middle">角度で手前/奥を撃ち分け</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.5）は弾が衝突相手の手前（赤〇）で止まり、停止点に最も近いセルへ吸着するため、奥のくぼみ（青〇）に入れなかった。
-    右：対応後（v0.9.6）はねらった線に沿って空きセルを前進し、奥のくぼみ（青〇）まで入れる。微妙な角度で手前／奥を撃ち分けられる（原作 Snood 準拠）。空きセルだけを辿るのでキャラ群は貫通しない。
-  </figcaption>
-</figure>
-<p><strong>追記（v0.9.7・感度調整）：</strong>v0.9.6 を実際にプレイしたところ「奥に入りにくい」との指摘があり、奥のくぼみへ入りやすくなるよう前進の感度を調整した。<code>src/config.ts</code> の <code>SETTLE_FORWARD_MIN_DOT</code>（前進を許す方向の許容角）を <code>0.5 → 0.35</code>、<code>SETTLE_MAX_PERP</code>（射線からの逸脱上限）を <code>0.6 → 0.72</code> に緩めた。経路上の全セルが射線から <code>SETTLE_MAX_PERP</code> 以内に収まる仕組みのため、緩めても横滑りは構造的に 1 セル未満に抑えられ、キャラ群の貫通も起きない。ロジックは変えず定数のみの調整。</p>
-<p><strong>追記（v0.9.8・再調整＋開発者向け表示）：</strong>まだ奥に入りにくいとの指摘を受け <code>SETTLE_FORWARD_MIN_DOT</code> を <code>0.35 → 0.25</code> にさらに緩めた。あわせて<strong>着地予測の開発者向け表示</strong>を追加：プレイ中に <kbd>d</kbd> キーで ON/OFF を切り替えられ（スマホ等では URL に <code>?debug</code> を付けて開く）、現在の照準で発射した場合に着地するセルを水色のリングと座標で重ね描きする。予測は実弾と同じ移動・衝突・着弾ロジックを使うので、表示どおりのセルに着地する（感度調整の検証に使える）。<code>src/game.ts</code>（<code>predictLanding()</code>／<code>renderLandingPreview()</code>）・<code>src/config.ts</code> を修正。</p>
+  <div class="fb-detail" id="fb15">
+    <h3><span>#15：キャラのセット位置に奥行きの許容範囲を持たせる（v0.9.6）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>原作 Snood では、発射角度の微調整でキャラを「手前の空きセル」または「その奥（天井側）の空きセル」のどちらにもセットできた。現状の Snoot は、ねらった線の先に空きがあっても<strong>衝突したキャラの手前にしかセットされず、その奥の空きセル（図の青〇）に入れられない</strong>。原作のように配置に許容範囲を持たせるとゲーム性が上がるので取り入れたい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝着弾時、弾は最初に当たったキャラの手前で止まり、その停止座標に<strong>最も近い空きセルを距離だけで選んでいた</strong>ため、停止点が常に手前側に固定され、奥のセルは必ず手前のセルに負けていた（<code>src/game.ts</code> の <code>land()</code>）。<br>
+    対応＝着弾後、<strong>進行方向（壁反射後の向き）に沿って空きセルを 1 つずつ前進（グリッド・ウォーク）し、行き止まり手前の最も奥の空き＋支持セルに着地</strong>させるようにした。空きセルだけを辿るのでキャラ群は貫通しない。さらに、斜め狙いのときに弾が横方向へ滑ってしまうのを防ぐため、<strong>ねらった射線から大きく逸れる前進は弾く</strong>（射線からの垂直距離に上限）。これにより、線が通る奥のくぼみまで入れられ、微妙な角度で手前／奥を撃ち分けられる。前進のしきい値などは <code>src/config.ts</code> に定数化（<code>SETTLE_FORWARD_MIN_DOT</code> ほか）。配置の純粋ロジックは <code>src/placement.ts</code> に切り出し、決定論的に動作検証した（奥へ到達／角度で手前に留まる／壁は貫通しない の3ケース）。<code>src/game.ts</code>・<code>src/config.ts</code>・<code>src/placement.ts</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.5)は弾が衝突相手の手前(赤〇)で止まり、奥のくぼみ(青〇)に入れない。対応後(v0.9.6)はねらった線に沿って奥のくぼみまで入り、微妙な角度で手前/奥を撃ち分けられる。">
+        <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.6</text>
 
-<h3 id="fb14">#14：iPhone でバージョン表示下に残る横線を根本解消（v0.9.5） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>#11〜#13（v0.9.2〜v0.9.4）で対応してきたが、iPhone 8 のスタンドアロン起動だと <strong>v0.9.4 でも「Snoot v0.9.4」の下に細い横線が残り、v0.9.2 とほとんど見え方が変わらない</strong>。タイトル画面では横線は出ず、ゲーム画面でだけ出る。</p>
-<p><strong>原因・対応：</strong>これまでの 3 回はいずれも「背景色を合わせて隠す」対症療法で、横線を生む構造そのものは残っていた。<br>
-真因＝画面最下端で<strong>「ほぼ同じだが微妙に違う 2 色」が隣接</strong>し、その境界が線に見えること。盤面（キャンバス）は透明地に 25% 黒を重ねるため実効色は <code>#19283f</code>（やや濃い）。その背後・周囲の <code>#canvas-wrap</code> 背景は <code>#213654</code>（やや明るい）。iPhone では盤面が<strong>画面全幅</strong>でキャンバスが <code>#canvas-wrap</code> を覆うため、<code>#213654</code> は「キャンバスを中央寄せした際の下端のサブピクセル隙間」や「iOS スタンドアロンでレイアウト外に生じる下端帯」としてだけ細く覗き、それが横線に見えていた。v0.9.4 はルート背景の下端帯を <code>#19283f</code> に揃えたが、<code>#canvas-wrap</code> は <code>#213654</code> のまま残したため、明るい <code>#213654</code> の細線が消えずに残っていた。<br>
-着眼点＝<code>#213654</code>（跳ね返り壁の目印）が<strong>実際に見えるのは PC だけ</strong>（盤面が画面より狭く左右に余白が出る）。<strong>スマホでは盤面が全幅で左右余白＝壁が存在しない</strong>。そこで、盤面が全幅のとき（＝スマホ）だけ <code>#canvas-wrap</code> を盤面実効色 <code>--play-bg</code>（<code>#19283f</code>）に揃えるようにした。これで下端に覗く面が「隙間」でも「レイアウト外帯」でも一律 <code>#19283f</code>＝盤面色になり、原因のどちらに転んでも横線が消える。全幅かどうかは <code>resize()</code> の実測値（<code>boardW ≥ availW</code>）で判定して <code>#canvas-wrap</code> にクラスを付け外しするため、PC では従来どおり <code>#213654</code> の壁が残る。<code>src/game.ts</code>（<code>resize()</code>）と <code>src/style.css</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.4)はキャンバス下端の隙間に明るい #213654 が細く覗いて横線が残る。対応後(v0.9.5)は盤面が全幅のとき枠も盤面色 #19283f に揃え、覗く色が盤面と同色になって横線が消える。">
-    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
-    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.4</text>
-    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.5</text>
-    <defs>
-      <clipPath id="ln-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
-      <clipPath id="ln-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
-    </defs>
+        <!-- 対応前：手前(赤)で止まり、奥(青)に入れない -->
+        <rect x="45" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+        <!-- くぼみの両脇のキャラ -->
+        <circle cx="105" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="165" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <!-- 奥の空き（青〇・入れない） -->
+        <circle cx="135" cy="128" r="20" fill="none" stroke="#3aa0ff" stroke-width="3" stroke-dasharray="5 4"/>
+        <!-- 手前で止まった弾（赤〇） -->
+        <circle cx="135" cy="172" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <circle cx="135" cy="172" r="24" fill="none" stroke="#ff5b5b" stroke-width="3"/>
+        <!-- 照準線 -->
+        <line x1="135" y1="350" x2="135" y2="150" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">手前(赤)で止まり</text>
+        <text x="135" y="408" fill="#ff9a9a" font-size="11" text-anchor="middle">奥(青)に入れない</text>
 
-    <!-- 対応前：盤面 #19283f の下端に明るい #213654 の細線が残る -->
-    <g clip-path="url(#ln-clipA)">
-      <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
-      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="135" cy="318" r="13" fill="#3a4a63"/>
-      <circle cx="135" cy="318" r="8" fill="#f5a623"/>
-      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
-      <!-- 不具合：下端に明るい #213654 の細い横線 -->
-      <rect x="45" y="360" width="180" height="4" fill="#213654"/>
-    </g>
-    <rect x="45" y="357" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に明るい細線が残る</text>
-    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 隙間に #213654 が覗く</text>
+        <!-- 対応後：線に沿って奥(青)まで入る -->
+        <rect x="315" y="40" width="180" height="330" rx="12" fill="#19283f"/>
+        <circle cx="375" cy="90" r="20" fill="#4a90d9" stroke="#222" stroke-width="2"/>
+        <circle cx="435" cy="90" r="20" fill="#5cb85c" stroke="#222" stroke-width="2"/>
+        <!-- 奥のくぼみに入った弾（青〇） -->
+        <circle cx="405" cy="128" r="20" fill="#f5a623" stroke="#222" stroke-width="2"/>
+        <circle cx="405" cy="128" r="24" fill="none" stroke="#3aa0ff" stroke-width="3"/>
+        <!-- 手前は空き（赤〇） -->
+        <circle cx="405" cy="172" r="20" fill="none" stroke="#ff5b5b" stroke-width="3" stroke-dasharray="5 4"/>
+        <line x1="405" y1="350" x2="405" y2="106" stroke="#cdd8ea" stroke-width="2" stroke-dasharray="4 6"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">線に沿って奥(青)まで入る</text>
+        <text x="405" y="408" fill="#8ce6a6" font-size="11" text-anchor="middle">角度で手前/奥を撃ち分け</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.5）は弾が衝突相手の手前（赤〇）で止まり、停止点に最も近いセルへ吸着するため、奥のくぼみ（青〇）に入れなかった。
+        右：対応後（v0.9.6）はねらった線に沿って空きセルを前進し、奥のくぼみ（青〇）まで入れる。微妙な角度で手前／奥を撃ち分けられる（原作 Snood 準拠）。空きセルだけを辿るのでキャラ群は貫通しない。
+      </figcaption>
+    </figure>
+    <div class="callout"><span class="ct">追記（v0.9.7・感度調整）</span>v0.9.6 を実際にプレイしたところ「奥に入りにくい」との指摘があり、奥のくぼみへ入りやすくなるよう前進の感度を調整した。<code>src/config.ts</code> の <code>SETTLE_FORWARD_MIN_DOT</code>（前進を許す方向の許容角）を <code>0.5 → 0.35</code>、<code>SETTLE_MAX_PERP</code>（射線からの逸脱上限）を <code>0.6 → 0.72</code> に緩めた。経路上の全セルが射線から <code>SETTLE_MAX_PERP</code> 以内に収まる仕組みのため、緩めても横滑りは構造的に 1 セル未満に抑えられ、キャラ群の貫通も起きない。ロジックは変えず定数のみの調整。</div>
+    <div class="callout"><span class="ct">追記（v0.9.8・再調整＋開発者向け表示）</span>まだ奥に入りにくいとの指摘を受け <code>SETTLE_FORWARD_MIN_DOT</code> を <code>0.35 → 0.25</code> にさらに緩めた。あわせて<strong>着地予測の開発者向け表示</strong>を追加：プレイ中に <kbd>d</kbd> キーで ON/OFF を切り替えられ（スマホ等では URL に <code>?debug</code> を付けて開く）、現在の照準で発射した場合に着地するセルを水色のリングと座標で重ね描きする。予測は実弾と同じ移動・衝突・着弾ロジックを使うので、表示どおりのセルに着地する（感度調整の検証に使える）。<code>src/game.ts</code>（<code>predictLanding()</code>／<code>renderLandingPreview()</code>）・<code>src/config.ts</code> を修正。</div>
+  </div>
 
-    <!-- 対応後：全幅のとき枠も #19283f。覗く色が盤面と同色で線が消える -->
-    <g clip-path="url(#ln-clipB)">
-      <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
-      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="405" cy="318" r="13" fill="#3a4a63"/>
-      <circle cx="405" cy="318" r="8" fill="#f5a623"/>
-      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
-      <!-- 下端まで一様な #19283f（隙間に覗く色も盤面と同色＝線が見えない） -->
-    </g>
-    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで一様で横線なし</text>
-    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">全幅時は枠も #19283f に統一</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.4）は盤面（<code>#19283f</code>）の下端に、キャンバスを覆い切れない隙間から明るい枠色 <code>#213654</code> が細く覗き、横線として残っていた。
-    右：対応後（v0.9.5）は盤面が全幅のとき（スマホ）だけ <code>#canvas-wrap</code> も盤面色 <code>--play-bg</code>（<code>#19283f</code>）に揃え、覗く色を盤面と同色にして横線を消した。
-    左右余白が出る PC では <code>#213654</code> の跳ね返り壁の目印をそのまま維持している。
-  </figcaption>
-</figure>
-<p><strong>追記（v0.9.10・真因の根治）：</strong>v0.9.5 の対症（盤面が全幅のとき枠 <code>#canvas-wrap</code> を盤面色に揃える）でゲーム画面の横線は消えたが、iPhone 8 実機で再確認したところ、今度は<strong>タイトル画面</strong>の下端（版数表示部）に盤面色 <code>#19283f</code> の<strong>暗い帯</strong>が新たに出る regression が残っていた。<br>
-真因＝2 つ。(1) <strong>ルート背景のフォールバック単色を常時 <code>--play-bg</code>（<code>#19283f</code>）にしていた</strong>ため、iOS で本文（<code>height:100%</code>）より下に生じる下端帯がビューポート全体へ伝播し、グラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）より暗い <code>#19283f</code> がタイトルで「暗い帯」として露出していた。(2) <strong>盤面（キャンバス）背景が半透明 <code>rgba(0,0,0,0.25)</code></strong> で、全幅時に背後 <code>#canvas-wrap</code> 色×0.75 となり、実効色がルート帯の <code>#19283f</code> と微妙にずれていた。<br>
-対応＝(1) ルート背景の<strong>既定フォールバックをグラデ裾 <code>--bg-bottom</code> に戻し、ゲーム中だけ <code>&lt;html&gt;</code> に <code>in-game</code> クラスを付けて <code>--play-bg</code>（<code>#19283f</code>）へ切り替える</strong>（<code>src/style.css</code>。付け外しは <code>src/main.ts</code> の <code>startGame()</code>／<code>showTitle()</code>）。これでタイトルの下端帯はグラデ裾と同色、ゲーム画面の下端帯は盤面色と同色になり、両画面とも帯が消える。(2) <strong>盤面を不透明 <code>#19283f</code> で直接塗り</strong>、背後色依存をなくした（<code>src/game.ts</code> の <code>render()</code>）。PC の見た目（左右の壁マーカー・盤面色）は不変。<strong>iPhone 8 実機で帯が消えたことを確認済み（2026-06-25）</strong>。<code>src/style.css</code>・<code>src/main.ts</code>・<code>src/game.ts</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前(v0.9.5)はルート背景のフォールバックが常時盤面色 #19283f のため、タイトル画面の下端にグラデ裾 #2c4870 より暗い帯が出る。対応後(v0.9.10)は既定フォールバックを裾色に戻しゲーム中のみ盤面色へ切り替え、盤面も不透明 #19283f で塗ることで両画面とも帯が消える。">
-    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
-    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
-    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.10</text>
-    <defs>
-      <linearGradient id="ttl-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1b2a4a"/>
-        <stop offset="1" stop-color="#2c4870"/>
-      </linearGradient>
-      <clipPath id="ttl-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
-      <clipPath id="ttl-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
-    </defs>
+  <div class="fb-detail" id="fb14">
+    <h3><span>#14：iPhone でバージョン表示下に残る横線を根本解消（v0.9.5）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>#11〜#13（v0.9.2〜v0.9.4）で対応してきたが、iPhone 8 のスタンドアロン起動だと <strong>v0.9.4 でも「Snoot v0.9.4」の下に細い横線が残り、v0.9.2 とほとんど見え方が変わらない</strong>。タイトル画面では横線は出ず、ゲーム画面でだけ出る。</div>
+    <div class="note fix"><span class="k">原因・対応</span>これまでの 3 回はいずれも「背景色を合わせて隠す」対症療法で、横線を生む構造そのものは残っていた。<br>
+    真因＝画面最下端で<strong>「ほぼ同じだが微妙に違う 2 色」が隣接</strong>し、その境界が線に見えること。盤面（キャンバス）は透明地に 25% 黒を重ねるため実効色は <code>#19283f</code>（やや濃い）。その背後・周囲の <code>#canvas-wrap</code> 背景は <code>#213654</code>（やや明るい）。iPhone では盤面が<strong>画面全幅</strong>でキャンバスが <code>#canvas-wrap</code> を覆うため、<code>#213654</code> は「キャンバスを中央寄せした際の下端のサブピクセル隙間」や「iOS スタンドアロンでレイアウト外に生じる下端帯」としてだけ細く覗き、それが横線に見えていた。v0.9.4 はルート背景の下端帯を <code>#19283f</code> に揃えたが、<code>#canvas-wrap</code> は <code>#213654</code> のまま残したため、明るい <code>#213654</code> の細線が消えずに残っていた。<br>
+    着眼点＝<code>#213654</code>（跳ね返り壁の目印）が<strong>実際に見えるのは PC だけ</strong>（盤面が画面より狭く左右に余白が出る）。<strong>スマホでは盤面が全幅で左右余白＝壁が存在しない</strong>。そこで、盤面が全幅のとき（＝スマホ）だけ <code>#canvas-wrap</code> を盤面実効色 <code>--play-bg</code>（<code>#19283f</code>）に揃えるようにした。これで下端に覗く面が「隙間」でも「レイアウト外帯」でも一律 <code>#19283f</code>＝盤面色になり、原因のどちらに転んでも横線が消える。全幅かどうかは <code>resize()</code> の実測値（<code>boardW ≥ availW</code>）で判定して <code>#canvas-wrap</code> にクラスを付け外しするため、PC では従来どおり <code>#213654</code> の壁が残る。<code>src/game.ts</code>（<code>resize()</code>）と <code>src/style.css</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.4)はキャンバス下端の隙間に明るい #213654 が細く覗いて横線が残る。対応後(v0.9.5)は盤面が全幅のとき枠も盤面色 #19283f に揃え、覗く色が盤面と同色になって横線が消える。">
+        <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+        <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.4</text>
+        <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.5</text>
+        <defs>
+          <clipPath id="ln-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+          <clipPath id="ln-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+        </defs>
 
-    <!-- 対応前：常時フォールバック #19283f がタイトル下端で暗い帯になる -->
-    <g clip-path="url(#ttl-clipA)">
-      <rect x="45" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
-      <!-- ロゴ（スマイル） -->
-      <circle cx="135" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
-      <circle cx="127" cy="99" r="3.2" fill="#222"/>
-      <circle cx="143" cy="99" r="3.2" fill="#222"/>
-      <path d="M125 112 Q135 121 145 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <text x="135" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
-      <!-- ボタン -->
-      <rect x="80" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
-      <text x="135" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
-      <rect x="80" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
-      <text x="135" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
-      <rect x="80" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
-      <text x="135" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
-      <!-- 版数表示 -->
-      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
-      <!-- 不具合：下端にグラデ裾より暗い #19283f の帯 -->
-      <rect x="45" y="352" width="180" height="12" fill="#19283f"/>
-    </g>
-    <rect x="45" y="349" width="180" height="17" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">タイトル下端に暗い帯が出る</text>
-    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">グラデ裾 #2c4870 / 帯 #19283f</text>
+        <!-- 対応前：盤面 #19283f の下端に明るい #213654 の細線が残る -->
+        <g clip-path="url(#ln-clipA)">
+          <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
+          <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="135" cy="318" r="13" fill="#3a4a63"/>
+          <circle cx="135" cy="318" r="8" fill="#f5a623"/>
+          <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
+          <!-- 不具合：下端に明るい #213654 の細い横線 -->
+          <rect x="45" y="360" width="180" height="4" fill="#213654"/>
+        </g>
+        <rect x="45" y="357" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に明るい細線が残る</text>
+        <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 隙間に #213654 が覗く</text>
 
-    <!-- 対応後：フォールバックを裾色に戻し、ゲーム中のみ盤面色へ。タイトルは均一 -->
-    <g clip-path="url(#ttl-clipB)">
-      <rect x="315" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
-      <circle cx="405" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
-      <circle cx="397" cy="99" r="3.2" fill="#222"/>
-      <circle cx="413" cy="99" r="3.2" fill="#222"/>
-      <path d="M395 112 Q405 121 415 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <text x="405" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
-      <rect x="350" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
-      <text x="405" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
-      <rect x="350" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
-      <text x="405" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
-      <rect x="350" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
-      <text x="405" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
-      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.10</text>
-      <!-- 下端帯もグラデ裾と同色（#2c4870）で帯が見えない -->
-      <rect x="315" y="352" width="180" height="12" fill="#2c4870"/>
-    </g>
-    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで均一で帯なし</text>
-    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">既定は裾色／ゲーム中のみ盤面色</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.5）はルート背景のフォールバックを常時盤面色 <code>#19283f</code> にしていたため、iOS でタイトル画面の下端（版数表示部）に、グラデ裾 <code>#2c4870</code> より暗い <code>#19283f</code> の帯が露出していた。
-    右：対応後（v0.9.10）は既定のフォールバックをグラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）に戻し、ゲーム中だけ <code>html.in-game</code> で盤面色 <code>--play-bg</code>（<code>#19283f</code>）へ切り替える。あわせて盤面を不透明 <code>#19283f</code> で塗ることで、タイトル・ゲームのどちらも下端帯が背景と同色になり帯が消える。PC の見た目は不変。
-  </figcaption>
-</figure>
+        <!-- 対応後：全幅のとき枠も #19283f。覗く色が盤面と同色で線が消える -->
+        <g clip-path="url(#ln-clipB)">
+          <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
+          <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="405" cy="318" r="13" fill="#3a4a63"/>
+          <circle cx="405" cy="318" r="8" fill="#f5a623"/>
+          <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
+          <!-- 下端まで一様な #19283f（隙間に覗く色も盤面と同色＝線が見えない） -->
+        </g>
+        <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで一様で横線なし</text>
+        <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">全幅時は枠も #19283f に統一</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.4）は盤面（<code>#19283f</code>）の下端に、キャンバスを覆い切れない隙間から明るい枠色 <code>#213654</code> が細く覗き、横線として残っていた。
+        右：対応後（v0.9.5）は盤面が全幅のとき（スマホ）だけ <code>#canvas-wrap</code> も盤面色 <code>--play-bg</code>（<code>#19283f</code>）に揃え、覗く色を盤面と同色にして横線を消した。
+        左右余白が出る PC では <code>#213654</code> の跳ね返り壁の目印をそのまま維持している。
+      </figcaption>
+    </figure>
+    <div class="callout"><span class="ct">追記（v0.9.10・真因の根治）</span>v0.9.5 の対症（盤面が全幅のとき枠 <code>#canvas-wrap</code> を盤面色に揃える）でゲーム画面の横線は消えたが、iPhone 8 実機で再確認したところ、今度は<strong>タイトル画面</strong>の下端（版数表示部）に盤面色 <code>#19283f</code> の<strong>暗い帯</strong>が新たに出る regression が残っていた。<br>
+    真因＝2 つ。(1) <strong>ルート背景のフォールバック単色を常時 <code>--play-bg</code>（<code>#19283f</code>）にしていた</strong>ため、iOS で本文（<code>height:100%</code>）より下に生じる下端帯がビューポート全体へ伝播し、グラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）より暗い <code>#19283f</code> がタイトルで「暗い帯」として露出していた。(2) <strong>盤面（キャンバス）背景が半透明 <code>rgba(0,0,0,0.25)</code></strong> で、全幅時に背後 <code>#canvas-wrap</code> 色×0.75 となり、実効色がルート帯の <code>#19283f</code> と微妙にずれていた。<br>
+    対応＝(1) ルート背景の<strong>既定フォールバックをグラデ裾 <code>--bg-bottom</code> に戻し、ゲーム中だけ <code>&lt;html&gt;</code> に <code>in-game</code> クラスを付けて <code>--play-bg</code>（<code>#19283f</code>）へ切り替える</strong>（<code>src/style.css</code>。付け外しは <code>src/main.ts</code> の <code>startGame()</code>／<code>showTitle()</code>）。これでタイトルの下端帯はグラデ裾と同色、ゲーム画面の下端帯は盤面色と同色になり、両画面とも帯が消える。(2) <strong>盤面を不透明 <code>#19283f</code> で直接塗り</strong>、背後色依存をなくした（<code>src/game.ts</code> の <code>render()</code>）。PC の見た目（左右の壁マーカー・盤面色）は不変。<strong>iPhone 8 実機で帯が消えたことを確認済み（2026-06-25）</strong>。<code>src/style.css</code>・<code>src/main.ts</code>・<code>src/game.ts</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前(v0.9.5)はルート背景のフォールバックが常時盤面色 #19283f のため、タイトル画面の下端にグラデ裾 #2c4870 より暗い帯が出る。対応後(v0.9.10)は既定フォールバックを裾色に戻しゲーム中のみ盤面色へ切り替え、盤面も不透明 #19283f で塗ることで両画面とも帯が消える。">
+        <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+        <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.5</text>
+        <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.10</text>
+        <defs>
+          <linearGradient id="ttl-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1b2a4a"/>
+            <stop offset="1" stop-color="#2c4870"/>
+          </linearGradient>
+          <clipPath id="ttl-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+          <clipPath id="ttl-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+        </defs>
 
-<h3 id="fb13">#13：iPhone でバージョン表示下の帯を盤面と同色にする（v0.9.4） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>#11（v0.9.2）で白い帯は消え、#12（v0.9.3）で横線も消えたが、iPhone 8 のスタンドアロン起動だと「Snoot v0.9.3」の下に<strong>盤面とは少し違う色の帯</strong>が残って違和感がある。その色は PC 版でゲーム画面の左右に見える余白と同じ色。Android のように、iPhone でもこの帯を盤面の背景色と同じに見せたい。</p>
-<p><strong>原因・対応：</strong>原因＝「ほぼ同じだが微妙に違う 2 色」が併存していたこと。盤面（キャンバス）は透明背景に 25% 黒を重ねており、その背後は <code>#canvas-wrap</code> の <code>#213654</code> なので実効色は <strong><code>#213654 × 0.75 ≒ #19283f</code>（やや濃い）</strong>。一方、PC の左右余白（<code>#canvas-wrap</code> 背景）と、iOS スタンドアロンで文書外に生じる下端余白を塗る <code>html, body</code> の単色フォールバックは <strong><code>#213654</code>（やや明るい）</strong>。v0.9.2（白帯対策）と v0.9.3（横線対策）で <code>#213654</code> を背景に足した結果、キャンバスの背後がグラデーションから単色 <code>#213654</code> に変わって盤面が一律 <code>#19283f</code> になり、明るい <code>#213654</code> の余白との差が iPhone 下端の広い平面で目立つようになっていた。<br>
-対応＝<strong>全体を 1 色に統一はしない</strong>。PC ではキャンバス左右の色差が<strong>ボールの跳ね返り壁の目印</strong>になっており、統一すると壁が分かりにくくなるため。PC 左右余白（<code>#canvas-wrap</code> 背景）と iPhone 下端の帯（<code>html, body</code> フォールバック）は別々の面で、フォールバックは PC では表示されない。そこで盤面の実効色を変数 <code>--play-bg: #19283f</code> として定義し、<strong><code>html, body</code> のフォールバックだけ <code>#213654</code> → <code>--play-bg</code> に差し替えた</strong>。これで iPhone 下端の帯だけ盤面色に揃い、PC の跳ね返り壁（<code>#213654</code>）はそのまま残る。<code>src/style.css</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前は iPhone 下端の帯が盤面より明るい #213654 で違和感がある。対応後は帯が盤面と同じ #19283f になり継ぎ目が消える。PC の跳ね返り壁の色 #213654 は維持する。">
-    <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
-    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.3</text>
-    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.4</text>
-    <defs>
-      <clipPath id="bd-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
-      <clipPath id="bd-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
-    </defs>
+        <!-- 対応前：常時フォールバック #19283f がタイトル下端で暗い帯になる -->
+        <g clip-path="url(#ttl-clipA)">
+          <rect x="45" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
+          <!-- ロゴ（スマイル） -->
+          <circle cx="135" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
+          <circle cx="127" cy="99" r="3.2" fill="#222"/>
+          <circle cx="143" cy="99" r="3.2" fill="#222"/>
+          <path d="M125 112 Q135 121 145 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <text x="135" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
+          <!-- ボタン -->
+          <rect x="80" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
+          <text x="135" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
+          <rect x="80" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+          <text x="135" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
+          <rect x="80" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+          <text x="135" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
+          <!-- 版数表示 -->
+          <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.5</text>
+          <!-- 不具合：下端にグラデ裾より暗い #19283f の帯 -->
+          <rect x="45" y="352" width="180" height="12" fill="#19283f"/>
+        </g>
+        <rect x="45" y="349" width="180" height="17" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">タイトル下端に暗い帯が出る</text>
+        <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">グラデ裾 #2c4870 / 帯 #19283f</text>
 
-    <!-- 対応前：盤面 #19283f に対し下端の帯が明るい #213654 -->
-    <g clip-path="url(#bd-clipA)">
-      <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
-      <!-- HUD -->
-      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <!-- バブル -->
-      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
-      <!-- 砲台 -->
-      <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
-      <circle cx="135" cy="320" r="8" fill="#f5a623"/>
-      <text x="216" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
-      <!-- 不具合：下端の帯が盤面より明るい #213654 -->
-      <rect x="45" y="350" width="180" height="14" fill="#213654"/>
-    </g>
-    <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">帯が盤面より明るい</text>
-    <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 帯 #213654</text>
+        <!-- 対応後：フォールバックを裾色に戻し、ゲーム中のみ盤面色へ。タイトルは均一 -->
+        <g clip-path="url(#ttl-clipB)">
+          <rect x="315" y="44" width="180" height="320" fill="url(#ttl-bg)"/>
+          <circle cx="405" cy="104" r="22" fill="#f5a623" stroke="#222" stroke-width="2"/>
+          <circle cx="397" cy="99" r="3.2" fill="#222"/>
+          <circle cx="413" cy="99" r="3.2" fill="#222"/>
+          <path d="M395 112 Q405 121 415 112" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <text x="405" y="150" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Snoot</text>
+          <rect x="350" y="172" width="110" height="26" rx="13" fill="#2b6cb0"/>
+          <text x="405" y="190" fill="#fff" font-size="12" text-anchor="middle">あそぶ</text>
+          <rect x="350" y="206" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+          <text x="405" y="223" fill="#cfd8e6" font-size="11" text-anchor="middle">むずかしさ</text>
+          <rect x="350" y="238" width="110" height="24" rx="12" fill="none" stroke="#7f93ad" stroke-width="1.5"/>
+          <text x="405" y="255" fill="#cfd8e6" font-size="11" text-anchor="middle">ハイスコア</text>
+          <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.10</text>
+          <!-- 下端帯もグラデ裾と同色（#2c4870）で帯が見えない -->
+          <rect x="315" y="352" width="180" height="12" fill="#2c4870"/>
+        </g>
+        <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで均一で帯なし</text>
+        <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">既定は裾色／ゲーム中のみ盤面色</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.5）はルート背景のフォールバックを常時盤面色 <code>#19283f</code> にしていたため、iOS でタイトル画面の下端（版数表示部）に、グラデ裾 <code>#2c4870</code> より暗い <code>#19283f</code> の帯が露出していた。
+        右：対応後（v0.9.10）は既定のフォールバックをグラデ裾 <code>--bg-bottom</code>（<code>#2c4870</code>）に戻し、ゲーム中だけ <code>html.in-game</code> で盤面色 <code>--play-bg</code>（<code>#19283f</code>）へ切り替える。あわせて盤面を不透明 <code>#19283f</code> で塗ることで、タイトル・ゲームのどちらも下端帯が背景と同色になり帯が消える。PC の見た目は不変。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：帯も盤面と同じ #19283f で継ぎ目なし -->
-    <g clip-path="url(#bd-clipB)">
-      <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
-      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
-      <circle cx="405" cy="320" r="8" fill="#f5a623"/>
-      <text x="486" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
-      <!-- 下端まで盤面と同色（帯が見えない） -->
-    </g>
-    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">帯も盤面と同色で継ぎ目なし</text>
-    <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">盤面・帯とも #19283f</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.3）は iPhone 下端の帯が盤面（<code>#19283f</code>）より明るい <code>#213654</code> で違和感がある。
-    右：対応後（v0.9.4）は <code>html, body</code> のフォールバックを盤面色 <code>--play-bg</code>（<code>#19283f</code>）に変え、帯を盤面と同色にして継ぎ目をなくした。
-    PC の左右余白（ボールの跳ね返り壁の目印）は <code>#213654</code> のまま維持している。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb13">
+    <h3><span>#13：iPhone でバージョン表示下の帯を盤面と同色にする（v0.9.4）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>#11（v0.9.2）で白い帯は消え、#12（v0.9.3）で横線も消えたが、iPhone 8 のスタンドアロン起動だと「Snoot v0.9.3」の下に<strong>盤面とは少し違う色の帯</strong>が残って違和感がある。その色は PC 版でゲーム画面の左右に見える余白と同じ色。Android のように、iPhone でもこの帯を盤面の背景色と同じに見せたい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝「ほぼ同じだが微妙に違う 2 色」が併存していたこと。盤面（キャンバス）は透明背景に 25% 黒を重ねており、その背後は <code>#canvas-wrap</code> の <code>#213654</code> なので実効色は <strong><code>#213654 × 0.75 ≒ #19283f</code>（やや濃い）</strong>。一方、PC の左右余白（<code>#canvas-wrap</code> 背景）と、iOS スタンドアロンで文書外に生じる下端余白を塗る <code>html, body</code> の単色フォールバックは <strong><code>#213654</code>（やや明るい）</strong>。v0.9.2（白帯対策）と v0.9.3（横線対策）で <code>#213654</code> を背景に足した結果、キャンバスの背後がグラデーションから単色 <code>#213654</code> に変わって盤面が一律 <code>#19283f</code> になり、明るい <code>#213654</code> の余白との差が iPhone 下端の広い平面で目立つようになっていた。<br>
+    対応＝<strong>全体を 1 色に統一はしない</strong>。PC ではキャンバス左右の色差が<strong>ボールの跳ね返り壁の目印</strong>になっており、統一すると壁が分かりにくくなるため。PC 左右余白（<code>#canvas-wrap</code> 背景）と iPhone 下端の帯（<code>html, body</code> フォールバック）は別々の面で、フォールバックは PC では表示されない。そこで盤面の実効色を変数 <code>--play-bg: #19283f</code> として定義し、<strong><code>html, body</code> のフォールバックだけ <code>#213654</code> → <code>--play-bg</code> に差し替えた</strong>。これで iPhone 下端の帯だけ盤面色に揃い、PC の跳ね返り壁（<code>#213654</code>）はそのまま残る。<code>src/style.css</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 430" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前は iPhone 下端の帯が盤面より明るい #213654 で違和感がある。対応後は帯が盤面と同じ #19283f になり継ぎ目が消える。PC の跳ね返り壁の色 #213654 は維持する。">
+        <rect x="0" y="0" width="540" height="430" rx="12" fill="#0d1526"/>
+        <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.3</text>
+        <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.4</text>
+        <defs>
+          <clipPath id="bd-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+          <clipPath id="bd-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+        </defs>
 
-<h3 id="fb12">#12：iPhone 画面下端の背景継ぎ目（横線）を解消（v0.9.3） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>#11（v0.9.2）で下端の白い帯は消えたが、iPhone 8 のスタンドアロン起動だと、バージョン表示の下あたり（盤面の最下部）に<strong>薄い横線（継ぎ目）</strong>がうっすら残って見えた。</p>
-<p><strong>原因・対応：</strong>原因＝キャンバスを中央寄せする都合で下端にサブピクセルの隙間が生じると、そこに盤面背景（当時は <code>html, body</code> のグラデーションに 25% 黒を重ねた色）より明るい<strong>素のグラデーション下端 <code>#2c4870</code></strong>が透けて、細い横線に見えていた。対応＝キャンバスを載せる枠 <code>#canvas-wrap</code> 自体を盤面外周色 <code>#213654</code> で塗り、隙間に透ける色をキャンバス下端と同系色にして横線を消した。<code>src/style.css</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前は盤面下端のサブピクセル隙間に明るいグラデーションが透けて薄い横線が見える。対応後は枠を #213654 で塗り横線が消える。">
-    <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
-    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.2</text>
-    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.3</text>
-    <defs>
-      <linearGradient id="ln-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1b2a4a"/>
-        <stop offset="1" stop-color="#2c4870"/>
-      </linearGradient>
-      <clipPath id="ln-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
-      <clipPath id="ln-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
-    </defs>
+        <!-- 対応前：盤面 #19283f に対し下端の帯が明るい #213654 -->
+        <g clip-path="url(#bd-clipA)">
+          <rect x="45" y="44" width="180" height="320" fill="#19283f"/>
+          <!-- HUD -->
+          <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <!-- バブル -->
+          <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+          <!-- 砲台 -->
+          <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
+          <circle cx="135" cy="320" r="8" fill="#f5a623"/>
+          <text x="216" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
+          <!-- 不具合：下端の帯が盤面より明るい #213654 -->
+          <rect x="45" y="350" width="180" height="14" fill="#213654"/>
+        </g>
+        <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">帯が盤面より明るい</text>
+        <text x="135" y="408" fill="#ff9a9a" font-size="10" text-anchor="middle">盤面 #19283f / 帯 #213654</text>
 
-    <!-- 対応前：下端のサブピクセル隙間に明るいグラデーションが透けて横線 -->
-    <g clip-path="url(#ln-clipA)">
-      <rect x="45" y="44" width="180" height="320" fill="url(#ln-bg)"/>
-      <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
-      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
-      <circle cx="135" cy="320" r="8" fill="#f5a623"/>
-      <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
-      <!-- 不具合：隙間に透ける明るい横線（素のグラデーション #2c4870） -->
-      <rect x="45" y="356" width="180" height="3" fill="#2c4870"/>
-    </g>
-    <rect x="45" y="353" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に薄い横線が残る</text>
+        <!-- 対応後：帯も盤面と同じ #19283f で継ぎ目なし -->
+        <g clip-path="url(#bd-clipB)">
+          <rect x="315" y="44" width="180" height="320" fill="#19283f"/>
+          <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
+          <circle cx="405" cy="320" r="8" fill="#f5a623"/>
+          <text x="486" y="346" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.4</text>
+          <!-- 下端まで盤面と同色（帯が見えない） -->
+        </g>
+        <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">帯も盤面と同色で継ぎ目なし</text>
+        <text x="405" y="408" fill="#8ce6a6" font-size="10" text-anchor="middle">盤面・帯とも #19283f</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.3）は iPhone 下端の帯が盤面（<code>#19283f</code>）より明るい <code>#213654</code> で違和感がある。
+        右：対応後（v0.9.4）は <code>html, body</code> のフォールバックを盤面色 <code>--play-bg</code>（<code>#19283f</code>）に変え、帯を盤面と同色にして継ぎ目をなくした。
+        PC の左右余白（ボールの跳ね返り壁の目印）は <code>#213654</code> のまま維持している。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：枠を #213654 で塗り隙間も同色化、横線が消える -->
-    <g clip-path="url(#ln-clipB)">
-      <rect x="315" y="44" width="180" height="320" fill="#213654"/>
-      <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
-      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
-      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
-      <circle cx="405" cy="320" r="8" fill="#f5a623"/>
-      <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
-    </g>
-    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">枠を盤面色で塗り横線が消える</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.2）はキャンバス下端のサブピクセル隙間に明るいグラデーション（<code>#2c4870</code>）が透け、薄い横線に見える。
-    右：対応後（v0.9.3）は <code>#canvas-wrap</code> を <code>#213654</code> で塗り、隙間に透ける色を同系色にして横線を消した。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb12">
+    <h3><span>#12：iPhone 画面下端の背景継ぎ目（横線）を解消（v0.9.3）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>#11（v0.9.2）で下端の白い帯は消えたが、iPhone 8 のスタンドアロン起動だと、バージョン表示の下あたり（盤面の最下部）に<strong>薄い横線（継ぎ目）</strong>がうっすら残って見えた。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝キャンバスを中央寄せする都合で下端にサブピクセルの隙間が生じると、そこに盤面背景（当時は <code>html, body</code> のグラデーションに 25% 黒を重ねた色）より明るい<strong>素のグラデーション下端 <code>#2c4870</code></strong>が透けて、細い横線に見えていた。対応＝キャンバスを載せる枠 <code>#canvas-wrap</code> 自体を盤面外周色 <code>#213654</code> で塗り、隙間に透ける色をキャンバス下端と同系色にして横線を消した。<code>src/style.css</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前は盤面下端のサブピクセル隙間に明るいグラデーションが透けて薄い横線が見える。対応後は枠を #213654 で塗り横線が消える。">
+        <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
+        <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.2</text>
+        <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.3</text>
+        <defs>
+          <linearGradient id="ln-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1b2a4a"/>
+            <stop offset="1" stop-color="#2c4870"/>
+          </linearGradient>
+          <clipPath id="ln2-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+          <clipPath id="ln2-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+        </defs>
 
-<h3 id="fb11">#11：iPhone スタンドアロン時の画面下端の白い余白を解消（v0.9.2） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>iPhone 8 でホーム画面から起動（スタンドアロン）すると、ゲーム画面の最下部に横幅いっぱいの白い帯が出て、濃紺の画面と違和感があった。Android では出ず下端まで途切れない。Android と同様に境目のない見た目にしたい。</p>
-<p><strong>原因・対応：</strong>原因＝ゲームの濃紺は <code>html, body</code> の背景グラデーション（透明なキャンバスに 25% 黒オーバーレイを重ねたものを透かして見えている）だが、この背景が<strong>グラデーション画像のみで単色の <code>background-color</code> を持たない</strong>ため。iOS スタンドアロンでは高さ <code>100%</code> の文書の外側に余白領域ができ、そこは画像が届かず既定の白で塗られていた（Android は文書が画面を埋めるので隙間が出ない）。対応＝ルート背景に<strong>盤面下端の実効色 <code>#213654</code></strong>（グラデーション下端 <code>#2c4870</code> に 25% 黒オーバーレイを重ねた色）を単色として併記。ルート要素の背景色はビューポート全体へ伝播するため、余白が盤面と同色で埋まり白帯が消える。通常ブラウザ・PC・Android は隙間が無いので見た目は不変。<code>src/style.css</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="対応前後の比較。対応前は iPhone スタンドアロン時に画面下端へ白い帯が出る。対応後は下端まで盤面と同色で継ぎ目が無い。">
-    <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
-    <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.1</text>
-    <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.2</text>
-    <defs>
-      <linearGradient id="be-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1b2a4a"/>
-        <stop offset="1" stop-color="#2c4870"/>
-      </linearGradient>
-      <clipPath id="be-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
-      <clipPath id="be-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
-    </defs>
+        <!-- 対応前：下端のサブピクセル隙間に明るいグラデーションが透けて横線 -->
+        <g clip-path="url(#ln2-clipA)">
+          <rect x="45" y="44" width="180" height="320" fill="url(#ln-bg)"/>
+          <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+          <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="135" cy="320" r="13" fill="#3a4a63"/>
+          <circle cx="135" cy="320" r="8" fill="#f5a623"/>
+          <text x="216" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
+          <!-- 不具合：隙間に透ける明るい横線（素のグラデーション #2c4870） -->
+          <rect x="45" y="356" width="180" height="3" fill="#2c4870"/>
+        </g>
+        <rect x="45" y="353" width="180" height="9" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に薄い横線が残る</text>
 
-    <!-- 対応前：下端に白い帯 -->
-    <g clip-path="url(#be-clipA)">
-      <rect x="45" y="44" width="180" height="320" fill="url(#be-bg)"/>
-      <!-- キャンバス相当の 25% 黒オーバーレイ -->
-      <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
-      <!-- HUD -->
-      <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
-      <!-- バブル -->
-      <circle cx="70" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="174" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
-      <!-- 砲台 -->
-      <circle cx="135" cy="322" r="13" fill="#3a4a63"/>
-      <circle cx="135" cy="322" r="8" fill="#4a90d9"/>
-      <text x="216" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.1</text>
-      <!-- 不具合：下端の白帯 -->
-      <rect x="45" y="350" width="180" height="14" fill="#ffffff"/>
-    </g>
-    <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に白い帯が出る</text>
+        <!-- 対応後：枠を #213654 で塗り隙間も同色化、横線が消える -->
+        <g clip-path="url(#ln2-clipB)">
+          <rect x="315" y="44" width="180" height="320" fill="#213654"/>
+          <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+          <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">30</text>
+          <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="405" cy="320" r="13" fill="#3a4a63"/>
+          <circle cx="405" cy="320" r="8" fill="#f5a623"/>
+          <text x="486" y="344" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.3</text>
+        </g>
+        <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">枠を盤面色で塗り横線が消える</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.2）はキャンバス下端のサブピクセル隙間に明るいグラデーション（<code>#2c4870</code>）が透け、薄い横線に見える。
+        右：対応後（v0.9.3）は <code>#canvas-wrap</code> を <code>#213654</code> で塗り、隙間に透ける色を同系色にして横線を消した。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- 対応後：下端まで盤面色で継ぎ目なし -->
-    <g clip-path="url(#be-clipB)">
-      <rect x="315" y="44" width="180" height="320" fill="url(#be-bg)"/>
-      <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
-      <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
-      <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
-      <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
-      <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
-      <circle cx="340" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
-      <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
-      <circle cx="444" cy="94" r="12" fill="#f5a623"/>
-      <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
-      <circle cx="405" cy="322" r="13" fill="#3a4a63"/>
-      <circle cx="405" cy="322" r="8" fill="#4a90d9"/>
-      <text x="486" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
-    </g>
-    <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで継ぎ目なし</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.1）は iPhone のスタンドアロン起動時、画面下端に白い帯が出る。
-    右：対応後（v0.9.2）は下端の余白を盤面と同じ色（<code>#213654</code>）で塗り、Android と同様に継ぎ目をなくした。
-  </figcaption>
-</figure>
+  <div class="fb-detail" id="fb11">
+    <h3><span>#11：iPhone スタンドアロン時の画面下端の白い余白を解消（v0.9.2）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>iPhone 8 でホーム画面から起動（スタンドアロン）すると、ゲーム画面の最下部に横幅いっぱいの白い帯が出て、濃紺の画面と違和感があった。Android では出ず下端まで途切れない。Android と同様に境目のない見た目にしたい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝ゲームの濃紺は <code>html, body</code> の背景グラデーション（透明なキャンバスに 25% 黒オーバーレイを重ねたものを透かして見えている）だが、この背景が<strong>グラデーション画像のみで単色の <code>background-color</code> を持たない</strong>ため。iOS スタンドアロンでは高さ <code>100%</code> の文書の外側に余白領域ができ、そこは画像が届かず既定の白で塗られていた（Android は文書が画面を埋めるので隙間が出ない）。対応＝ルート背景に<strong>盤面下端の実効色 <code>#213654</code></strong>（グラデーション下端 <code>#2c4870</code> に 25% 黒オーバーレイを重ねた色）を単色として併記。ルート要素の背景色はビューポート全体へ伝播するため、余白が盤面と同色で埋まり白帯が消える。通常ブラウザ・PC・Android は隙間が無いので見た目は不変。<code>src/style.css</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 410" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。対応前は iPhone スタンドアロン時に画面下端へ白い帯が出る。対応後は下端まで盤面と同色で継ぎ目が無い。">
+        <rect x="0" y="0" width="540" height="410" rx="12" fill="#0d1526"/>
+        <text x="135" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.1</text>
+        <text x="405" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.2</text>
+        <defs>
+          <linearGradient id="be-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1b2a4a"/>
+            <stop offset="1" stop-color="#2c4870"/>
+          </linearGradient>
+          <clipPath id="be-clipA"><rect x="45" y="44" width="180" height="320" rx="20"/></clipPath>
+          <clipPath id="be-clipB"><rect x="315" y="44" width="180" height="320" rx="20"/></clipPath>
+        </defs>
 
-<h3 id="fb10">#10：iPhone のステータスバー（セーフエリア）との重なり解消（v0.9.1） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>iPhone 8 でホーム画面から起動（スタンドアロン）すると、上部の HUD（レベル表示・スコア・「タイトルへ」ボタン）が iOS のステータスバー（時刻・電波・電池）と重なって見づらく、ステータスバー領域に隠れた「タイトルへ」ボタンが押せなくなっていた。</p>
-<p><strong>原因・対応：</strong>原因＝<code>viewport-fit=cover</code> ＋ <code>black-translucent</code> ステータスバー構成でコンテンツが画面最上端から描かれるのに、CSS でセーフエリア（<code>env(safe-area-inset-*)</code>）を考慮していなかったため。さらに iPhone 8 はノッチが無く <code>env(safe-area-inset-top)</code> が 0 を返すので、単純な <code>env()</code> だけでは回避できない。対応＝PWA スタンドアロン起動時のみ（<code>@media (display-mode: standalone)</code>）HUD 上部に <code>max(env(safe-area-inset-top), 20px)</code> の余白を確保してステータスバーを避けた（通常ブラウザ・PC には余白を出さない）。あわせて横向きの左右切り欠き（HUD）と、ノッチ端末のホームインジケータ（盤面下端・バージョン表示）にもインセットを加えた。<code>src/style.css</code> を修正。</p>
-<figure>
-  <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="セーフエリア対応の前後比較。対応前はステータスバーと HUD が重なって「タイトルへ」ボタンが押せず、対応後は HUD を下げて衝突を解消している。">
-    <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
-    <text x="125" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.0</text>
-    <text x="415" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.1</text>
-    <defs>
-      <linearGradient id="sa-bg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1b2a4a"/>
-        <stop offset="1" stop-color="#2c4870"/>
-      </linearGradient>
-      <clipPath id="sa-clipA"><rect x="30" y="44" width="190" height="360" rx="22"/></clipPath>
-      <clipPath id="sa-clipB"><rect x="320" y="44" width="190" height="360" rx="22"/></clipPath>
-    </defs>
+        <!-- 対応前：下端に白い帯 -->
+        <g clip-path="url(#be-clipA)">
+          <rect x="45" y="44" width="180" height="320" fill="url(#be-bg)"/>
+          <!-- キャンバス相当の 25% 黒オーバーレイ -->
+          <rect x="45" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+          <!-- HUD -->
+          <rect x="45" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="55" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="88" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="216" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
+          <!-- バブル -->
+          <circle cx="70" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="96" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="122" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="148" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="174" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="200" cy="94" r="12" fill="#4a90d9"/>
+          <!-- 砲台 -->
+          <circle cx="135" cy="322" r="13" fill="#3a4a63"/>
+          <circle cx="135" cy="322" r="8" fill="#4a90d9"/>
+          <text x="216" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.1</text>
+          <!-- 不具合：下端の白帯 -->
+          <rect x="45" y="350" width="180" height="14" fill="#ffffff"/>
+        </g>
+        <rect x="45" y="350" width="180" height="14" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="45" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="135" y="392" fill="#ff9a9a" font-size="11" text-anchor="middle">下端に白い帯が出る</text>
 
-    <!-- ===== 対応前：HUD が最上端から描かれステータスバーに食い込む ===== -->
-    <g clip-path="url(#sa-clipA)">
-      <rect x="30" y="44" width="190" height="360" fill="url(#sa-bg)"/>
-      <rect x="30" y="44" width="190" height="46" fill="#0c1322" fill-opacity="0.82"/>
-      <!-- HUD（ステータスバーと同じ最上段の一行に並ぶ） -->
-      <text x="42" y="72" fill="#ffb347" font-size="13" font-weight="bold">Easy</text>
-      <text x="80" y="72" fill="#cfd8e6" font-size="12">Lv.1</text>
-      <text x="146" y="72" fill="#fff" font-size="12" font-weight="bold">780</text>
-      <rect x="166" y="60" width="46" height="20" rx="4" fill="none" stroke="#8aa0bd" stroke-opacity="0.8"/>
-      <text x="189" y="73" fill="#aab8cc" font-size="8" text-anchor="middle">タイトルへ</text>
-      <!-- ステータスバー（半透明でコンテンツの上に重なる） -->
-      <g stroke="#fff" stroke-width="2">
-        <line x1="42" y1="66" x2="42" y2="62"/>
-        <line x1="47" y1="66" x2="47" y2="58"/>
-        <line x1="52" y1="66" x2="52" y2="54"/>
-      </g>
-      <text x="120" y="65" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">14:08</text>
-      <rect x="176" y="55" width="22" height="11" rx="2" fill="none" stroke="#fff"/>
-      <rect x="178" y="57" width="12" height="7" fill="#fff"/>
-      <rect x="199" y="58" width="2" height="5" fill="#fff"/>
-      <text x="172" y="64" fill="#fff" font-size="9" text-anchor="end">65%</text>
-    </g>
-    <!-- 衝突マーカー -->
-    <circle cx="49" cy="62" r="17" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <circle cx="190" cy="63" r="27" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
-    <rect x="30" y="44" width="190" height="360" rx="22" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="125" y="430" fill="#ff9a9a" font-size="11" text-anchor="middle">ステータスバーと HUD が重なり</text>
-    <text x="125" y="448" fill="#ff9a9a" font-size="11" text-anchor="middle">「タイトルへ」ボタンが押せない</text>
+        <!-- 対応後：下端まで盤面色で継ぎ目なし -->
+        <g clip-path="url(#be-clipB)">
+          <rect x="315" y="44" width="180" height="320" fill="url(#be-bg)"/>
+          <rect x="315" y="70" width="180" height="294" fill="#000" fill-opacity="0.25"/>
+          <rect x="315" y="44" width="180" height="26" fill="#0c1322" fill-opacity="0.85"/>
+          <text x="325" y="61" fill="#ffb347" font-size="11" font-weight="bold">Easy</text>
+          <text x="358" y="61" fill="#cfd8e6" font-size="10">Lv.1</text>
+          <text x="486" y="61" fill="#fff" font-size="10" text-anchor="end">0</text>
+          <circle cx="340" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="366" cy="94" r="12" fill="#e74c3c"/>
+          <circle cx="392" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="418" cy="94" r="12" fill="#5cb85c"/>
+          <circle cx="444" cy="94" r="12" fill="#f5a623"/>
+          <circle cx="470" cy="94" r="12" fill="#4a90d9"/>
+          <circle cx="405" cy="322" r="13" fill="#3a4a63"/>
+          <circle cx="405" cy="322" r="8" fill="#4a90d9"/>
+          <text x="486" y="348" fill="#8696ad" font-size="8" text-anchor="end">Snoot v0.9.2</text>
+        </g>
+        <rect x="315" y="44" width="180" height="320" rx="20" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="405" y="392" fill="#8ce6a6" font-size="11" text-anchor="middle">下端まで継ぎ目なし</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.1）は iPhone のスタンドアロン起動時、画面下端に白い帯が出る。
+        右：対応後（v0.9.2）は下端の余白を盤面と同じ色（<code>#213654</code>）で塗り、Android と同様に継ぎ目をなくした。
+      </figcaption>
+    </figure>
+  </div>
 
-    <!-- ===== 対応後：セーフエリア分 HUD を下げて衝突を解消 ===== -->
-    <g clip-path="url(#sa-clipB)">
-      <rect x="320" y="44" width="190" height="360" fill="url(#sa-bg)"/>
-      <!-- セーフエリア（ステータスバー）分の余白帯 -->
-      <rect x="320" y="44" width="190" height="34" fill="#ffffff" fill-opacity="0.06"/>
-      <line x1="320" y1="78" x2="510" y2="78" stroke="#8ce6a6" stroke-width="1.5" stroke-dasharray="5 3"/>
-      <!-- ステータスバー（余白帯の中に収まり重ならない） -->
-      <g stroke="#fff" stroke-width="2">
-        <line x1="332" y1="68" x2="332" y2="64"/>
-        <line x1="337" y1="68" x2="337" y2="60"/>
-        <line x1="342" y1="68" x2="342" y2="56"/>
-      </g>
-      <text x="415" y="66" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">14:08</text>
-      <rect x="472" y="57" width="22" height="11" rx="2" fill="none" stroke="#fff"/>
-      <rect x="474" y="59" width="12" height="7" fill="#fff"/>
-      <rect x="495" y="60" width="2" height="5" fill="#fff"/>
-      <text x="468" y="66" fill="#fff" font-size="9" text-anchor="end">65%</text>
-      <!-- HUD バー（余白帯の下へ押し下げ） -->
-      <rect x="320" y="78" width="190" height="40" fill="#0c1322" fill-opacity="0.82"/>
-      <text x="332" y="103" fill="#ffb347" font-size="13" font-weight="bold">Easy</text>
-      <text x="370" y="103" fill="#cfd8e6" font-size="12">Lv.1</text>
-      <text x="436" y="103" fill="#fff" font-size="12" font-weight="bold">780</text>
-      <rect x="458" y="91" width="46" height="20" rx="4" fill="none" stroke="#cdd8e8"/>
-      <text x="481" y="104" fill="#e3ebf6" font-size="8" text-anchor="middle">タイトルへ</text>
-    </g>
-    <rect x="320" y="44" width="190" height="360" rx="22" fill="none" stroke="#46587a" stroke-width="3"/>
-    <text x="415" y="430" fill="#8ce6a6" font-size="11" text-anchor="middle">セーフエリア分だけ HUD を下げ</text>
-    <text x="415" y="448" fill="#8ce6a6" font-size="11" text-anchor="middle">時刻・電池とも重ならず押せる</text>
-  </svg>
-  <figcaption>
-    左：対応前（v0.9.0）はステータスバーの時刻・電池と HUD が重なり「タイトルへ」が押せない。
-    右：対応後（v0.9.1）はセーフエリア分だけ HUD を下げて衝突を解消（通常ブラウザ・PC では余白を出さない）。
-  </figcaption>
-</figure>
-<div class="note">
-<strong>補足：なぜ <code>env()</code> だけでは足りないのか。</strong>
-ノッチのある端末（iPhone X 以降）は <code>env(safe-area-inset-top)</code> が 44px 以上を返すが、
-ノッチの無い iPhone 8 では <code>black-translucent</code> でも 0 を返す。そのため
-<code>max(env(safe-area-inset-top), 20px)</code> とし、ノッチ端末では実値・非ノッチ端末では
-20px（ステータスバー高さ相当）をフォールバックに使うことで、どちらの端末でも
-ステータスバーを避けられるようにした。各 <code>env()</code> には未対応環境向けに
-第 2 引数 <code>0px</code> のフォールバックも付けている。
-</div>
+  <div class="fb-detail" id="fb10">
+    <h3><span>#10：iPhone のステータスバー（セーフエリア）との重なり解消（v0.9.1）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>iPhone 8 でホーム画面から起動（スタンドアロン）すると、上部の HUD（レベル表示・スコア・「タイトルへ」ボタン）が iOS のステータスバー（時刻・電波・電池）と重なって見づらく、ステータスバー領域に隠れた「タイトルへ」ボタンが押せなくなっていた。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝<code>viewport-fit=cover</code> ＋ <code>black-translucent</code> ステータスバー構成でコンテンツが画面最上端から描かれるのに、CSS でセーフエリア（<code>env(safe-area-inset-*)</code>）を考慮していなかったため。さらに iPhone 8 はノッチが無く <code>env(safe-area-inset-top)</code> が 0 を返すので、単純な <code>env()</code> だけでは回避できない。対応＝PWA スタンドアロン起動時のみ（<code>@media (display-mode: standalone)</code>）HUD 上部に <code>max(env(safe-area-inset-top), 20px)</code> の余白を確保してステータスバーを避けた（通常ブラウザ・PC には余白を出さない）。あわせて横向きの左右切り欠き（HUD）と、ノッチ端末のホームインジケータ（盤面下端・バージョン表示）にもインセットを加えた。<code>src/style.css</code> を修正。</div>
+    <figure>
+      <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="セーフエリア対応の前後比較。対応前はステータスバーと HUD が重なって「タイトルへ」ボタンが押せず、対応後は HUD を下げて衝突を解消している。">
+        <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
+        <text x="125" y="28" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前 v0.9.0</text>
+        <text x="415" y="28" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後 v0.9.1</text>
+        <defs>
+          <linearGradient id="sa-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1b2a4a"/>
+            <stop offset="1" stop-color="#2c4870"/>
+          </linearGradient>
+          <clipPath id="sa-clipA"><rect x="30" y="44" width="190" height="360" rx="22"/></clipPath>
+          <clipPath id="sa-clipB"><rect x="320" y="44" width="190" height="360" rx="22"/></clipPath>
+        </defs>
 
-<h3 id="fb9">#9：PWA 化とアプリアイコンの「ネムリ」化（v0.9.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>テストプレイしやすいよう PWA 化したい。あわせて黄色いアプリアイコンを、ゲームキャラに使われている紫の「ネムリ：寝息の浮き沈み」のアイコンに変更したい。</p>
-<p><strong>原因・対応：</strong>スマホで「ホーム画面に追加」でき、スタンドアロン（全画面）で起動・オフライン対応する PWA にした。今後のこまめな更新が確実に届くよう、<code>vite-plugin-pwa</code> の <code>autoUpdate</code> でビルド毎に Service Worker を更新し、インストール済みアプリが次回起動時に自動で最新化する方式を採用。配信場所（<code>play/&lt;tag&gt;/</code>・XServer サブディレクトリ）が一定しないため manifest / SW 登録をすべて相対パスにした。アイコンは著作権配慮のため本家画像を使わず、<code>drawSnoot()</code> の <code>type=4</code>（ネムリ）から生成（<code>scripts/make-icons.mjs</code>）。詳細は <a href="step4-pwa.html">step4：PWA 化</a>。<code>vite.config.ts</code>・<code>index.html</code>・<code>package.json</code>・<code>.github/workflows/deploy.yml</code> を修正、<code>public/</code> アイコンと <code>scripts/make-icons.mjs</code> を追加。</p>
+        <!-- ===== 対応前：HUD が最上端から描かれステータスバーに食い込む ===== -->
+        <g clip-path="url(#sa-clipA)">
+          <rect x="30" y="44" width="190" height="360" fill="url(#sa-bg)"/>
+          <rect x="30" y="44" width="190" height="46" fill="#0c1322" fill-opacity="0.82"/>
+          <!-- HUD（ステータスバーと同じ最上段の一行に並ぶ） -->
+          <text x="42" y="72" fill="#ffb347" font-size="13" font-weight="bold">Easy</text>
+          <text x="80" y="72" fill="#cfd8e6" font-size="12">Lv.1</text>
+          <text x="146" y="72" fill="#fff" font-size="12" font-weight="bold">780</text>
+          <rect x="166" y="60" width="46" height="20" rx="4" fill="none" stroke="#8aa0bd" stroke-opacity="0.8"/>
+          <text x="189" y="73" fill="#aab8cc" font-size="8" text-anchor="middle">タイトルへ</text>
+          <!-- ステータスバー（半透明でコンテンツの上に重なる） -->
+          <g stroke="#fff" stroke-width="2">
+            <line x1="42" y1="66" x2="42" y2="62"/>
+            <line x1="47" y1="66" x2="47" y2="58"/>
+            <line x1="52" y1="66" x2="52" y2="54"/>
+          </g>
+          <text x="120" y="65" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">14:08</text>
+          <rect x="176" y="55" width="22" height="11" rx="2" fill="none" stroke="#fff"/>
+          <rect x="178" y="57" width="12" height="7" fill="#fff"/>
+          <rect x="199" y="58" width="2" height="5" fill="#fff"/>
+          <text x="172" y="64" fill="#fff" font-size="9" text-anchor="end">65%</text>
+        </g>
+        <!-- 衝突マーカー -->
+        <circle cx="49" cy="62" r="17" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <circle cx="190" cy="63" r="27" fill="none" stroke="#ff5b5b" stroke-width="2" stroke-dasharray="4 3"/>
+        <rect x="30" y="44" width="190" height="360" rx="22" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="125" y="430" fill="#ff9a9a" font-size="11" text-anchor="middle">ステータスバーと HUD が重なり</text>
+        <text x="125" y="448" fill="#ff9a9a" font-size="11" text-anchor="middle">「タイトルへ」ボタンが押せない</text>
 
-<h3 id="fb8">#8：ハイスコア画面を枠外タップでも閉じる（v0.8.1） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>ハイスコア画面の閉じ方が「閉じる」ボタンだけだと使いにくい。ウィンドウの枠外をタッチ／クリックしても閉じられるようにしたい。</p>
-<p><strong>原因・対応：</strong>ハイスコアのオーバーレイ背景（枠外）をタップ／クリックしたときも閉じるようにした。ボックス内側のタップでは閉じないよう、イベントの対象がオーバーレイ自身のときだけ閉じる判定にしている。名前入力オーバーレイは途中で閉じると記録フローが中断するため、対象外（従来どおりボタン操作）。<code>src/main.ts</code> を修正。</p>
+        <!-- ===== 対応後：セーフエリア分 HUD を下げて衝突を解消 ===== -->
+        <g clip-path="url(#sa-clipB)">
+          <rect x="320" y="44" width="190" height="360" fill="url(#sa-bg)"/>
+          <!-- セーフエリア（ステータスバー）分の余白帯 -->
+          <rect x="320" y="44" width="190" height="34" fill="#ffffff" fill-opacity="0.06"/>
+          <line x1="320" y1="78" x2="510" y2="78" stroke="#8ce6a6" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <!-- ステータスバー（余白帯の中に収まり重ならない） -->
+          <g stroke="#fff" stroke-width="2">
+            <line x1="332" y1="68" x2="332" y2="64"/>
+            <line x1="337" y1="68" x2="337" y2="60"/>
+            <line x1="342" y1="68" x2="342" y2="56"/>
+          </g>
+          <text x="415" y="66" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">14:08</text>
+          <rect x="472" y="57" width="22" height="11" rx="2" fill="none" stroke="#fff"/>
+          <rect x="474" y="59" width="12" height="7" fill="#fff"/>
+          <rect x="495" y="60" width="2" height="5" fill="#fff"/>
+          <text x="468" y="66" fill="#fff" font-size="9" text-anchor="end">65%</text>
+          <!-- HUD バー（余白帯の下へ押し下げ） -->
+          <rect x="320" y="78" width="190" height="40" fill="#0c1322" fill-opacity="0.82"/>
+          <text x="332" y="103" fill="#ffb347" font-size="13" font-weight="bold">Easy</text>
+          <text x="370" y="103" fill="#cfd8e6" font-size="12">Lv.1</text>
+          <text x="436" y="103" fill="#fff" font-size="12" font-weight="bold">780</text>
+          <rect x="458" y="91" width="46" height="20" rx="4" fill="none" stroke="#cdd8e8"/>
+          <text x="481" y="104" fill="#e3ebf6" font-size="8" text-anchor="middle">タイトルへ</text>
+        </g>
+        <rect x="320" y="44" width="190" height="360" rx="22" fill="none" stroke="#46587a" stroke-width="3"/>
+        <text x="415" y="430" fill="#8ce6a6" font-size="11" text-anchor="middle">セーフエリア分だけ HUD を下げ</text>
+        <text x="415" y="448" fill="#8ce6a6" font-size="11" text-anchor="middle">時刻・電池とも重ならず押せる</text>
+      </svg>
+      <figcaption>
+        左：対応前（v0.9.0）はステータスバーの時刻・電池と HUD が重なり「タイトルへ」が押せない。
+        右：対応後（v0.9.1）はセーフエリア分だけ HUD を下げて衝突を解消（通常ブラウザ・PC では余白を出さない）。
+      </figcaption>
+    </figure>
+    <div class="callout"><span class="ct">補足：なぜ <code>env()</code> だけでは足りないのか</span>
+    ノッチのある端末（iPhone X 以降）は <code>env(safe-area-inset-top)</code> が 44px 以上を返すが、
+    ノッチの無い iPhone 8 では <code>black-translucent</code> でも 0 を返す。そのため
+    <code>max(env(safe-area-inset-top), 20px)</code> とし、ノッチ端末では実値・非ノッチ端末では
+    20px（ステータスバー高さ相当）をフォールバックに使うことで、どちらの端末でも
+    ステータスバーを避けられるようにした。各 <code>env()</code> には未対応環境向けに
+    第 2 引数 <code>0px</code> のフォールバックも付けている。</div>
+  </div>
 
-<h3 id="fb7">#7：ハイスコア保存機能（v0.8.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>得点が毎回リセットされ記録に残らないので、やる気が出にくい。ハイスコアの保存機能をつけたい（原作のリサーチを踏まえて）。</p>
-<p><strong>原因・対応：</strong>原作 Snood を調査したところ、<strong>難易度別のローカル・ベストスコア表（名前入力あり）</strong>に加え、SnoodWorld.com の<strong>オンライン世界ランキング（検証コード付き）</strong>という二層構造だった。Snoot は「ブラウザ完結・ゼロコスト・オフライン」が制約のため、オンライン世界ランキングは対象外とし、原作のローカル表を <strong>localStorage による難易度別 Top5 ランキング</strong>として再現。新記録達成時に名前を入力（前回名を既定表示）し、タイトルの「ハイスコア」ボタンとリザルトから閲覧できる。「次のレベルへ」で続く間は記録せず、最終的なゲームオーバー（または途中でタイトルへ戻ったとき）に積み上げ得点を 1 回だけ記録する。<code>src/scores.ts</code>（新規）・<code>src/main.ts</code>・<code>src/game.ts</code>・<code>index.html</code>・<code>src/style.css</code> を追加／修正。</p>
-<p>
-難易度ごとに自分のベスト 5 が残るようにした。新記録を出すと名前を入力でき
-（前回名が既定で入る）、タイトルの「ハイスコア」ボタンといつでも見返せる。スコアは
-ブラウザの <code>localStorage</code> に保存するので、閉じても次回に残る。
-</p>
-<div class="shot-grid">
-  <figure>
-    <img src="img/highscore.png" alt="ハイスコア一覧（難易度別 Top5）">
-    <figcaption>難易度別の Top5 ランキング。未記録の枠は「—」で表示</figcaption>
-  </figure>
-</div>
-<p>保存仕様：</p>
-<ul>
-  <li><strong>難易度別</strong>に Easy / Normal / Hard それぞれ上位 5 件を保持（得点は難易度で
-      スケールが違うため別管理）。各記録は 名前・スコア・到達レベル・日付を持つ</li>
-  <li>保存先は <code>localStorage</code>（キー <code>snoot.highscores.v1</code>）。サーバを使わない
-      ブラウザ完結・ゼロコスト方式。データが壊れていても安全に空表示へフォールバックする</li>
-  <li>記録のタイミングは「<strong>同じプレイ（連続レベル）につき 1 回</strong>」。「次のレベルへ」で
-      続く間は記録せず、最終的なゲームオーバー、または途中でタイトルへ戻ったときに、
-      積み上げたスコアを 1 回だけ記録する（同一プレイの途中得点で表が埋まらない）</li>
-</ul>
-<div class="note">
-<strong>補足：原作 Snood のハイスコア。</strong>
-原作は <strong>難易度別のローカル・ベスト表（名前入力あり）</strong>に加えて、
-SnoodWorld.com の <strong>オンライン世界ランキング</strong>（不正対策のスコア検証コード付き）に
-提出できる二層構造だった。Snoot はゼロコスト・ブラウザ完結の方針のため、オンライン
-世界ランキングは採用せず、ローカルの難易度別ベスト表だけを <code>localStorage</code> で再現した。
-</div>
+  <div class="fb-detail" id="fb9">
+    <h3><span>#9：PWA 化とアプリアイコンの「ネムリ」化（v0.9.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>テストプレイしやすいよう PWA 化したい。あわせて黄色いアプリアイコンを、ゲームキャラに使われている紫の「ネムリ：寝息の浮き沈み」のアイコンに変更したい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>スマホで「ホーム画面に追加」でき、スタンドアロン（全画面）で起動・オフライン対応する PWA にした。今後のこまめな更新が確実に届くよう、<code>vite-plugin-pwa</code> の <code>autoUpdate</code> でビルド毎に Service Worker を更新し、インストール済みアプリが次回起動時に自動で最新化する方式を採用。配信場所（<code>play/&lt;tag&gt;/</code>・XServer サブディレクトリ）が一定しないため manifest / SW 登録をすべて相対パスにした。アイコンは著作権配慮のため本家画像を使わず、<code>drawSnoot()</code> の <code>type=4</code>（ネムリ）から生成（<code>scripts/make-icons.mjs</code>）。詳細は <a href="step4-pwa.html">step4：PWA 化</a>。<code>vite.config.ts</code>・<code>index.html</code>・<code>package.json</code>・<code>.github/workflows/deploy.yml</code> を修正、<code>public/</code> アイコンと <code>scripts/make-icons.mjs</code> を追加。</div>
+  </div>
 
-<h3 id="fb6">#6：レベルアップによる段階的難化（v0.7.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>クリアすると次のレベルへ進めるが、レベルが上がったときに何が変化しているのか分からなかった。レベルアップで何が変わる仕様にするのか決めたい（原作 Snood に合わせるかどうかを含めて）。</p>
-<p><strong>原因・対応：</strong>原因＝<code>level</code> は HUD 表示とスコア引き継ぎにしか使われておらず、盤面の難しさは難易度（Easy/Normal/Hard）だけで決まり、レベルでは一切変わっていなかった。原作 Snood を再調査したところ、原作の <strong>Classic も面を進めて難化はせず</strong>、難化するのは難易度ラダーを上る <strong>Journey モード</strong>だった（下記参照）。検討の結果、原作 Classic そのままではなく<strong>現代のバブルシューター流に「選んだ難易度を起点として、レベルが上がるほど段階的に難化させる」</strong>方式を採用。レベル+1ごとに 初期行数+1 / 危険ゲージ容量-1（天井がより速く降りる） / キャラ種類数+1（2レベルごと）で難化させ（各値に上限・下限）、クリアボーナスも高レベルほど増やした。あわせてリザルトに到達レベルを明示し、「次のレベルへ（Lv.N）」表示と retry のレベル整合も修正。<code>src/config.ts</code>・<code>src/game.ts</code>・<code>src/main.ts</code> を修正。</p>
-<p>
-同じ難易度（Easy）でも、レベルが上がると <strong>初期行数が増え（盤面がより埋まる）</strong>、
-キャラの種類が増え、危険ゲージが満タンになるまでの発射数が減る（天井がより速く降りる）。
-下のスクリーンショットは同じ Easy の Lv.1 と Lv.5 の開始直後で、盤面の埋まり方が違う。
-</p>
-<div class="shot-grid">
-  <figure>
-    <img src="img/game-level-1.png" alt="Easy・Lv.1 の開始直後">
-    <figcaption>Easy・Lv.1（初期 5 行・種類 4・ゲージ 10）</figcaption>
-  </figure>
-  <figure>
-    <img src="img/game-level-5.png" alt="Easy・Lv.5 の開始直後">
-    <figcaption>Easy・Lv.5（初期 9 行・種類 6・ゲージ 6）。同じ難易度でも明らかに手強い</figcaption>
-  </figure>
-</div>
+  <div class="fb-detail" id="fb8">
+    <h3><span>#8：ハイスコア画面を枠外タップでも閉じる（v0.8.1）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>ハイスコア画面の閉じ方が「閉じる」ボタンだけだと使いにくい。ウィンドウの枠外をタッチ／クリックしても閉じられるようにしたい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>ハイスコアのオーバーレイ背景（枠外）をタップ／クリックしたときも閉じるようにした。ボックス内側のタップでは閉じないよう、イベントの対象がオーバーレイ自身のときだけ閉じる判定にしている。名前入力オーバーレイは途中で閉じると記録フローが中断するため、対象外（従来どおりボタン操作）。<code>src/main.ts</code> を修正。</div>
+  </div>
 
-<p>レベルごとの難化（Easy を起点とした例。各値は上限・下限で頭打ち／底打ち）：</p>
-<table>
-  <tr><th>レベル</th><th>初期行数</th><th>危険ゲージ容量</th><th>キャラ種類数</th></tr>
-  <tr><td>Lv.1（起点）</td><td>5</td><td>10</td><td>4</td></tr>
-  <tr><td>Lv.2</td><td>6</td><td>9</td><td>4</td></tr>
-  <tr><td>Lv.3</td><td>7</td><td>8</td><td>5</td></tr>
-  <tr><td>Lv.4</td><td>8</td><td>7</td><td>5</td></tr>
-  <tr><td>Lv.5</td><td>9</td><td>6</td><td>6</td></tr>
-  <tr><td>Lv.6 以降</td><td>10（上限）</td><td>5 → 3（下限）</td><td>7（上限）</td></tr>
-</table>
-<p class="note">
-  ルール＝レベル+1ごとに「初期行数 +1」「危険ゲージ容量 −1」「キャラ種類数 +1（2 レベルごと）」。
-  盤面の列数は見た目を難易度間で揃えるためレベルでは変えない。Normal / Hard も同じルールで、
-  起点の値が高いぶん早く上限・下限に達する。
-</p>
+  <div class="fb-detail" id="fb7">
+    <h3><span>#7：ハイスコア保存機能（v0.8.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>得点が毎回リセットされ記録に残らないので、やる気が出にくい。ハイスコアの保存機能をつけたい（原作のリサーチを踏まえて）。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原作 Snood を調査したところ、<strong>難易度別のローカル・ベストスコア表（名前入力あり）</strong>に加え、SnoodWorld.com の<strong>オンライン世界ランキング（検証コード付き）</strong>という二層構造だった。Snoot は「ブラウザ完結・ゼロコスト・オフライン」が制約のため、オンライン世界ランキングは対象外とし、原作のローカル表を <strong>localStorage による難易度別 Top5 ランキング</strong>として再現。新記録達成時に名前を入力（前回名を既定表示）し、タイトルの「ハイスコア」ボタンとリザルトから閲覧できる。「次のレベルへ」で続く間は記録せず、最終的なゲームオーバー（または途中でタイトルへ戻ったとき）に積み上げ得点を 1 回だけ記録する。<code>src/scores.ts</code>（新規）・<code>src/main.ts</code>・<code>src/game.ts</code>・<code>index.html</code>・<code>src/style.css</code> を追加／修正。</div>
+    <p>
+    難易度ごとに自分のベスト 5 が残るようにした。新記録を出すと名前を入力でき
+    （前回名が既定で入る）、タイトルの「ハイスコア」ボタンといつでも見返せる。スコアは
+    ブラウザの <code>localStorage</code> に保存するので、閉じても次回に残る。
+    </p>
+    <figure class="shot">
+      <img src="img/highscore.png" alt="ハイスコア一覧（難易度別 Top5）">
+      <figcaption>難易度別の Top5 ランキング。未記録の枠は「—」で表示</figcaption>
+    </figure>
+    <p>保存仕様：</p>
+    <ul>
+      <li><strong>難易度別</strong>に Easy / Normal / Hard それぞれ上位 5 件を保持（得点は難易度で
+          スケールが違うため別管理）。各記録は 名前・スコア・到達レベル・日付を持つ</li>
+      <li>保存先は <code>localStorage</code>（キー <code>snoot.highscores.v1</code>）。サーバを使わない
+          ブラウザ完結・ゼロコスト方式。データが壊れていても安全に空表示へフォールバックする</li>
+      <li>記録のタイミングは「<strong>同じプレイ（連続レベル）につき 1 回</strong>」。「次のレベルへ」で
+          続く間は記録せず、最終的なゲームオーバー、または途中でタイトルへ戻ったときに、
+          積み上げたスコアを 1 回だけ記録する（同一プレイの途中得点で表が埋まらない）</li>
+    </ul>
+    <div class="callout"><span class="ct">補足：原作 Snood のハイスコア</span>
+    原作は <strong>難易度別のローカル・ベスト表（名前入力あり）</strong>に加えて、
+    SnoodWorld.com の <strong>オンライン世界ランキング</strong>（不正対策のスコア検証コード付き）に
+    提出できる二層構造だった。Snoot はゼロコスト・ブラウザ完結の方針のため、オンライン
+    世界ランキングは採用せず、ローカルの難易度別ベスト表だけを <code>localStorage</code> で再現した。</div>
+  </div>
 
-<div class="note">
-<strong>補足：原作 Snood ではどうだったか。</strong>
-原作の <em>Classic</em> モードは難易度（Child/Easy/Medium/Hard/Evil）を選ぶと盤面サイズ・
-初期行数・危険ゲージ容量が固定で、<strong>面を進めても難化しない</strong>（新しいランダム盤面が
-出るだけ）。難易度が段階的に上がるのは、Child から 1 レベルずつ難易度ラダーを上っていく
-<em>Journey</em> モードの方だった。Snoot は 3 難易度（Easy/Normal/Hard）を選ぶ構成なので、
-原作 Classic の「難化しない」をそのまま踏襲せず、選んだ難易度を起点に少しずつ難化させる
-現代的な方式（上表）を採った。
-</div>
+  <div class="fb-detail" id="fb6">
+    <h3><span>#6：レベルアップによる段階的難化（v0.7.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>クリアすると次のレベルへ進めるが、レベルが上がったときに何が変化しているのか分からなかった。レベルアップで何が変わる仕様にするのか決めたい（原作 Snood に合わせるかどうかを含めて）。</div>
+    <div class="note fix"><span class="k">原因・対応</span>原因＝<code>level</code> は HUD 表示とスコア引き継ぎにしか使われておらず、盤面の難しさは難易度（Easy/Normal/Hard）だけで決まり、レベルでは一切変わっていなかった。原作 Snood を再調査したところ、原作の <strong>Classic も面を進めて難化はせず</strong>、難化するのは難易度ラダーを上る <strong>Journey モード</strong>だった（下記参照）。検討の結果、原作 Classic そのままではなく<strong>現代のバブルシューター流に「選んだ難易度を起点として、レベルが上がるほど段階的に難化させる」</strong>方式を採用。レベル+1ごとに 初期行数+1 / 危険ゲージ容量-1（天井がより速く降りる） / キャラ種類数+1（2レベルごと）で難化させ（各値に上限・下限）、クリアボーナスも高レベルほど増やした。あわせてリザルトに到達レベルを明示し、「次のレベルへ（Lv.N）」表示と retry のレベル整合も修正。<code>src/config.ts</code>・<code>src/game.ts</code>・<code>src/main.ts</code> を修正。</div>
+    <p>
+    同じ難易度（Easy）でも、レベルが上がると <strong>初期行数が増え（盤面がより埋まる）</strong>、
+    キャラの種類が増え、危険ゲージが満タンになるまでの発射数が減る（天井がより速く降りる）。
+    下のスクリーンショットは同じ Easy の Lv.1 と Lv.5 の開始直後で、盤面の埋まり方が違う。
+    </p>
+    <figure>
+      <img src="img/game-level-1.png" alt="Easy・Lv.1 の開始直後">
+      <figcaption>Easy・Lv.1（初期 5 行・種類 4・ゲージ 10）</figcaption>
+    </figure>
+    <figure>
+      <img src="img/game-level-5.png" alt="Easy・Lv.5 の開始直後">
+      <figcaption>Easy・Lv.5（初期 9 行・種類 6・ゲージ 6）。同じ難易度でも明らかに手強い</figcaption>
+    </figure>
+    <p>レベルごとの難化（Easy を起点とした例。各値は上限・下限で頭打ち／底打ち）：</p>
+    <div class="table-scroll">
+      <table class="doc-table">
+        <thead><tr><th>レベル</th><th>初期行数</th><th>危険ゲージ容量</th><th>キャラ種類数</th></tr></thead>
+        <tbody>
+          <tr><td>Lv.1（起点）</td><td>5</td><td>10</td><td>4</td></tr>
+          <tr><td>Lv.2</td><td>6</td><td>9</td><td>4</td></tr>
+          <tr><td>Lv.3</td><td>7</td><td>8</td><td>5</td></tr>
+          <tr><td>Lv.4</td><td>8</td><td>7</td><td>5</td></tr>
+          <tr><td>Lv.5</td><td>9</td><td>6</td><td>6</td></tr>
+          <tr><td>Lv.6 以降</td><td>10（上限）</td><td>5 → 3（下限）</td><td>7（上限）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout"><span class="ct">ルールのまとめ</span>
+      ルール＝レベル+1ごとに「初期行数 +1」「危険ゲージ容量 −1」「キャラ種類数 +1（2 レベルごと）」。
+      盤面の列数は見た目を難易度間で揃えるためレベルでは変えない。Normal / Hard も同じルールで、
+      起点の値が高いぶん早く上限・下限に達する。</div>
+    <div class="callout"><span class="ct">補足：原作 Snood ではどうだったか</span>
+    原作の <em>Classic</em> モードは難易度（Child/Easy/Medium/Hard/Evil）を選ぶと盤面サイズ・
+    初期行数・危険ゲージ容量が固定で、<strong>面を進めても難化しない</strong>（新しいランダム盤面が
+    出るだけ）。難易度が段階的に上がるのは、Child から 1 レベルずつ難易度ラダーを上っていく
+    <em>Journey</em> モードの方だった。Snoot は 3 難易度（Easy/Normal/Hard）を選ぶ構成なので、
+    原作 Classic の「難化しない」をそのまま踏襲せず、選んだ難易度を起点に少しずつ難化させる
+    現代的な方式（上表）を採った。</div>
+  </div>
 
-<h3 id="fb5">#5：落下キャラの驚き顔＋大量落下のファンファーレ SE（v0.6.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>消滅キャラに加えて、それに伴って落ちていくキャラの表情も驚き顔にすると迫力が増す。またまとめて落としたときの低音は迫力を感じないので、ファンファーレのような SE に変更したい。</p>
-<p><strong>原因・対応：</strong>落下アニメ中のキャラも驚き顔で描画するよう変更（v0.5.0 で追加した驚き顔を再利用）。大量落下（4 個以上）の SE を、低音スイープからブラスふうの上昇ファンファーレ（タタタ・ターン型）に差し替え、落下数が多いほど最後の和音が厚くなる（6 個以上で三和音、9 個以上でさらに 1 声）方式にした。<code>src/game.ts</code>・<code>src/audio.ts</code> を修正。</p>
+  <div class="fb-detail" id="fb5">
+    <h3><span>#5：落下キャラの驚き顔＋大量落下のファンファーレ SE（v0.6.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>消滅キャラに加えて、それに伴って落ちていくキャラの表情も驚き顔にすると迫力が増す。またまとめて落としたときの低音は迫力を感じないので、ファンファーレのような SE に変更したい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>落下アニメ中のキャラも驚き顔で描画するよう変更（v0.5.0 で追加した驚き顔を再利用）。大量落下（4 個以上）の SE を、低音スイープからブラスふうの上昇ファンファーレ（タタタ・ターン型）に差し替え、落下数が多いほど最後の和音が厚くなる（6 個以上で三和音、9 個以上でさらに 1 声）方式にした。<code>src/game.ts</code>・<code>src/audio.ts</code> を修正。</div>
+  </div>
 
-<h3 id="fb4">#4：消滅キャラの驚き顔＋消滅数連動の SE（v0.5.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>グループが消滅する際、消えるキャラの表情が驚いた顔になるエフェクトでさらにコミカルに。また消滅数が多いときは SE を少し盛大にしてほしい（嬉しさが増す）。</p>
-<p><strong>原因・対応：</strong>消滅アニメ中のキャラを驚き顔（見開いた白目・大きく開いた口・コミック風の驚き線）に差し替え。体の色・形・葉っぱ等の個性は維持。SE は消滅数に応じてアルペジオの音数（5 個以上で 4 音、8 個以上で 5 音）と音量が増える方式にし、まとめて落としたときは低音スイープも重なる。<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/game.ts</code> を修正。</p>
+  <div class="fb-detail" id="fb4">
+    <h3><span>#4：消滅キャラの驚き顔＋消滅数連動の SE（v0.5.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>グループが消滅する際、消えるキャラの表情が驚いた顔になるエフェクトでさらにコミカルに。また消滅数が多いときは SE を少し盛大にしてほしい（嬉しさが増す）。</div>
+    <div class="note fix"><span class="k">原因・対応</span>消滅アニメ中のキャラを驚き顔（見開いた白目・大きく開いた口・コミック風の驚き線）に差し替え。体の色・形・葉っぱ等の個性は維持。SE は消滅数に応じてアルペジオの音数（5 個以上で 4 音、8 個以上で 5 音）と音量が増える方式にし、まとめて落としたときは低音スイープも重なる。<code>src/characters.ts</code>・<code>src/audio.ts</code>・<code>src/game.ts</code> を修正。</div>
+  </div>
 
-<h3 id="fb3">#3：キャラの表情アニメーション（v0.4.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>本家はキャラの表情が変化してコミカルさを出していた。Snoot もゲーム中に表情を変化させたい。ただし NEXT のキャラは表情を変えない（目立たせると現在弾と勘違いするため）。</p>
-<p><strong>原因・対応：</strong>キャラ描画関数に時刻引数を追加し、種類ごとのアニメ（マルオ：まばたき、ハッパ：葉っぱ揺れ、プンタ：眉ピクピク、ヒナタ：星キラキラ＋口の開閉、ネムリ：寝息の浮き沈み、ビック：瞳の泳ぎ＋口の大小、イシゴロ：たまに目を閉じるのみ）を実装。盤面・発射弾・砲台の現在弾はアニメし、<strong>NEXT は誤認防止のため意図的に静止のまま</strong>。セルごとに位相をずらして一斉まばたきも防止。<code>src/characters.ts</code>・<code>src/game.ts</code> を修正。</p>
+  <div class="fb-detail" id="fb3">
+    <h3><span>#3：キャラの表情アニメーション（v0.4.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>本家はキャラの表情が変化してコミカルさを出していた。Snoot もゲーム中に表情を変化させたい。ただし NEXT のキャラは表情を変えない（目立たせると現在弾と勘違いするため）。</div>
+    <div class="note fix"><span class="k">原因・対応</span>キャラ描画関数に時刻引数を追加し、種類ごとのアニメ（マルオ：まばたき、ハッパ：葉っぱ揺れ、プンタ：眉ピクピク、ヒナタ：星キラキラ＋口の開閉、ネムリ：寝息の浮き沈み、ビック：瞳の泳ぎ＋口の大小、イシゴロ：たまに目を閉じるのみ）を実装。盤面・発射弾・砲台の現在弾はアニメし、<strong>NEXT は誤認防止のため意図的に静止のまま</strong>。セルごとに位相をずらして一斉まばたきも防止。<code>src/characters.ts</code>・<code>src/game.ts</code> を修正。</div>
+  </div>
 
-<h3 id="fb2">#2：スマホの操作エリア拡大（v0.3.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>スマホで赤い点線の上をスワイプすると指がキャラにかぶり、点線の下は操作部分が狭くて砲台に指がかぶる。操作できる範囲に余裕がほしい。</p>
-<p><strong>原因・対応：</strong>操作エリア（点線から下）が固定 3 セル分しかなく、画面の余り高さが上下余白として捨てられていたのが原因。キャンバスが画面の縦をすべて使うようにし、砲台を画面下端近くへ移動。点線と砲台の間の広い空間がスワイプ用の操作エリアになった。あわせて砲台より下に指がある間は照準を更新しないガードを追加。<code>src/game.ts</code> の <code>resize()</code>・<code>onPointer()</code> を修正。</p>
-<p>赤い点線と画面下端近くの砲台の間が広いスワイプ空間になり、指がキャラ・砲台にかぶらない。</p>
-<div class="shot-grid">
-  <figure>
-    <img src="img/game-easy-mobile.png" alt="対応後のスマホ・Easy 画面">
-    <figcaption>スマホ・Easy。画面の約半分が操作エリア</figcaption>
-  </figure>
-  <figure>
-    <img src="img/game-hard-mobile.png" alt="対応後のスマホ・Hard 画面">
-    <figcaption>スマホ・Hard でも同様</figcaption>
-  </figure>
-</div>
+  <div class="fb-detail" id="fb2">
+    <h3><span>#2：スマホの操作エリア拡大（v0.3.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>スマホで赤い点線の上をスワイプすると指がキャラにかぶり、点線の下は操作部分が狭くて砲台に指がかぶる。操作できる範囲に余裕がほしい。</div>
+    <div class="note fix"><span class="k">原因・対応</span>操作エリア（点線から下）が固定 3 セル分しかなく、画面の余り高さが上下余白として捨てられていたのが原因。キャンバスが画面の縦をすべて使うようにし、砲台を画面下端近くへ移動。点線と砲台の間の広い空間がスワイプ用の操作エリアになった。あわせて砲台より下に指がある間は照準を更新しないガードを追加。<code>src/game.ts</code> の <code>resize()</code>・<code>onPointer()</code> を修正。</div>
+    <p>赤い点線と画面下端近くの砲台の間が広いスワイプ空間になり、指がキャラ・砲台にかぶらない。</p>
+    <figure>
+      <img src="img/game-easy-mobile.png" alt="対応後のスマホ・Easy 画面">
+      <figcaption>スマホ・Easy。画面の約半分が操作エリア</figcaption>
+    </figure>
+    <figure>
+      <img src="img/game-hard-mobile.png" alt="対応後のスマホ・Hard 画面">
+      <figcaption>スマホ・Hard でも同様</figcaption>
+    </figure>
+  </div>
 
-<h3 id="fb1">#1：難易度によるキャラサイズの統一（v0.2.0） <a class="back-to-list" href="#list">↑ 一覧へ戻る</a></h3>
-<p><strong>指摘：</strong>スマホでは難易度によってキャラのサイズが大中小と変わるのに、PC ではサイズが一定で挙動が違う。</p>
-<p><strong>原因・対応：</strong>サイズの自動フィット計算で、縦長画面では「幅÷列数」、横長画面では「高さ÷行数（列数非依存）」が採用されていたのが原因。盤面の横幅を難易度によらず一定とし、列数が増えるほどキャラが小さくなる方式に統一（PC もスマホと同じ見た目に）。<code>src/game.ts</code> の <code>resize()</code> を修正。</p>
-<p>PC でも盤面の横幅は難易度によらず一定で、列数が増えるほどキャラが小さくなる（スマホと同じ見た目）。</p>
-<div class="shot-grid">
-  <figure>
-    <img src="img/game-easy-pc.png" alt="対応後の PC・Easy 画面">
-    <figcaption>PC・Easy（9 列・キャラ大）</figcaption>
-  </figure>
-  <figure>
-    <img src="img/game-hard-pc.png" alt="対応後の PC・Hard 画面">
-    <figcaption>PC・Hard（13 列・キャラ小）。盤面幅は Easy と同じ</figcaption>
-  </figure>
-</div>
+  <div class="fb-detail" id="fb1">
+    <h3><span>#1：難易度によるキャラサイズの統一（v0.2.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>スマホでは難易度によってキャラのサイズが大中小と変わるのに、PC ではサイズが一定で挙動が違う。</div>
+    <div class="note fix"><span class="k">原因・対応</span>サイズの自動フィット計算で、縦長画面では「幅÷列数」、横長画面では「高さ÷行数（列数非依存）」が採用されていたのが原因。盤面の横幅を難易度によらず一定とし、列数が増えるほどキャラが小さくなる方式に統一（PC もスマホと同じ見た目に）。<code>src/game.ts</code> の <code>resize()</code> を修正。</div>
+    <p>PC でも盤面の横幅は難易度によらず一定で、列数が増えるほどキャラが小さくなる（スマホと同じ見た目）。</p>
+    <figure>
+      <img src="img/game-easy-pc.png" alt="対応後の PC・Easy 画面">
+      <figcaption>PC・Easy（9 列・キャラ大）</figcaption>
+    </figure>
+    <figure>
+      <img src="img/game-hard-pc.png" alt="対応後の PC・Hard 画面">
+      <figcaption>PC・Hard（13 列・キャラ小）。盤面幅は Easy と同じ</figcaption>
+    </figure>
+  </div>
 
-<h2>未対応・検討中</h2>
-<p>（現在なし）</p>
+  <h2>未対応・検討中</h2>
+  <p>（現在なし）</p>
 
 </main>
-<footer>Snoot 開発備忘録 — step3</footer>
+
+<footer class="ftr">
+  <div class="ftr-in">
+    <div class="ftr-name">SNOOT 開発備忘録 — step3</div>
+    <div class="ftr-note">Snood 風ブラウザゲーム ・ 開発中につき随時更新</div>
+  </div>
+</footer>
+
 </body>
 </html>

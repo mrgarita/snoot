@@ -5,87 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Snoot 開発備忘録</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623' stroke='%23333' stroke-width='4'/%3E%3Ccircle cx='35' cy='42' r='6' fill='%23222'/%3E%3Ccircle cx='65' cy='42' r='6' fill='%23222'/%3E%3Cpath d='M32 62 Q50 78 68 62' stroke='%23222' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<header>
-  <h1>Snoot 開発備忘録</h1>
-  <p>Snood 風ブラウザゲーム「Snoot」の開発記録（各 step の文書一覧）</p>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SNOOT</div>
+        <div class="brand-sub">開発備忘録</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="#evo">進化の記録</a>
+      <a href="#docs">開発文書</a>
+      <a class="btn btn-play" target="_blank" rel="noopener" href="play/latest/">▶ 遊ぶ</a>
+    </nav>
+  </div>
 </header>
+
 <main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill">ブラウザで遊べる・Snood 風バブルシューター</span>
+      <h1>同じ「カオ」を<br>そろえて、落す。</h1>
+      <p>かつて Mac で人気を博したパズル <b>Snood</b> を、オリジナル素材でブラウザに再現。開発中につき、今もアップデートを続けています。</p>
+      <div class="hero-cta">
+        <a class="btn btn-cta" target="_blank" rel="noopener" href="play/latest/">▶ 最新版で遊ぶ <span class="ver">v0.9.17</span></a>
+        <a class="btn btn-ghost" href="#evo">進化の記録を見る</a>
+      </div>
+      <div class="shots">
+        <div class="shot-pc"><img src="img/title-pc.png" alt="タイトル画面（PC）"></div>
+        <div class="shot-ph"><img src="img/game-easy-mobile.png" alt="ゲーム画面（スマホ・Easy）"></div>
+      </div>
+    </div>
+  </section>
 
-<h2>このサイトについて</h2>
-<p>
-かつて Mac で人気を博したゲーム <strong>Snood</strong> をオリジナル素材で再現する
-ブラウザゲーム「<strong>Snoot</strong>」の開発過程を、step ごとに文書として残したもの。
-開発フローは次の 5 step（<code>project.txt</code> で定義）。
-</p>
+  <!-- ABOUT -->
+  <section class="section band">
+    <div class="wrap">
+      <h2>このサイトについて</h2>
+      <p class="lead">開発の過程を step ごとに文書として記録。フローは次の 5 step（<code>project.txt</code> で定義）。</p>
+      <div class="flow" id="flow"></div>
+    </div>
+  </section>
 
-<div class="shot-grid">
-  <figure>
-    <img src="img/title-pc.png" alt="Snoot タイトル画面">
-    <figcaption>タイトル画面（PC）</figcaption>
-  </figure>
-  <figure>
-    <img src="img/game-easy-mobile.png" alt="Snoot ゲーム画面（スマホ・Easy）">
-    <figcaption>ゲーム画面（スマホ・Easy）</figcaption>
-  </figure>
-</div>
-<ol>
-  <li>Snood がどんなゲームかを調査する</li>
-  <li>調査・フィードバックに基づき Snoot を制作する</li>
-  <li>人間が実際にプレイして面白さと再現度をチェックする</li>
-  <li>フィードバックに基づき step2→3 を反復する（バージョンを上げながら）</li>
-  <li>一般公開用サイトを作成し XServer に本番デプロイして完了</li>
-</ol>
+  <!-- VERSIONS -->
+  <section class="section" id="evo">
+    <div class="wrap">
+      <h2>進化の記録</h2>
+      <p class="lead">版を上げるたびにゲームが育ってきました。各版はそのまま遊べます。<b style="color:var(--ink)">全 <span id="ver-count">27</span> バージョン</b>・新しい順。</p>
+      <div class="timeline"><div class="tl-list" id="tl-list"></div></div>
+      <div class="more-wrap"><button class="btn-more" id="more-btn"></button></div>
+    </div>
+  </section>
 
-<h2>バージョン別に遊ぶ（進化の過程）</h2>
-<p>
-フィードバックを反映するたびにバージョンを上げてきた。各版をそのまま遊べるので、
-ゲームがどう進化したかを比べられる。一覧は<strong>新しい順</strong>に並べている。
-</p>
-<p style="text-align:center;margin:1rem 0;">
-  <a class="play-now" target="_blank" rel="noopener" href="play/latest/">▶ 最新版で遊ぶ（v0.9.17）</a>
-</p>
-<ul class="version-list">
-  <li><a target="_blank" rel="noopener" href="play/v0.9.17/">v0.9.17</a> — Android で新記録の名前入力画面がソフトキーボードに隠れて「登録」を押せない問題を解消（visualViewport で可視領域に追従させ、キーボードの上に全体を表示）（フィードバック #21）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.16/">v0.9.16</a> — クリア時の段階表示のテンポを緩め、各情報（ショット数・スコア・ボーナス）を目で追えるようにした（約1秒間隔）（フィードバック #20 追従）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.15/">v0.9.15</a> — クリア時、「次のレベルへ」の前にプレイ情報（ショット数→スコア→ショットボーナス）を順に表示し、SE で盛り上げる演出を追加。少ない発射数でクリアするほどボーナス加点（仕様追加）（フィードバック ②b）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.14/">v0.9.14</a> — ゲームオーバー時、即結果表示せず盤面のキャラを下→上に骸骨化させ、暗い重低音とともに失敗の余韻を演出（フィードバック ②a）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.13/">v0.9.13</a> — 降りてくる天井を岩肌（下端ギザギザ）にし、降下を低い地鳴りとともにアニメーション化して緊張感を演出（フィードバック ②c）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.12/">v0.9.12</a> — 「次のレベルへ」の拡大が効いていなかった不具合を修正（CSS 詳細度で上書きされていた）。実際に一回り大きく表示（フィードバック #17 追従）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.11/">v0.9.11</a> — クリア時の「次のレベルへ」を大きく強調し、ほかのボタンとの押し間違い（誤タップ）を防止（フィードバック #17）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.10/">v0.9.10</a> — iPhone でバージョン表示部に残る背景色の帯を根本解消（ルート背景を画面別に切替＋盤面を不透明色で塗る）（フィードバック #14 追従）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.9/">v0.9.9</a> — 着弾判定を最近傍セル（ボロノイ）方式に刷新し、原作どおりねらった角度で奥のくぼみへ撃ち込めるようにした（感度パラメータを廃止）（フィードバック #16）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.8/">v0.9.8</a> — 奥行き許容の感度をさらに調整（奥へ入りやすく）＋開発者向けの着地予測表示を追加（フィードバック #15 のプレイ感調整）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.7/">v0.9.7</a> — 奥行き許容の感度を調整し、奥のくぼみへより入りやすくした（フィードバック #15 のプレイ感調整）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.6/">v0.9.6</a> — キャラのセット位置に奥行きの許容範囲を追加（ねらった線の奥のくぼみまで入れられる／原作 Snood 準拠）（フィードバック #15）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.5/">v0.9.5</a> — iPhone でゲーム画面下端に残る横線を根本解消（盤面が全幅のとき枠も盤面色に統一）（フィードバック #14）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.4/">v0.9.4</a> — iPhone でバージョン表示下の帯を盤面と同色にして違和感を解消（フィードバック #13）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.3/">v0.9.3</a> — iPhone 画面下端の背景継ぎ目（バージョン表示下の横線）を解消（フィードバック #12）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.2/">v0.9.2</a> — iPhone スタンドアロン時の画面下端の白い余白を解消（フィードバック #11）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.1/">v0.9.1</a> — iPhone 等のステータスバー（セーフエリア）と HUD の重なりを修正（フィードバック #10）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.9.0/">v0.9.0</a> — PWA 化（ホーム画面追加・スタンドアロン起動）とアプリアイコンの「ネムリ」化（フィードバック #9）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.8.1/">v0.8.1</a> — ハイスコア画面を枠外タップでも閉じられるよう改善（フィードバック #8）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.8.0/">v0.8.0</a> — ハイスコア保存（難易度別 Top5・名前入力）を追加（フィードバック #7）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.7.0/">v0.7.0</a> — レベルアップで段階的に難化する仕様を追加（フィードバック #6）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.6.0/">v0.6.0</a> — 落下キャラも驚き顔＋大量落下のファンファーレ（フィードバック #5）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.5.0/">v0.5.0</a> — 消滅時の驚き顔＋消滅数連動の効果音（フィードバック #4）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.4.0/">v0.4.0</a> — キャラの表情アニメーションを追加（フィードバック #3）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.3.0/">v0.3.0</a> — スマホの操作エリアを拡大（フィードバック #2）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.2.0/">v0.2.0</a> — 難易度別のキャラサイズを PC でも統一（フィードバック #1）</li>
-  <li><a target="_blank" rel="noopener" href="play/v0.1.0/">v0.1.0</a> — 初版（バブルシューターの基本：発射・マッチ消去・落下・危険ゲージ）</li>
-</ul>
-
-<h2>文書一覧</h2>
-<ul class="toc">
-  <li><a href="step1-research.html">step1：Snood とはどんなゲームか（調査結果）</a> — 基本ルール・危険ゲージ・難易度・スコアリングの調査まとめ</li>
-  <li><a href="step2-build.html">step2：Snoot v0.1.0 制作記録</a> — 技術構成・実装内容・遊び方</li>
-  <li><a href="step3-feedback.html">step3：プレイフィードバック記録</a> — 指摘と対応（バージョン履歴を兼ねる）</li>
-  <li><a href="step4-pwa.html">step4：PWA 化とアプリアイコン変更（v0.9.0）</a> — テストプレイ用のインストール対応とアイコンの「ネムリ」化</li>
-</ul>
-
+  <!-- DOCS -->
+  <section class="section band band-bottom" id="docs">
+    <div class="wrap">
+      <h2>開発文書</h2>
+      <p class="lead">調査からデプロイまで、各 step の記録。</p>
+      <div class="docs" id="docs-list"></div>
+    </div>
+  </section>
 </main>
-<footer>Snoot 開発備忘録</footer>
+
+<footer class="ftr">
+  <div class="ftr-in">
+    <div class="ftr-name">SNOOT 開発備忘録</div>
+    <div class="ftr-note">Snood 風ブラウザゲーム ・ 開発中につき随時更新</div>
+  </div>
+</footer>
+
+<script>
+/* ===== データ（更新時はここを追記するだけ） ===== */
+var TAG_COLOR = {
+  '新機能':'#43b86a', '演出':'#a875e8', '修正':'#2e9be6',
+  '調整':'#ffcb3d', '改善':'#ff8a3d', '刷新':'#ff5a7a', '初版':'#e8453c'
+};
+/* [version, tag, note] — 新しい順。新版を出したら先頭に1行足す */
+var VERSIONS = [
+  ['0.9.17','修正','Android で新記録の名前入力画面がソフトキーボードに隠れて「登録」を押せない問題を解消（visualViewport で可視領域に追従）'],
+  ['0.9.16','調整','クリア時の段階表示のテンポを緩め、ショット数・スコア・ボーナスを目で追えるように（約1秒間隔）'],
+  ['0.9.15','新機能','クリア時、プレイ情報（ショット数→スコア→ボーナス）を順に表示し SE で盛り上げる演出。少ない発射でクリアするほどボーナス加点'],
+  ['0.9.14','演出','ゲームオーバー時、盤面のキャラを下→上に骸骨化させ、暗い重低音とともに失敗の余韻を演出'],
+  ['0.9.13','演出','降りてくる天井を岩肌にし、降下を低い地鳴りとともにアニメーション化して緊張感を演出'],
+  ['0.9.12','修正','「次のレベルへ」の拡大が効いていなかった不具合を修正（CSS 詳細度で上書きされていた）'],
+  ['0.9.11','改善','クリア時の「次のレベルへ」を大きく強調し、ほかのボタンとの押し間違いを防止'],
+  ['0.9.10','修正','iPhone でバージョン表示部に残る背景色の帯を根本解消（ルート背景を画面別に切替）'],
+  ['0.9.9','刷新','着弾判定を最近傍セル（ボロノイ）方式に刷新し、ねらった角度で奥のくぼみへ撃ち込めるように'],
+  ['0.9.8','調整','奥行き許容の感度をさらに調整（奥へ入りやすく）＋開発者向けの着地予測表示を追加'],
+  ['0.9.7','調整','奥行き許容の感度を調整し、奥のくぼみへより入りやすくした'],
+  ['0.9.6','新機能','キャラのセット位置に奥行きの許容範囲を追加（原作 Snood 準拠）'],
+  ['0.9.5','修正','iPhone でゲーム画面下端に残る横線を根本解消（盤面が全幅のとき枠も盤面色に統一）'],
+  ['0.9.4','修正','iPhone でバージョン表示下の帯を盤面と同色にして違和感を解消'],
+  ['0.9.3','修正','iPhone 画面下端の背景継ぎ目（バージョン表示下の横線）を解消'],
+  ['0.9.2','修正','iPhone スタンドアロン時の画面下端の白い余白を解消'],
+  ['0.9.1','修正','iPhone 等のステータスバー（セーフエリア）と HUD の重なりを修正'],
+  ['0.9.0','新機能','PWA 化（ホーム画面追加・スタンドアロン起動）とアプリアイコンの「ネムリ」化'],
+  ['0.8.1','改善','ハイスコア画面を枠外タップでも閉じられるよう改善'],
+  ['0.8.0','新機能','ハイスコア保存（難易度別 Top5・名前入力）を追加'],
+  ['0.7.0','新機能','レベルアップで段階的に難化する仕様を追加'],
+  ['0.6.0','演出','落下キャラも驚き顔＋大量落下のファンファーレ'],
+  ['0.5.0','演出','消滅時の驚き顔＋消滅数連動の効果音'],
+  ['0.4.0','新機能','キャラの表情アニメーションを追加'],
+  ['0.3.0','改善','スマホの操作エリアを拡大'],
+  ['0.2.0','調整','難易度別のキャラサイズを PC でも統一'],
+  ['0.1.0','初版','初版（発射・マッチ消去・落下・危険ゲージ）'],
+];
+var FLOW = [
+  '1|Snood がどんなゲームかを調査する',
+  '2|調査・FB に基づき Snoot を制作する',
+  '3|実際にプレイして面白さと再現度をチェック',
+  '4|FB に基づき制作→検証を反復（版を上げる）',
+  '5|公開用サイトを作り本番デプロイして完了',
+];
+var DOCS = [
+  ['01','Snood とはどんなゲームか','調査','基本ルール・危険ゲージ・難易度・スコアリングの調査まとめ','step1-research.html'],
+  ['02','Snoot v0.1.0 制作記録','ビルド','技術構成・実装内容・遊び方','step2-build.html'],
+  ['03','プレイフィードバック記録','検証','指摘と対応（バージョン履歴を兼ねる）','step3-feedback.html'],
+  ['04','PWA 化とアイコン変更','v0.9.0','インストール対応とアイコンの「ネムリ」化','step4-pwa.html'],
+];
+var COLLAPSED = 6;   /* 折りたたみ時に見せる件数 */
+
+/* ===== レンダリング ===== */
+var expanded = false;
+function esc(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+function renderFlow(){
+  document.getElementById('flow').innerHTML = FLOW.map(function(f){
+    var p = f.split('|');
+    return '<div class="step"><div class="num">'+p[0]+'</div><div class="txt">'+esc(p[1])+'</div></div>';
+  }).join('');
+}
+function renderVersions(){
+  var list = expanded ? VERSIONS : VERSIONS.slice(0, COLLAPSED);
+  document.getElementById('tl-list').innerHTML = list.map(function(v){
+    var color = TAG_COLOR[v[1]] || '#999';
+    return '<div class="tl-item">'
+      + '<span class="tl-dot" style="background:'+color+'"></span>'
+      + '<a class="tl-card" target="_blank" rel="noopener" href="play/v'+v[0]+'/">'
+        + '<span class="tl-meta"><span class="tl-ver">v'+v[0]+'</span>'
+        + '<span class="tag" style="background:'+color+'">'+esc(v[1])+'</span></span>'
+        + '<span class="tl-note">'+esc(v[2])+'</span>'
+        + '<span class="tl-go">遊ぶ →</span>'
+      + '</a></div>';
+  }).join('');
+  var btn = document.getElementById('more-btn');
+  btn.textContent = expanded ? '折りたたむ ▲' : ('残り ' + (VERSIONS.length - COLLAPSED) + ' 件をすべて見る ▼');
+  document.getElementById('ver-count').textContent = VERSIONS.length;
+}
+function renderDocs(){
+  document.getElementById('docs-list').innerHTML = DOCS.map(function(d){
+    return '<a class="doc" href="'+d[4]+'">'
+      + '<div class="n">'+d[0]+'</div>'
+      + '<div><div class="ttl"><b>'+esc(d[1])+'</b><span class="badge">'+esc(d[2])+'</span></div>'
+      + '<div class="desc">'+esc(d[3])+'</div><div class="go">読む →</div></div>'
+    + '</a>';
+  }).join('');
+}
+document.getElementById('more-btn').addEventListener('click', function(){ expanded = !expanded; renderVersions(); });
+renderFlow(); renderVersions(); renderDocs();
+</script>
 </body>
 </html>
