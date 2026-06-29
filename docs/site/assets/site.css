@@ -185,8 +185,8 @@ img{display:block;max-width:100%;}
 /* フィードバック一覧テーブル内のリンクピル */
 .lk-detail,.lk-play{display:inline-block;text-decoration:none;font-weight:800;font-size:11px;
   border:2px solid var(--ink);border-radius:12px;padding:3px 10px;white-space:nowrap;}
-.lk-detail{color:var(--ink);background:#fff;}
-.lk-play{color:#fff;background:var(--c-blue);}
+.doc-main a.lk-detail{color:var(--ink);background:#fff;}
+.doc-main a.lk-play{color:#fff;background:var(--c-blue);}
 .ver-pill{font-family:var(--font-pixel);font-size:9.5px;white-space:nowrap;}
 
 /* 図・スクショ・概念図 */
