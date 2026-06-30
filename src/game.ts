@@ -211,10 +211,13 @@ export class Game {
 
     // 盤面の横幅は難易度によらず一定にする（列数が増えるほどキャラが小さくなり、
     // 縦長・横長どちらの画面でも同じ見た目になる）。
+    // 盤面幅 W = cell × cols とし、偶数行（最上段など）が左右の壁にぴったり接する
+    // ようにする（両端フラッシュ）。奇数行は 1 個少なく半セル分ずれるので、左右に
+    // 半セルのインデントが入る（バブルシューターの標準的な見た目）。
     // 上限は「最小列数＝セルが最大になる難易度」でも縦が収まる幅。
-    const maxBoardW = availH * ((MIN_COLS + 0.5) / rowFactor);
+    const maxBoardW = availH * (MIN_COLS / rowFactor);
     const boardW = Math.min(availW, maxBoardW);
-    this.cell = boardW / (this.cfg.cols + 0.5);
+    this.cell = boardW / this.cfg.cols;
 
     this.W = boardW;
     // 縦は使える高さを全部使う。デッドラインから下の余白がすべて操作エリアになり、
