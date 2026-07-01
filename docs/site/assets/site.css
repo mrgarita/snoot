@@ -99,11 +99,13 @@ img{display:block;max-width:100%;}
   display:flex;align-items:center;justify-content:center;font-family:var(--font-pixel);font-size:12px;margin-bottom:12px;}
 .flow .txt{font-size:12.5px;line-height:1.6;color:#3a3146;font-weight:500;}
 
-.timeline{max-width:760px;margin:0 auto;position:relative;padding-left:34px;}
-.timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:4px;background:var(--ink);border-radius:2px;}
+/* --axis：縦線と〇を合わせる軸の x 座標（.timeline 内側基準）。--pl：左パディング。
+   両者を変数で一元管理し、〇は translateX(-50%) で軸に中心合わせ（枠幅に依存しない）。*/
+.timeline{--axis:10px;--pl:34px;max-width:760px;margin:0 auto;position:relative;padding-left:var(--pl);}
+.timeline::before{content:"";position:absolute;left:calc(var(--axis) - 2px);top:6px;bottom:6px;width:4px;background:var(--ink);border-radius:2px;}
 .tl-list{display:flex;flex-direction:column;gap:14px;}
 .tl-item{position:relative;}
-.tl-dot{position:absolute;left:-34px;top:18px;width:18px;height:18px;border-radius:50%;border:3px solid var(--ink);}
+.tl-dot{position:absolute;left:calc(var(--axis) - var(--pl));transform:translateX(-50%);top:18px;width:18px;height:18px;border-radius:50%;border:3px solid var(--ink);}
 .tl-card{text-decoration:none;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
   background:#fff;border:3px solid var(--ink);border-radius:13px;padding:14px 18px;box-shadow:var(--shadow-sm);
   transition:transform .08s ease, box-shadow .08s ease;}
@@ -235,7 +237,7 @@ figcaption{font-size:12px;color:var(--muted);line-height:1.75;margin-top:9px;fon
   .flow{grid-template-columns:1fr;}
   .flow .step{display:flex;align-items:center;gap:12px;}
   .flow .num{margin-bottom:0;flex:none;}
-  .timeline{padding-left:28px;}
+  .timeline{--pl:28px;}
   .tl-card{grid-template-columns:1fr;gap:8px;}
   .tl-meta{flex-direction:row;align-items:center;}
   .tl-go{justify-self:start;}
