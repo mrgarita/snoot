@@ -3,7 +3,6 @@ import {
   DIFFICULTIES,
   DifficultyConfig,
   DifficultyId,
-  MIN_COLS,
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
@@ -206,18 +205,26 @@ export class Game {
     const availH = wrap.clientHeight;
     if (availW === 0 || availH === 0) return;
 
-    // 縦方向の行数換算（盤面 + 操作エリアの最小 3 セル分）
-    const rowFactor = 1 + (ROWS_LIMIT - 1) * ROW_H + 3;
+    // 盤面幅は「幅優先」で決める。まず盤面を画面全幅にして両端フラッシュを最優先する
+    // （偶数行＝最上段などが左右の壁にぴったり接する）。ホーム画面追加前の Safari
+    // 表示のように下部ツールバーで縦が縮む環境でも、左右いっぱいに出すのが狙い。
+    // 難易度が上がる（列数が増える）ほど 1 個が小さくなるが、盤面幅は常に全幅で揃う。
+    let boardW = availW;
+    let cell = boardW / this.cfg.cols;
 
-    // 盤面の横幅は難易度によらず一定にする（列数が増えるほどキャラが小さくなり、
-    // 縦長・横長どちらの画面でも同じ見た目になる）。
-    // 盤面幅 W = cell × cols とし、偶数行（最上段など）が左右の壁にぴったり接する
-    // ようにする（両端フラッシュ）。奇数行は 1 個少なく半セル分ずれるので、左右に
-    // 半セルのインデントが入る（バブルシューターの標準的な見た目）。
-    // 上限は「最小列数＝セルが最大になる難易度」でも縦が収まる幅。
-    const maxBoardW = availH * (MIN_COLS / rowFactor);
-    const boardW = Math.min(availW, maxBoardW);
-    this.cell = boardW / this.cfg.cols;
+    // ただし縦が破綻しないよう、デッドライン下に最低限の操作エリアは確保する。
+    // 必要縦セル数 = デッドライン(0.5 + ROWS_LIMIT*ROW_H) + 操作エリアの最小余白(OP_MIN)。
+    // これも収まらない極端に低いビューポートのときだけ、高さ基準で縮める（左右に余白）。
+    // OP_MIN は「どの高さで全幅に切り替わるか」を決める値。iPhone 8 の Safari 通常表示
+    // （枠の高さ availH ≈ 510px 前後）でも全幅になるよう 1.2 とする。この高さでの砲台は
+    // デッドライン直下ぎりぎり（現状 v0.9.18 のブラウザ表示と同じ見た目）に収まる。
+    const OP_MIN = 1.2;
+    const neededCells = 0.5 + ROWS_LIMIT * ROW_H + OP_MIN;
+    if (cell * neededCells > availH) {
+      cell = availH / neededCells;
+      boardW = cell * this.cfg.cols;
+    }
+    this.cell = cell;
 
     this.W = boardW;
     // 縦は使える高さを全部使う。デッドラインから下の余白がすべて操作エリアになり、
