@@ -65,3 +65,27 @@
 - 備忘録は文字だけにせず、**スクリーンショットや図を併載する**（画像は
   `scripts/make-doc-images.mjs` で `docs/site/img/` に生成。Snood 本家の画像は
   著作権配慮のため使わない）
+
+## リリース手順（版を上げて公開する）
+新しい版を公開するときは、リリースに必要な機械的作業（`deploy.yml` の公開対象と
+`docs/site/index.html` のヒーロー版表示の更新、git タグ付け、push）を
+**1 コマンドにまとめた `npm run release` を使う**。手作業だと反映漏れが起きやすい
+（VERSIONS/LATEST 更新やタグ付けの漏れで未公開になる事故が過去に発生）。
+
+手順：
+
+1. `package.json` の `version` を新版へ上げる（version が正）
+2. 説明文を手で追記する：
+   - `docs/site/index.html` の「進化の記録」`VERSIONS` 配列の先頭に 1 行
+   - `docs/site/step3-feedback.html`（フィードバック対応時は指摘と対応の詳細）
+3. 上記をコミットして作業ツリーをクリーンにする
+4. `npm run release`（本番）を実行 → 以下を自動で行う
+   - 事前チェック（main ブランチ・作業ツリーがクリーン・タグ未存在）
+   - `deploy.yml` の `VERSIONS` 追記＋`LATEST` 更新、`index.html` のヒーロー版表示更新
+   - 説明文（手順 2）が未反映なら**警告**（中断はしない）
+   - commit → `v{version}` タグ作成 → `git push origin main` + タグ push
+   - push により `deploy.yml` の GitHub Actions が起動し `play/v{version}/`
+     （= `play/latest/`）へ公開される
+
+確認だけしたいときは `npm run release -- --dry-run`（変更内容のプレビューのみ／
+何も変更しない）。実装は `scripts/release.mjs`。
