@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-01</td><td class="num">24</td>
+          <td>iPhone 8 の Safari 通常表示（ホーム画面追加前）で、Easy のときだけ砲台がデッドライン（赤破線）の上に表示される（Normal/Hard・追加後は正常）</td>
+          <td><span class="ver-pill">v0.9.20</span></td>
+          <td><a class="lk-detail" href="#fb24">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.20/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-01</td><td class="num">23</td>
           <td>iPhone で「ホーム画面に追加」せず Safari で開くと、盤面の左右に余白が出て両端まで届かない（追加後は全幅）</td>
           <td><span class="ver-pill">v0.9.19</span></td>
@@ -224,6 +231,77 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb24">
+    <h3><span>#24：Easy の Safari 通常表示で砲台がデッドライン（赤破線）の上に出る問題を解消（v0.9.20）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>iPhone 8 の実機（v0.9.19）で確認したところ、<strong>「ホーム画面に追加」せず Safari の通常表示</strong>で開いたとき、<strong>Easy のときだけ</strong>砲台がデッドライン（赤破線）の<strong>上</strong>に表示されてしまう。Normal・Hard では砲台は赤線の下に表示され、ホーム画面に追加した後（スタンドアロン）は Easy でも問題ない。</div>
+    <div class="note fix"><span class="k">原因</span>#23 の対応で盤面幅を<strong>幅優先</strong>（画面全幅）にした。セル直径は <code>画面幅 ÷ 列数</code> で決まり、列数は難易度で異なる（<strong>Easy=9・Normal=11・Hard=13</strong>）ため、<strong>Easy はセルが最大</strong>になる。デッドラインの位置（<code>セル×10.892</code>）も砲台の大きさ（台座直径＝<code>セル×1.5</code>）もセルに比例して大きくなる一方、Safari 通常表示は下部ツールバーで画面の縦が短い。その結果 Easy では<strong>デッドライン下の隙間（約46px）＜砲台の台座直径（約62px）</strong>となり、砲台が線の下に収まらず上へはみ出していた。スタンドアロンは縦が高いぶん隙間が足りるため問題が出ない。<br>
+    直接の原因は、デッドライン下に必ず確保する最小余白 <code>OP_MIN</code> が <code>1.2</code> セルで、砲台の縦寸法（中心オフセット <code>1.6</code> ＋ 台座半径 <code>0.75</code> ＝ <code>2.35</code> セル）より小さかったこと。</div>
+    <div class="note fix"><span class="k">対応</span><code>OP_MIN</code> を <strong><code>1.2</code> → <code>2.4</code></strong> に修正し、デッドライン下に砲台がちょうど収まる余白を必ず確保するようにした。これで Easy でも砲台が赤線の下に来る。<br>
+    <strong>トレードオフ</strong>：短い Safari 表示の Easy では「盤面を全幅にする（#23）」と「砲台を線の下に収める」を<strong>両立できない</strong>（隙間＜砲台）。そこで<strong>砲台を線の下に収めることを優先</strong>し、<strong>Easy かつ短い Safari 表示のときだけ</strong>盤面をわずかに縮めて左右に余白を出す（PC と同じ見た目）。Normal・Hard・スタンドアロン・十分高い画面では従来どおり全幅（#23 を維持）。<br>
+    修正ファイル：<code>src/game.ts</code>（<code>resize</code> の <code>OP_MIN</code>）。</div>
+    <figure>
+      <svg viewBox="0 0 540 470" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="対応前後の比較。どちらも iPhone 8 の Safari 通常表示で Easy を遊んだところ。対応前は盤面が全幅だが砲台がデッドライン（赤破線）の上にはみ出す。対応後は盤面を少し縮めて左右に余白を出し、砲台をデッドラインの下に収める。">
+        <rect x="0" y="0" width="540" height="470" rx="12" fill="#0d1526"/>
+        <text x="135" y="26" fill="#ff8a8a" font-size="15" font-weight="bold" text-anchor="middle">対応前（砲台が赤線の上）</text>
+        <text x="405" y="26" fill="#8ce6a6" font-size="15" font-weight="bold" text-anchor="middle">対応後（砲台が赤線の下）</text>
+
+        <!-- ===== 対応前：全幅だが砲台がデッドラインの上へはみ出す ===== -->
+        <rect x="55" y="44" width="160" height="18" rx="4" fill="#26344f"/>
+        <text x="135" y="57" fill="#9fb2d0" font-size="9" text-anchor="middle">HUD</text>
+        <rect x="55" y="66" width="160" height="300" fill="#19283f"/>
+        <!-- 全幅の壁（緑・密着） -->
+        <line x1="55" y1="66" x2="55" y2="366" stroke="#8ce6a6" stroke-width="3"/>
+        <line x1="215" y1="66" x2="215" y2="366" stroke="#8ce6a6" stroke-width="3"/>
+        <!-- 盤面（全幅で大きい） -->
+        <g>
+          <circle cx="70" cy="98" r="14" fill="#4a90d9"/><circle cx="98" cy="98" r="14" fill="#5cb85c"/><circle cx="126" cy="98" r="14" fill="#e0b341"/><circle cx="154" cy="98" r="14" fill="#d9534f"/><circle cx="182" cy="98" r="14" fill="#4a90d9"/><circle cx="204" cy="98" r="14" fill="#5cb85c"/>
+        </g>
+        <g>
+          <circle cx="84" cy="124" r="14" fill="#5cb85c"/><circle cx="112" cy="124" r="14" fill="#e0b341"/><circle cx="140" cy="124" r="14" fill="#d9534f"/><circle cx="168" cy="124" r="14" fill="#4a90d9"/><circle cx="196" cy="124" r="14" fill="#5cb85c"/>
+        </g>
+        <!-- デッドライン（赤破線）：低い位置 -->
+        <line x1="55" y1="300" x2="215" y2="300" stroke="#ff5a5a" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <text x="60" y="294" fill="#ff8a8a" font-size="9" text-anchor="start">デッドライン</text>
+        <!-- 砲台：赤線の上にはみ出す -->
+        <circle cx="135" cy="280" r="21" fill="#3a4a63"/>
+        <rect x="131" y="250" width="8" height="30" rx="4" fill="#b8c4d6"/>
+        <circle cx="135" cy="280" r="12" fill="#d9534f"/>
+        <text x="135" y="344" fill="#ff9a9a" font-size="11" text-anchor="middle">隙間が足りず</text>
+        <text x="135" y="360" fill="#ff9a9a" font-size="11" text-anchor="middle">砲台が線の上へ</text>
+
+        <!-- ===== 対応後：少し縮めて余白・砲台は線の下 ===== -->
+        <rect x="315" y="44" width="160" height="18" rx="4" fill="#26344f"/>
+        <text x="395" y="57" fill="#9fb2d0" font-size="9" text-anchor="middle">HUD</text>
+        <rect x="315" y="66" width="160" height="300" fill="#19283f"/>
+        <!-- 左右の余白（わずか） -->
+        <rect x="315" y="66" width="14" height="300" fill="#9fb2d0" opacity="0.12"/>
+        <rect x="461" y="66" width="14" height="300" fill="#9fb2d0" opacity="0.12"/>
+        <!-- 盤面（少し小さい・中央） -->
+        <g>
+          <circle cx="341" cy="96" r="12" fill="#4a90d9"/><circle cx="365" cy="96" r="12" fill="#5cb85c"/><circle cx="389" cy="96" r="12" fill="#e0b341"/><circle cx="413" cy="96" r="12" fill="#d9534f"/><circle cx="437" cy="96" r="12" fill="#4a90d9"/><circle cx="459" cy="96" r="12" fill="#5cb85c"/>
+        </g>
+        <g>
+          <circle cx="353" cy="118" r="12" fill="#5cb85c"/><circle cx="377" cy="118" r="12" fill="#e0b341"/><circle cx="401" cy="118" r="12" fill="#d9534f"/><circle cx="425" cy="118" r="12" fill="#4a90d9"/><circle cx="449" cy="118" r="12" fill="#5cb85c"/>
+        </g>
+        <!-- デッドライン（赤破線）：やや高い位置＝下に隙間ができる -->
+        <line x1="315" y1="286" x2="475" y2="286" stroke="#ff5a5a" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <text x="320" y="280" fill="#ff8a8a" font-size="9" text-anchor="start">デッドライン</text>
+        <!-- 砲台：赤線の下に収まる -->
+        <circle cx="395" cy="326" r="18" fill="#3a4a63"/>
+        <rect x="391.5" y="300" width="7" height="26" rx="3.5" fill="#b8c4d6"/>
+        <circle cx="395" cy="326" r="10" fill="#d9534f"/>
+        <text x="322" y="360" fill="#9fb2d0" font-size="9" text-anchor="start">左＝余白</text>
+        <text x="468" y="360" fill="#9fb2d0" font-size="9" text-anchor="end">右＝余白</text>
+        <text x="395" y="360" fill="#8ce6a6" font-size="11" text-anchor="middle">砲台は線の下</text>
+      </svg>
+      <figcaption>
+        左：対応前は Easy でも盤面を<strong>全幅</strong>にしていたため、Safari 通常表示の短い画面ではデッドライン下の隙間が足りず、<strong>砲台が赤破線の上へはみ出して</strong>いた。
+        右：対応後は <code>OP_MIN</code> を大きくして砲台の分の余白を必ず確保する。Easy かつ短い Safari 表示のときだけ<strong>盤面をわずかに縮めて左右に余白</strong>を出し、<strong>砲台をデッドラインの下</strong>に収める（Normal・Hard・スタンドアロンは全幅のまま）。
+      </figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb23">
     <h3><span>#23：ホーム画面に追加せず Safari で開くと盤面の左右に余白が出て両端まで届かない問題を解消（v0.9.19）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
