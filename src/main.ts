@@ -62,6 +62,24 @@ const btnNameOk = document.getElementById("btn-name-ok")!;
 // project.txt step4 の要件：今プレイ中のバージョンが常に分かるようにする
 versionBadge.textContent = `Snoot v${pkg.version}`;
 
+// Canvas 内テキスト（NEXT・寝息の z）用にウェブフォントの読み込みを先行して促す保険。
+// タイトル画面の DOM 表示で実際には読み込まれるため await はしない（毎フレーム
+// 再描画のゲームなので、読み込み完了後のフレームから自然に切り替わる）
+document.fonts?.load('bold 16px "M PLUS Rounded 1c"').catch(() => {});
+
+// ロゴの「oo」＝キャラ 2 体の顔（index.html の data-snoot で種類を指定）を描画する。
+// 静的な顔にしたいので drawSnoot にアニメ時刻 t は渡さない
+function initLogo(): void {
+  for (const cv of document.querySelectorAll<HTMLCanvasElement>("#logo .logo-face")) {
+    const ctx = cv.getContext("2d");
+    if (!ctx) continue;
+    const type = Number(cv.dataset.snoot ?? "0");
+    // r は本体（r*0.95）＋輪郭線が canvas 内に収まる大きさ
+    drawSnoot(ctx, type, cv.width / 2, cv.height / 2, cv.width * 0.47);
+  }
+}
+initLogo();
+
 let currentDifficulty: DifficultyId = "easy";
 let lastEnd: GameEndInfo | null = null;
 /** 現在の run のスコアをハイスコアへ記録済みか（同一 run の二重記録を防ぐ） */

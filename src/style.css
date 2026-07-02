@@ -11,6 +11,10 @@
   --play-bg: #19283f;
   --accent: #ffb347;
   --danger: #e74c3c;
+  /* ウェブフォント（index.html で Google Fonts から読み込み）。読み込み前・オフライン
+     初回訪問時に備え、フォールバックへ従来のシステムフォントスタックを残す */
+  --font-body: "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  --font-display: "Mochiy Pop One", "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -19,7 +23,7 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-family: var(--font-body);
   /* 末尾の単色がルート背景のフォールバック色。ルート要素(html)の背景はビューポート
      全体（本文 height:100% より下に出る iOS の下端帯）へ伝播する。タイトル／リザルト
      ではグラデ末尾色 --bg-bottom を使い、その下端帯をグラデの裾と同色にして帯を消す。
@@ -55,11 +59,64 @@ html.in-game body {
 }
 
 #logo {
+  font-family: var(--font-display);
   font-size: clamp(3rem, 14vw, 5.5rem);
   margin: 0;
   letter-spacing: 0.05em;
   color: var(--accent);
   text-shadow: 0 4px 0 rgba(0,0,0,0.35);
+}
+
+/* ---- ロゴの遊び演出 ----
+   以下は (共通)(a)(b)(c) の各ブロックを削除するだけで独立に外せる構成。
+   「oo」の顔 canvas を外す場合は index.html を <span class="logo-ch">o</span> に戻す */
+
+/* (共通) ロゴ文字の基礎。--i は文字順（アニメの時間差用）、--tilt は傾き */
+#logo .logo-ch {
+  display: inline-block;
+  --i: 0;
+  --tilt: 0deg;
+  transform: rotate(var(--tilt));
+}
+#logo .logo-face {
+  /* 小文字 o の高さ相当。em 指定なので clamp のフォントサイズに自動追従する */
+  width: 0.6em;
+  height: 0.6em;
+  vertical-align: -0.03em; /* ベースラインの光学調整 */
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.35)); /* 文字の text-shadow と揃える */
+}
+
+/* (a) 彩色＋傾き：色は characters.ts の TYPE_COLORS と同値（手作り感を出す）。
+   3・4 文字目は canvas の顔（マルオ青・ネムリ紫）なので傾きのみ */
+#logo .logo-ch:nth-child(1) { color: #f5a623; --i: 0; --tilt: -7deg; } /* S ヒナタ橙 */
+#logo .logo-ch:nth-child(2) { color: #5cb85c; --i: 1; --tilt: 4deg; }  /* n ハッパ緑 */
+#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; }                 /* o マルオ（canvas） */
+#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }                  /* o ネムリ（canvas） */
+#logo .logo-ch:nth-child(5) { color: #e74c3c; --i: 4; --tilt: 6deg; }  /* t プンタ赤 */
+
+/* (b) 登場のぽよん＋(c) アイドルの上下ゆれ。--tilt を transform に含めて回転と両立。
+   backwards フィルで登場前（時間差の待ち中）は scale(0) のまま見えない。
+   タイトル画面は display:none の付け外しなので、タイトルへ戻るたび再生される */
+@keyframes logo-pop {
+  0%   { transform: rotate(var(--tilt)) scale(0); }
+  60%  { transform: rotate(var(--tilt)) scale(1.2); }
+  80%  { transform: rotate(var(--tilt)) scale(0.92); }
+  100% { transform: rotate(var(--tilt)) scale(1); }
+}
+@keyframes logo-float {
+  from { transform: rotate(var(--tilt)) translateY(0); }
+  to   { transform: rotate(var(--tilt)) translateY(-0.07em); }
+}
+#logo .logo-ch {
+  animation:
+    logo-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards,
+    logo-float 2.6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * 90ms), calc(var(--i) * 90ms + 0.55s);
+}
+
+/* 動きを抑える設定（OS のアクセシビリティ）ではアニメを止める */
+@media (prefers-reduced-motion: reduce) {
+  #logo .logo-ch { animation: none; }
 }
 
 #tagline { margin: 0; opacity: 0.85; }
@@ -202,6 +259,8 @@ html.in-game body {
 }
 
 #result-title { margin: 0 0 0.5rem; font-size: 1.6rem; }
+/* 見出しはロゴと同じディスプレイ書体で「ゲームらしさ」を出す（外すのも独立に可能） */
+#result-title { font-family: var(--font-display); font-weight: normal; }
 #result-score { margin: 0 0 0.4rem; font-size: 1.1rem; }
 #result-best { margin: 0 0 1.2rem; font-size: 0.95rem; color: #666; }
 #result-best.new-record { color: #e67e22; font-weight: bold; }
@@ -299,6 +358,9 @@ html.in-game body {
 
 #name-entry-box h2,
 #highscore-box h2 { margin: 0 0 0.8rem; color: #e67e22; }
+/* リザルト見出しと同様にディスプレイ書体を適用（Mochiy Pop One は 400 のみ提供） */
+#name-entry-box h2,
+#highscore-box h2 { font-family: var(--font-display); font-weight: normal; }
 #name-entry-msg { margin: 0 0 0.8rem; font-size: 0.95rem; }
 
 #name-input {

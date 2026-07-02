@@ -14,6 +14,9 @@ export const TYPE_COLORS = [
 
 export const TYPE_COUNT_MAX = TYPE_COLORS.length;
 
+/** Canvas 内テキストの書体。DOM 側（style.css の --font-body）と揃えて統一する */
+export const CANVAS_FONT = '"M PLUS Rounded 1c", sans-serif';
+
 /** キャラクター名（TYPE_COLORS と同順） */
 export const TYPE_NAMES = ["マルオ", "ハッパ", "プンタ", "ヒナタ", "ネムリ", "ビック", "イシゴロ"];
 
@@ -159,7 +162,7 @@ export function drawSnoot(
       dot(ctx, 0, r * 0.35, r * 0.08);
       const floatY = anim ? r * 0.12 * Math.sin(tt * 1.5) : 0;
       if (anim) ctx.globalAlpha = 0.55 + 0.45 * Math.sin(tt * 1.5);
-      ctx.font = `bold ${r * 0.45}px sans-serif`;
+      ctx.font = `bold ${r * 0.45}px ${CANVAS_FONT}`;
       ctx.fillText("z", r * 0.45, -r * 0.45 - floatY);
       ctx.globalAlpha = 1;
       break;

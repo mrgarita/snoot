@@ -18,7 +18,7 @@ import {
 } from "./config";
 import { Board, Cell } from "./grid";
 import { nearestEmptyCell, resolveLanding } from "./placement";
-import { drawSnoot, drawSkull } from "./characters";
+import { drawSnoot, drawSkull, CANVAS_FONT } from "./characters";
 import { sound } from "./audio";
 
 type GameState = "aim" | "flying" | "over" | "clear";
@@ -793,7 +793,7 @@ export class Game {
     // NEXT 表示（誤認防止のため表情は動かさない＝アニメ時刻を渡さない）
     const nx = this.cannonX + this.cell * 2.2;
     ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.font = `${this.cell * 0.32}px sans-serif`;
+    ctx.font = `${this.cell * 0.32}px ${CANVAS_FONT}`;
     ctx.textAlign = "center";
     ctx.fillText("NEXT", nx, this.cannonY - this.cell * 0.7);
     drawSnoot(ctx, this.nextType, nx, this.cannonY, this.cell * 0.35);

@@ -37,6 +37,28 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest}"],
+        // Google Fonts をオフラインでも表示できるよう実行時キャッシュする
+        // （workbox 公式の Google Fonts レシピ準拠）
+        runtimeCaching: [
+          {
+            // フォント定義 CSS（unicode-range の分割定義）。更新に追従できるよう SWR
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: "StaleWhileRevalidate",
+            options: { cacheName: "google-fonts-stylesheets" },
+          },
+          {
+            // フォント本体（woff2）。内容不変の配信なので CacheFirst＋1 年保持。
+            // 日本語フォントは unicode-range で多数のサブセットに分割されるため
+            // maxEntries は多めに取る
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-webfonts",
+              cacheableResponse: { statuses: [0, 200] },
+              expiration: { maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+        ],
       },
     }),
   ],
