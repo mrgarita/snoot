@@ -58,6 +58,20 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-02</td><td class="num">26</td>
+          <td>スマホではキャラの大きさが Easy &gt; Normal &gt; Hard と小さくなるのに、PC（横長）では全レベル同じ大きさになっている（#1・v0.2.0 で対応した挙動が退行）</td>
+          <td><span class="ver-pill">v0.9.22</span></td>
+          <td><a class="lk-detail" href="#fb26">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.22/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-02</td><td class="num">25</td>
+          <td>PC（横長）で実行すると、どのレベルでも砲台脇の「NEXT」の文字がデッドライン（赤破線）に重なる（縦長＝スマホでは問題ない）</td>
+          <td><span class="ver-pill">v0.9.22</span></td>
+          <td><a class="lk-detail" href="#fb25">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.22/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-01</td><td class="num">24</td>
           <td>iPhone 8 の Safari 通常表示（ホーム画面追加前）で、Easy のときだけ砲台がデッドライン（赤破線）の上に表示される（Normal/Hard・追加後は正常）</td>
           <td><span class="ver-pill">v0.9.20</span></td>
@@ -231,6 +245,49 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb26">
+    <h3><span>#26：PC（横長）でキャラの大きさが難易度によらず同じになっていた退行を解消（v0.9.22）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>スマホではキャラの大きさが <strong>Easy &gt; Normal &gt; Hard</strong> の順に小さくなるのに、PC（横長）では全レベル同じ大きさで違和感がある。<strong>#1（v0.2.0）で一度対応した挙動が、いつの間にか元に戻っていた</strong>。</div>
+    <div class="note fix"><span class="k">原因</span>#23（v0.9.19）で盤面幅の決定を「幅優先」に書き換えた際に混入した<strong>退行</strong>。縦が収まらないとき高さ基準で縮めるクランプ処理の式（<code>セル＝使える高さ÷必要縦セル数</code>）に<strong>列数が入っておらず</strong>、横長（PC）は常にこの経路を通るため全難易度で同じセルサイズになっていた。スマホ縦ではクランプが発動せず「<code>セル＝画面幅÷列数</code>」のままだったため退行は PC だけで起き、発覚が遅れた（v0.9.19〜v0.9.21 の 3 版に存在）。</div>
+    <div class="note fix"><span class="k">対応</span>クランプ時のセルを「列数最小の Easy（<code>MIN_COLS=9</code>）が高さに収まる大きさ」を基準に、<strong>列数比で縮小</strong>する式（<code>cell = 高さ基準セル × MIN_COLS ÷ 列数</code>）へ変更。これで PC でも Easy &gt; Normal &gt; Hard となり、<strong>盤面幅は難易度によらず同一</strong>（#1・v0.2.0 と同じ見た目）になる。<br>
+    <strong>過去改善の保全確認</strong>：クランプ不発のスマホ縦は式が完全に同一のため変化しない。修正前（本番 v0.9.21）と修正後を iPhone 相当 3 ビューポート（375×667・375×554・390×844）× 3 難易度でヘッドレス計測し、<strong>保全対象 8 ケースの盤面幅・セルサイズ・全幅フラグが 1px 単位で完全一致</strong>することを確認済み（#22 の両端密着・#23 の全幅・#24 の砲台位置を維持）。<br>
+    修正ファイル：<code>src/game.ts</code>（<code>resize</code> のクランプ経路）。</div>
+    <p>PC（1024×768）の対応前後。対応前は Easy と Hard でキャラが同じ大きさ（盤面幅だけ広がる）。対応後は盤面幅が揃い、キャラの大きさが難易度で変わる。</p>
+    <figure>
+      <img src="img/fb26-before-easy-pc.png" alt="対応前の PC・Easy 画面。キャラは Hard と同じ大きさ">
+      <figcaption>対応前・Easy（9 列）。キャラは Hard と同じ大きさ</figcaption>
+    </figure>
+    <figure>
+      <img src="img/fb26-before-hard-pc.png" alt="対応前の PC・Hard 画面。キャラは Easy と同じ大きさで盤面幅だけ広い">
+      <figcaption>対応前・Hard（13 列）。キャラの大きさが Easy と同じで、盤面幅だけ広い</figcaption>
+    </figure>
+    <figure>
+      <img src="img/fb26-after-easy-pc.png" alt="対応後の PC・Easy 画面。キャラ大">
+      <figcaption>対応後・Easy（9 列・キャラ大）</figcaption>
+    </figure>
+    <figure>
+      <img src="img/fb26-after-hard-pc.png" alt="対応後の PC・Hard 画面。キャラ小。盤面幅は Easy と同じ">
+      <figcaption>対応後・Hard（13 列・キャラ小）。盤面幅は Easy と同じ（スマホと同じ見た目）</figcaption>
+    </figure>
+  </div>
+
+  <div class="fb-detail" id="fb25">
+    <h3><span>#25：PC（横長）で NEXT ラベルがデッドライン（赤破線）に重なる問題を解消（v0.9.22）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>PC（横長）で実行すると、<strong>Easy・Normal・Hard のいずれでも</strong>砲台脇の「NEXT」の文字が赤破線のデッドラインに重なって表示される。縦長（スマホ）では問題ない。</div>
+    <div class="note fix"><span class="k">原因</span>#24（v0.9.20）でデッドライン下に確保する最小余白 <code>OP_MIN</code> を <code>2.4</code> セルとした際、見積もりに入れていたのは<strong>砲台だけ</strong>（中心オフセット <code>1.6</code>＋台座半径 <code>0.75</code>）で、砲台中心より約 <code>0.93</code> セル<strong>上</strong>に出る NEXT ラベル（ベースラインが中心の <code>0.7</code> 上＋文字の立ち上がり ≈<code>0.23</code>）が<strong>考慮漏れ</strong>だった。横長では高さクランプにより画面の縦が「デッドライン＋<code>OP_MIN</code>」に固定されるため、赤破線がちょうど NEXT の文字を貫く位置関係になる（計測値：文字上端が線の 7.7px 上）。iPhone 8 の Safari 通常表示の Easy（#24 と同じクランプケース）でも同様の重なり（5.4px）が起きていた。</div>
+    <div class="note fix"><span class="k">対応</span><code>OP_MIN</code> を <strong><code>2.4</code> → <code>2.7</code></strong> に増やし、NEXT ラベルの立ち上がり＋余白まで含めて確保するようにした。修正後の計測で、PC は文字上端が線の <strong>8.6px 下</strong>、iPhone 8 Safari の Easy も <strong>6.0px 下</strong>に収まることを確認。副作用はクランプ時のセルが約 2% 小さくなることと、iPhone 8 Safari・Easy の左右余白が片側約 4px 増えることのみで、<strong>#23 の全幅ケース（スマホ縦・Normal/Hard）は 1px も変わらない</strong>ことを修正前後の計測照合で確認済み。<br>
+    修正ファイル：<code>src/game.ts</code>（<code>resize</code> の <code>OP_MIN</code>）。</div>
+    <p>PC・Easy の砲台まわりの拡大。対応前は赤破線が「NEXT」の文字を貫通、対応後は文字が線の下に離れる。</p>
+    <figure class="shot">
+      <img src="img/fb25-before-next.png" alt="対応前：赤破線が NEXT の文字を貫通している">
+      <figcaption>対応前。赤破線が「NEXT」の文字を貫通</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb25-after-next.png" alt="対応後：NEXT の文字が赤破線の下に離れて表示される">
+      <figcaption>対応後。「NEXT」が赤破線の下に収まる</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb24">
     <h3><span>#24：Easy の Safari 通常表示で砲台がデッドライン（赤破線）の上に出る問題を解消（v0.9.20）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>

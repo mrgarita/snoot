@@ -3,6 +3,7 @@ import {
   DIFFICULTIES,
   DifficultyConfig,
   DifficultyId,
+  MIN_COLS,
   ROWS_LIMIT,
   ROW_H,
   SHOT_SPEED,
@@ -214,22 +215,29 @@ export class Game {
 
     // ただし縦が破綻しないよう、デッドライン下に最低限の操作エリアは確保する。
     // 必要縦セル数 = デッドライン(0.5 + ROWS_LIMIT*ROW_H) + 操作エリアの最小余白(OP_MIN)。
-    // これも収まらない極端に低いビューポートのときだけ、高さ基準で縮める（左右に余白）。
+    // これが収まらないとき（PC の横長・Safari 通常表示の短い縦画面）だけ、
+    // 高さ基準で縮める（左右に余白）。
     //
-    // OP_MIN は「デッドライン下に必ず確保するセル数」で、砲台がこの余白に収まる必要がある。
-    // 砲台の縦フットプリント = 中心オフセット 1.6（下の cannonY = H - cell*1.6）
-    //   + 台座半径 0.75（renderCannon の arc 半径 cell*0.75）= 2.35 セル。
-    // これに僅かな余白を足して 2.4 とする。1.6 と 0.75 を変えたらここも合わせること。
+    // OP_MIN は「デッドライン下に必ず確保するセル数」。この余白には砲台に加えて
+    // 砲台中心より上に出る NEXT ラベルも収まる必要がある（#25）。内訳：
+    //   中心オフセット 1.6（下の cannonY = H - cell*1.6）
+    //   + NEXT ラベルの立ち上がり 0.95（ベースラインが中心の 0.7 上＋文字高さ ≈0.25）
+    //   + 余白 0.15 ＝ 2.7。下側は台座半径 0.75 < 1.6 なので自動的に収まる。
+    // cannonY の 1.6・台座 0.75・NEXT の 0.7／フォント 0.32 を変えたらここも合わせること。
     //
     // 補足：Easy は列数が最小（cols=9）でセルが最大になるため、iPhone 8 の Safari 通常表示
     // （availH ≈ 500px）では全幅にすると砲台がデッドライン下に収まらず線の上へはみ出す。
     // その場合はこのクランプで盤面をわずかに縮め（左右に余白）、砲台を線の下に収める。
     // Normal/Hard・スタンドアロン・十分高い画面では全幅のまま（#23 を維持）。
-    const OP_MIN = 2.4;
+    const OP_MIN = 2.7;
     const neededCells = 0.5 + ROWS_LIMIT * ROW_H + OP_MIN;
     if (cell * neededCells > availH) {
-      cell = availH / neededCells;
-      boardW = cell * this.cfg.cols;
+      // 高さ基準に縮める。セルは列数最小（Easy, MIN_COLS）で高さに収まる大きさを基準にし、
+      // 列数に応じて縮小する。これで横長（PC）でも難易度が上がるほど 1 個が小さくなり
+      // （スマホ縦と同じ体験。v0.2.0 の挙動＝#26 の復活）、盤面幅は難易度非依存で揃う。
+      // クランプ不発のとき（スマホ縦の通常ケース）は従来どおり全幅（#23 を維持）。
+      cell = (availH / neededCells) * (MIN_COLS / this.cfg.cols);
+      boardW = cell * this.cfg.cols; // = (availH / neededCells) * MIN_COLS（難易度非依存）
     }
     this.cell = cell;
 
