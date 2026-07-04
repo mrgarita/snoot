@@ -80,6 +80,49 @@ function initLogo(): void {
 }
 initLogo();
 
+/**
+ * ゲーム中（html.in-game）だけ、iOS のデフォルトズームを抑止する。
+ * iOS Safari は viewport の user-scalable=no を無視するため、JS で防ぐ必要がある
+ * （バブルシューターは連打発射するので、連続タップがダブルタップズームと誤認され、
+ *  画面全体が拡大して上部の HUD が見えなくなる不具合が実機で起きた）。
+ * リスナは起動時に 1 度だけ張り、毎回 in-game クラスの有無で作用を切り替える
+ * （付け外しの取りこぼしを避ける）。タイトル／リザルトはズーム可のまま残す。
+ */
+function preventGameZoom(): void {
+  const inGame = () => document.documentElement.classList.contains("in-game");
+
+  // ピンチズーム：iOS 独自の gesture イベント。touch-action では止まらないので preventDefault する。
+  // TS の型定義に無いイベント名なので文字列で回し、ハンドラは Event で受ける。
+  for (const type of ["gesturestart", "gesturechange", "gestureend"]) {
+    document.addEventListener(
+      type,
+      (e: Event) => {
+        if (inGame()) e.preventDefault();
+      },
+      { passive: false },
+    );
+  }
+
+  // ダブルタップズーム：古い iOS は touch-action を無視することがあるため JS でも保険をかける。
+  // 盤面（#canvas-wrap 内）で 300ms 以内に続いた touchend だけ抑止する。発射は Pointer Events
+  // （game.ts の pointerup）で処理され touchend.preventDefault では止まらないので、連打発射は
+  // そのまま効く。ボタン／入力欄の連打・単語選択を妨げないよう、対象を盤面領域に限定する。
+  let lastTouchEndAt = 0;
+  document.addEventListener(
+    "touchend",
+    (e: TouchEvent) => {
+      if (!inGame()) return;
+      const target = e.target as Element | null;
+      if (!target || !target.closest("#canvas-wrap")) return;
+      const now = Date.now();
+      if (now - lastTouchEndAt <= 300) e.preventDefault();
+      lastTouchEndAt = now;
+    },
+    { passive: false },
+  );
+}
+preventGameZoom();
+
 let currentDifficulty: DifficultyId = "easy";
 let lastEnd: GameEndInfo | null = null;
 /** 現在の run のスコアをハイスコアへ記録済みか（同一 run の二重記録を防ぐ） */

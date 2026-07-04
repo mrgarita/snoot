@@ -159,6 +159,9 @@ html.in-game body {
   justify-content: space-between;
   gap: 0.6rem;
   padding: 0.4rem 0.7rem;
+  /* ゲーム中の iOS ダブルタップズームを抑止（「タイトルへ」等のタップは維持する）。
+     touch-action は継承されないため、タッチを受ける要素ごとに個別指定する（#canvas-wrap も同様） */
+  touch-action: manipulation;
   /* 横向きのノッチ端末で左右の切り欠きを避ける（非ノッチ・PC では 0.7rem のまま） */
   padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
   padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
@@ -224,6 +227,10 @@ html.in-game body {
   background: var(--bg-edge);
   /* ノッチ端末のホームインジケータに砲台が潜らないよう下端を持ち上げる（非ノッチでは 0） */
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* 盤面の左右／上下のレターボックス余白でも iOS のダブルタップ／ピンチズームを抑止する
+     （canvas 自身は下の touch-action:none。ここはスクロール不要なので none でよい）。
+     iOS のピンチは touch-action では止まらないため main.ts の gesturestart 抑止と併用する */
+  touch-action: none;
 }
 
 /* スマホ等で盤面が画面全幅のときは左右余白＝跳ね返り壁が存在しない。枠を盤面の

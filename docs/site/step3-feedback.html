@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-04</td><td class="num">27</td>
+          <td>iPhone 実機でゲーム中に画面全体が拡大し、上部のステータス表示（HUD）が見えなくなる。ピンチやダブルタップといった iOS の標準動作がプレイに干渉している（連打発射がダブルタップと誤認されやすい）</td>
+          <td><span class="ver-pill">v0.9.23</span></td>
+          <td><a class="lk-detail" href="#fb27">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.23/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-02</td><td class="num">26</td>
           <td>スマホではキャラの大きさが Easy &gt; Normal &gt; Hard と小さくなるのに、PC（横長）では全レベル同じ大きさになっている（#1・v0.2.0 で対応した挙動が退行）</td>
           <td><span class="ver-pill">v0.9.22</span></td>
@@ -245,6 +252,28 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb27">
+    <h3><span>#27：iPhone 実機でゲーム中に画面全体が拡大し、上部 HUD が見えなくなる問題を解消（v0.9.23）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>iPhone 実機でプレイすると、<strong>ゲーム中に画面全体が拡大</strong>してしまい、上部のステータス表示（HUD：スコア・DANGER バー・「タイトルへ」）が画面外に押し出されて<strong>見えなくなる</strong>。ピンチやダブルタップといった iOS の標準ジェスチャがプレイに干渉している（バブルシューターは<strong>連打で発射</strong>するため、連続タップがダブルタップズームと誤認されやすい）。ゲーム中はこれらの標準動作を切ってほしい。</div>
+    <div class="note fix"><span class="k">原因</span>HTML の <code>viewport</code> には拡大禁止（<code>user-scalable=no</code>）を指定しているが、<strong>iOS Safari は iOS 10 以降この指定を無視する</strong>ため効かない。加えて、拡大抑止用の <code>touch-action:&nbsp;none</code> は盤面の <code>&lt;canvas&gt;</code> だけに付いており、盤面まわりのレターボックス余白（<code>#canvas-wrap</code>）や上部 HUD ではダブルタップズームが有効なままだった。さらに <strong>iOS のピンチズームは <code>touch-action</code> では止まらず</strong>、<code>gesturestart</code> の <code>preventDefault()</code> が必要になる。</div>
+    <div class="note fix"><span class="k">対応</span>ゲーム中（<code>&lt;html&gt;</code> に <code>in-game</code> クラスが付いている間）<strong>だけ</strong>、JavaScript でズームを抑止するようにした。<br>
+      (1) iOS 独自の <code>gesturestart</code>／<code>gesturechange</code>／<code>gestureend</code> を <code>preventDefault()</code> して<strong>ピンチ</strong>を無効化。<br>
+      (2) 盤面領域で 300ms 以内に続いたタップ（<code>touchend</code>）を <code>preventDefault()</code> して<strong>ダブルタップズーム</strong>を無効化。発射は Pointer Events（<code>pointerup</code>）で処理され <code>touchend.preventDefault()</code> では止まらないため、<strong>連打発射は従来どおり効く</strong>。<br>
+      (3) <code>touch-action</code> を盤面まわりへ拡張（<code>#canvas-wrap</code>＝<code>none</code>／<code>#hud</code>＝<code>manipulation</code>）。<br>
+      タイトル／リザルト画面ではズームを許可したまま残す（テキスト拡大のアクセシビリティを維持）。<br>
+      <strong>検証</strong>：ヘッドレスで「ゲーム中だけ」抑止が効くこと（ダブルタップ 2 回目・ピンチが抑止され、ボタン連打・タイトルでは非抑止、HUD が可視領域内）を 10 項目確認。<code>touch-action</code> は描画に影響しないプロパティのため、修正前後で <strong>mobile／PC × Easy／Hard の全ケースが 1px 一致</strong>（レイアウト退行なし）。最後に iPhone 実機で拡大しなくなり HUD が常に見えることを確認した。<br>
+      修正ファイル：<code>src/main.ts</code>（<code>preventGameZoom</code>）・<code>src/style.css</code>（<code>touch-action</code>）。</div>
+    <p>iPhone 実機での対応前後。対応前は拡大で上部 HUD が画面外に隠れ、対応後はゲーム中にズームが無効になり HUD が常に見える。</p>
+    <figure class="shot">
+      <img src="img/fb27-before-ios-zoom.png" alt="対応前の iPhone 実機画面。拡大で盤面が上へずれ、上部の HUD が画面外に隠れている">
+      <figcaption>対応前（v0.9.22・実機 iPhone）。ズームで盤面が拡大・上へずれ、本来上部にあるはずの HUD（スコア・DANGER・「タイトルへ」）が iOS ステータスバーの下に隠れて見えない</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb27-after-ios-zoom.png" alt="対応後のゲーム画面。上部に HUD（難易度・DANGER バー・スコア・タイトルへ）が表示されている">
+      <figcaption>対応後（v0.9.23）。ゲーム中はピンチ／ダブルタップのズームが無効になり、上部の HUD が常に表示される</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb26">
     <h3><span>#26：PC（横長）でキャラの大きさが難易度によらず同じになっていた退行を解消（v0.9.22）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
