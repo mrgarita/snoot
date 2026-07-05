@@ -57,6 +57,8 @@ export interface GameEndInfo {
   shots: number;
   /** クリア時のショットボーナス（少ない発射数で加点。gameover 時は 0） */
   bonus: number;
+  /** クリアボーナス（基本点＋残ゲージ余裕＋レベル加点。gameover 時は 0） */
+  clearBonus: number;
 }
 
 export class Game {
@@ -518,15 +520,24 @@ export class Game {
     // 終了判定
     if (this.board.count === 0) {
       this.state = "clear";
-      // クリアボーナス：基本点＋残ゲージ余裕＋レベルが上がるほど増える加点
-      this.score += 500 + this.cfg.dangerCap * 20 + (this.level - 1) * SCORE_LEVEL_BONUS;
+      // クリアボーナス：基本点＋残ゲージ余裕＋レベルが上がるほど増える加点。
+      // リザルトで内訳として見せるため個別に持つ（#28）
+      const clearBonus = 500 + this.cfg.dangerCap * 20 + (this.level - 1) * SCORE_LEVEL_BONUS;
+      this.score += clearBonus;
       // ショットボーナス（②b）：par より少ない発射数でクリアするほど加点
       const par = Math.ceil(this.initialCount / SHOT_BONUS_PAR_DIV);
       const bonus = Math.min(SHOT_BONUS_CAP, Math.max(0, par - this.shots) * SHOT_BONUS_PER);
       this.score += bonus;
       this.updateHud();
       sound.play("clear");
-      this.onEnd({ kind: "clear", score: this.score, level: this.level, shots: this.shots, bonus });
+      this.onEnd({
+        kind: "clear",
+        score: this.score,
+        level: this.level,
+        shots: this.shots,
+        bonus,
+        clearBonus,
+      });
       return;
     }
     if (this.board.maxVisualRow() >= ROWS_LIMIT) {
@@ -537,6 +548,7 @@ export class Game {
         level: this.level,
         shots: this.shots,
         bonus: 0,
+        clearBonus: 0,
       };
       // 即・結果画面ではなく、骸骨化ウェーブ（②a）を見せ切ってから onEnd で通知する。
       // 天井降下中なら、まずスライドを見せ切ってから（update 内で）シーケンスを開始する。

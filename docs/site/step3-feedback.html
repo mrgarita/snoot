@@ -58,6 +58,20 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-05</td><td class="num">29</td>
+          <td>ショットボーナスの基準が厳しく、プレイしていて表示をほとんど見ることがない。基準を少し緩めたい</td>
+          <td><span class="ver-pill">v0.9.24</span></td>
+          <td><a class="lk-detail" href="#fb29">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.24/">▶ プレイ</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-05</td><td class="num">28</td>
+          <td>クリア演出の「スコア」が上部 HUD と同じ累計値で、ゲットできた感が少ない。ショット数→ショットボーナス→クリアボーナスの順に内訳を見せたい</td>
+          <td><span class="ver-pill">v0.9.24</span></td>
+          <td><a class="lk-detail" href="#fb28">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.24/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-04</td><td class="num">27</td>
           <td>iPhone 実機でゲーム中に画面全体が拡大し、上部のステータス表示（HUD）が見えなくなる。ピンチやダブルタップといった iOS の標準動作がプレイに干渉している（連打発射がダブルタップと誤認されやすい）</td>
           <td><span class="ver-pill">v0.9.23</span></td>
@@ -252,6 +266,31 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb29">
+    <h3><span>#29：ショットボーナスの基準（par）を緩和し、実プレイで届く水準にした（v0.9.24）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>プレイしていて<strong>ショットボーナスの表示をほとんど見ることがない</strong>。基準は少し緩めてもいいと感じる。</div>
+    <div class="note fix"><span class="k">原因</span>ショットボーナスは「目安ショット数 par＝<strong>初期ピース数÷3</strong>（切り上げ）より少ない発射数でクリアすると、1 発少ないごとに +100 点（上限 1,000 点）」という設計（#20・v0.9.15）。Easy Lv.1（約 43 個）だと par は 15 発となり、<strong>14 発以内</strong>にクリアしないと 1 点も付かない。1 発あたり平均 4 個近く消し続ける（ほぼ全ショットで 3 連結＋落下を狙う）必要があり、通常のプレイではまず届かない水準だった。</div>
+    <div class="note fix"><span class="k">対応</span>par の除数を <strong>3 → 2</strong> に緩和（<code>src/config.ts</code> の <code>SHOT_BONUS_PAR_DIV</code>）。Easy Lv.1 なら par 22 発（21 発以内で加点開始）となり、<strong>ほぼ毎ショット 3 連結で消せていれば届く</strong>「上手いプレイへのご褒美」の水準になる。加点単価（100 点/発）と上限（1,000 点）は据え置き。<br>
+    効果は下の #28「対応後」のスクリーンショット参照：同じ 27 発のクリアでも、旧基準（par 20）では 0 点だったショットボーナスが、新基準（par 30）では <strong>+300 点</strong>付く。</div>
+  </div>
+
+  <div class="fb-detail" id="fb28">
+    <h3><span>#28：クリア演出を「ボーナス内訳 → 合計スコア」の順に変更し獲得感を出した（v0.9.24）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>クリア演出で表示される「スコア」は<strong>上部 HUD に出ているスコアと同一</strong>（ボーナス加算済みの累計値）のため、プレイヤー側では<strong>ゲットできた感が少ない</strong>。流れとしては、ショット数のあと<strong>ショットボーナス→クリアボーナス</strong>と表示した方が分かりやすい。</div>
+    <div class="note fix"><span class="k">原因</span>クリアボーナス（基本 500 点＋残ゲージ余裕＋レベル加点）は <code>Game</code> 内部でスコアへ直接加算するだけで、リザルト側へ<strong>内訳として通知していなかった</strong>。段階表示（#20・②b）の並びも「ショット数→スコア→ショットボーナス」で、<strong>合計が先に出てからボーナスが出る</strong>ため、何がいくら加算されたのか読み取れなかった。</div>
+    <div class="note fix"><span class="k">対応</span>クリアボーナスを <code>GameEndInfo.clearBonus</code> として個別に通知し、段階表示を「<strong>ショット数 → ショットボーナス（獲得時のみ）→ クリアボーナス → 合計スコア</strong>」の順に変更。合計行は罫線で区切って「合計スコア」と明記し、内訳を見せてから合計で締める流れにした。SE と表示間隔（約 1 秒）は従来どおり。<br>
+    修正ファイル：<code>src/game.ts</code>（<code>clearBonus</code> の通知）・<code>src/main.ts</code>（<code>revealClearResult</code> の並び）・<code>index.html</code>（行構成）・<code>src/style.css</code>（合計行の罫線）。</div>
+    <p>対応前後（Easy Lv.3 を 27 発でクリアした同じプレイ内容を再現）。対応前は「スコア：3,210」が右上 HUD の値と重複するだけ。対応後はショットボーナス（#29 の緩和で +300）とクリアボーナス（+860）の内訳が出てから、合計 3,510 で締まる。</p>
+    <figure class="shot">
+      <img src="img/fb28-before-result.png" alt="対応前のクリア画面。ショット数とスコアのみで、スコアは右上 HUD と同じ 3,210">
+      <figcaption>対応前（v0.9.23）。「スコア：3,210」は右上 HUD と同じ値の繰り返しで、ボーナスの内訳が見えない（ショットボーナスも旧基準では 0 点となり行ごと非表示）</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb28-after-result.png" alt="対応後のクリア画面。ショット数、ショットボーナス +300、クリアボーナス +860、罫線の下に合計スコア 3,510">
+      <figcaption>対応後（v0.9.24）。ショットボーナス→クリアボーナスの内訳が順に現れ、罫線の下に「合計スコア：3,510」で締まる</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb27">
     <h3><span>#27：iPhone 実機でゲーム中に画面全体が拡大し、上部 HUD が見えなくなる問題を解消（v0.9.23）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>

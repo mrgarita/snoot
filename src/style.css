@@ -294,6 +294,14 @@ html.in-game body {
   60% { transform: scale(1.25); }
   100% { transform: scale(1); }
 }
+/* 合計スコア行：ボーナス内訳の後に罫線で区切って「締め」として見せる（#28） */
+#result-stats .stat-total {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #ddd;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
 
 #result-buttons { display: flex; flex-direction: column; gap: 0.6rem; }
 

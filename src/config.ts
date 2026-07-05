@@ -57,8 +57,9 @@ export const SCORE_DROP = 30;
 export const SCORE_LEVEL_BONUS = 100;
 
 // ---- ショットボーナス（②b）：少ない発射数でクリアするほど加点 ----
-/** 目安ショット数 par = ceil(初期ピース数 / この値)。par より少なく撃つと加点 */
-export const SHOT_BONUS_PAR_DIV = 3;
+/** 目安ショット数 par = ceil(初期ピース数 / この値)。par より少なく撃つと加点。
+    3 では実プレイでほぼ届かず表示機会がなかったため 2 に緩和（#29） */
+export const SHOT_BONUS_PAR_DIV = 2;
 /** par より 1 発少ないごとの加点 */
 export const SHOT_BONUS_PER = 100;
 /** ショットボーナスの上限 */

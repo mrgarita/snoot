@@ -42,6 +42,7 @@ const resultStats = document.getElementById("result-stats")!;
 const statShots = document.getElementById("stat-shots")!;
 const statScore = document.getElementById("stat-score")!;
 const statBonus = document.getElementById("stat-bonus")!;
+const statClearBonus = document.getElementById("stat-clear-bonus")!;
 const resultButtons = document.getElementById("result-buttons")!;
 const btnRetry = document.getElementById("btn-retry")!;
 const btnNext = document.getElementById("btn-next")!;
@@ -296,8 +297,9 @@ function showResult(info: GameEndInfo): void {
 let clearRevealTimers: number[] = [];
 
 /**
- * ②b クリア演出：ショット数→スコア→（少発時）ショットボーナス を順に表示し、
- * 表示ごとに SE で盛り上げる。出し切ってから「次のレベルへ」等のボタンを見せる。
+ * ②b クリア演出：ショット数→（獲得時）ショットボーナス→クリアボーナス→合計スコア
+ * を順に表示し、表示ごとに SE で盛り上げる。出し切ってからボタンを見せる。
+ * 合計（HUD と同じ累計値）だけでは獲得感が薄いため、ボーナスの内訳を先に見せる（#28）。
  */
 function revealClearResult(info: GameEndInfo): void {
   // 前回の段階表示が進行中なら止める
@@ -308,14 +310,12 @@ function revealClearResult(info: GameEndInfo): void {
   resultScore.classList.add("hidden");
   resultBest.classList.add("hidden");
   resultButtons.classList.add("hidden");
-  for (const el of [statShots, statScore, statBonus]) el.classList.remove("revealed");
+  for (const el of [statShots, statBonus, statClearBonus, statScore]) {
+    el.classList.remove("revealed");
+  }
 
   statShots.textContent = `ショット数：${info.shots}`;
-  statScore.textContent = `スコア：${info.score.toLocaleString()}`;
-  const rows: { el: HTMLElement; se: "tally" | "bonus" }[] = [
-    { el: statShots, se: "tally" },
-    { el: statScore, se: "tally" },
-  ];
+  const rows: { el: HTMLElement; se: "tally" | "bonus" }[] = [{ el: statShots, se: "tally" }];
   if (info.bonus > 0) {
     statBonus.textContent = `ショットボーナス ＋${info.bonus.toLocaleString()}！`;
     statBonus.classList.remove("hidden");
@@ -323,6 +323,11 @@ function revealClearResult(info: GameEndInfo): void {
   } else {
     statBonus.classList.add("hidden");
   }
+  // クリアボーナスはクリア時必ず獲得するので常に表示する
+  statClearBonus.textContent = `クリアボーナス ＋${info.clearBonus.toLocaleString()}！`;
+  rows.push({ el: statClearBonus, se: "bonus" });
+  statScore.textContent = `合計スコア：${info.score.toLocaleString()}`;
+  rows.push({ el: statScore, se: "tally" });
 
   resultStats.classList.remove("hidden");
   resultOverlay.classList.remove("hidden");
