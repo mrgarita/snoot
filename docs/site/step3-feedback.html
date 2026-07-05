@@ -293,7 +293,7 @@
       (2) JS：ピンチ（<code>gesturestart</code> 系）の <code>preventDefault()</code> を<strong>無条件</strong>に（従来はゲーム中のみ）。ダブルタップ抑止も <strong>document 全体・無条件</strong>とし、判定窓を 300ms → <strong>500ms</strong> に拡大。<br>
       (3) 抑止したタップが<strong>ボタン上なら <code>click()</code> を代わりに発火</strong>し、「登録 → すぐハイスコア」のようなテンポの良い連続タップでも反応が消えないようにした。名前入力欄はフォーカス用の click を通すため抑止対象外。発射は Pointer Events（<code>pointerup</code>）処理のため<strong>連打発射は従来どおり効く</strong>。<br>
       修正ファイル：<code>src/style.css</code>・<code>src/main.ts</code>（<code>preventGameZoom</code> → <code>preventNativeGestures</code> に改称）。<br>
-      <strong>検証</strong>：ヘッドレス（タッチ端末エミュレーション）で 19 項目——全要素の computed <code>touch-action</code>（一律 none・例外 2 ボックスのみ pan-y）、タップ動線（レベル選択→発射→タイトルへ→名前入力→ハイスコア開閉）、500ms 内の 2 連タップの抑止とボタン click 合成——をすべて確認。レイアウトは iPhone SE／iPhone 12／横向き／PC の 4 ケースで修正前後の計測値が<strong>完全一致</strong>（退行なし）。実機（iPhone）での最終確認は次回のプレイ確認で行う。</div>
+      <strong>検証</strong>：ヘッドレス（タッチ端末エミュレーション）で 19 項目——全要素の computed <code>touch-action</code>（一律 none・例外 2 ボックスのみ pan-y）、タップ動線（レベル選択→発射→タイトルへ→名前入力→ハイスコア開閉）、500ms 内の 2 連タップの抑止とボタン click 合成——をすべて確認。レイアウトは iPhone SE／iPhone 12／横向き／PC の 4 ケースで修正前後の計測値が<strong>完全一致</strong>（退行なし）。リリース後、<strong>iPhone・Android の実機で 4 点すべて確認済み</strong>（①どの画面でもタップ／ダブルタップ／ピンチで拡大しない、②ハイスコア一覧の縦スクロール、③名前入力、④テンポの良い連続タップの反応。2026-07-05）。</div>
     <p>対応前に拡大が起きていた領域と、対応後の抑止範囲。</p>
     <figure class="shot">
       <img src="img/fb31-before-zones.png" alt="対応前のゲーム画面。上部 HUD と砲台周りに、拡大が発生していた領域の注記が重ねてある">
