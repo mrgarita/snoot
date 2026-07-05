@@ -70,12 +70,13 @@
     <div id="result-overlay" class="hidden">
       <div id="result-box">
         <h2 id="result-title"></h2>
-        <!-- クリア時の段階表示（②b・#28）。ショット数→ボーナス内訳→合計スコアの順に
-             出して「何をいくら獲得したか」を見せてから合計で締める -->
+        <!-- クリア時の段階表示（②b・#28・#30）。ショット数→ボーナス内訳→合計スコアの順に
+             出して「何をいくら獲得したか」を見せてから合計で締める。
+             毎回出るクリアボーナスを先、獲得時のみのショットボーナスを後にする -->
         <div id="result-stats" class="hidden">
           <p class="stat-row" id="stat-shots"></p>
-          <p class="stat-row stat-bonus" id="stat-bonus"></p>
           <p class="stat-row stat-bonus" id="stat-clear-bonus"></p>
+          <p class="stat-row stat-bonus" id="stat-bonus"></p>
           <p class="stat-row stat-total" id="stat-score"></p>
         </div>
         <p id="result-score"></p>

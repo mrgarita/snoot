@@ -528,7 +528,8 @@ export class Game {
       const par = Math.ceil(this.initialCount / SHOT_BONUS_PAR_DIV);
       const bonus = Math.min(SHOT_BONUS_CAP, Math.max(0, par - this.shots) * SHOT_BONUS_PER);
       this.score += bonus;
-      this.updateHud();
+      // HUD はボーナス加算前のまま保つ（直前の updateHud 済み）。クリア演出で内訳を
+      // 出し切った後、main.ts 側が合計へ切り替える（#30）
       sound.play("clear");
       this.onEnd({
         kind: "clear",

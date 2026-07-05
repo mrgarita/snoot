@@ -12,7 +12,8 @@ type SeName =
   | "gameover"
   | "doom"
   | "tally"
-  | "bonus";
+  | "bonus"
+  | "tick";
 
 class SoundPlayer {
   private ctx: AudioContext | null = null;
@@ -98,6 +99,13 @@ class SoundPlayer {
         const c = t + 0.21;
         [1175, 1568].forEach((f) => this.tone(f, c, 0.4, "square", 0.2));
         this.tone(587, c, 0.4, "triangle", 0.16);
+        break;
+      }
+      case "tick": {
+        // 合計スコアのカウントアップ：音程が少しずつ上がる控えめな連打ブリップ。
+        // tally より短く小さい音にして、連続再生しても耳障りにならないようにする
+        const f = 780 + intensity * 35;
+        this.tone(f, t, 0.04, "triangle", 0.09);
         break;
       }
     }

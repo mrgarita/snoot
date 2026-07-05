@@ -49,6 +49,9 @@ const btnNext = document.getElementById("btn-next")!;
 const btnTitle = document.getElementById("btn-title")!;
 const btnQuit = document.getElementById("btn-quit")!;
 const versionBadge = document.getElementById("version-badge")!;
+// HUD のスコア表示。通常は Game が更新するが、クリア演出の完了時に
+// main.ts 側から合計へ切り替える（#30）
+const hudScore = document.getElementById("hud-score")!;
 
 // ハイスコア関連の要素
 const btnHighscore = document.getElementById("btn-highscore")!;
@@ -145,6 +148,8 @@ const game = new Game(canvas, (info) => {
 });
 
 function startGame(difficulty: DifficultyId, level = 1, score = 0): void {
+  // 前のクリア演出が残っていたら止める（古いタイマーが HUD を上書きしないように）
+  cancelClearReveal();
   currentDifficulty = difficulty;
   runRecorded = false;
   lastRank = null;
@@ -295,27 +300,40 @@ function showResult(info: GameEndInfo): void {
 
 /** タイマー id を保持し、連続クリア時に前回の段階表示が残らないようにする */
 let clearRevealTimers: number[] = [];
+/** カウントアップの rAF id（再入時にキャンセルする） */
+let countUpRaf = 0;
 
-/**
- * ②b クリア演出：ショット数→（獲得時）ショットボーナス→クリアボーナス→合計スコア
- * を順に表示し、表示ごとに SE で盛り上げる。出し切ってからボタンを見せる。
- * 合計（HUD と同じ累計値）だけでは獲得感が薄いため、ボーナスの内訳を先に見せる（#28）。
- */
-function revealClearResult(info: GameEndInfo): void {
-  // 前回の段階表示が進行中なら止める
+/** 進行中のクリア演出（段階表示・カウントアップ）をすべて止める */
+function cancelClearReveal(): void {
   for (const id of clearRevealTimers) clearTimeout(id);
   clearRevealTimers = [];
+  cancelAnimationFrame(countUpRaf);
+}
+
+/**
+ * ②b クリア演出：ショット数→クリアボーナス→（獲得時）ショットボーナス→合計スコア
+ * を順に表示し、表示ごとに SE で盛り上げる。出し切ってからボタンを見せる。
+ * 合計（HUD と同じ累計値）だけでは獲得感が薄いため、ボーナスの内訳を先に見せる（#28）。
+ * 毎回出るクリアボーナスを先、獲得時のみのショットボーナスを後にする（#30）。
+ */
+function revealClearResult(info: GameEndInfo): void {
+  // 前回の段階表示・カウントアップが進行中なら止める
+  cancelClearReveal();
 
   // 静的スコア行は使わず、段階表示の #result-stats を使う
   resultScore.classList.add("hidden");
   resultBest.classList.add("hidden");
   resultButtons.classList.add("hidden");
-  for (const el of [statShots, statBonus, statClearBonus, statScore]) {
+  for (const el of [statShots, statClearBonus, statBonus, statScore]) {
     el.classList.remove("revealed");
   }
+  statScore.classList.remove("landed");
 
   statShots.textContent = `ショット数：${info.shots}`;
   const rows: { el: HTMLElement; se: "tally" | "bonus" }[] = [{ el: statShots, se: "tally" }];
+  // クリアボーナスはクリア時必ず獲得するので常に表示する
+  statClearBonus.textContent = `クリアボーナス ＋${info.clearBonus.toLocaleString()}！`;
+  rows.push({ el: statClearBonus, se: "bonus" });
   if (info.bonus > 0) {
     statBonus.textContent = `ショットボーナス ＋${info.bonus.toLocaleString()}！`;
     statBonus.classList.remove("hidden");
@@ -323,11 +341,9 @@ function revealClearResult(info: GameEndInfo): void {
   } else {
     statBonus.classList.add("hidden");
   }
-  // クリアボーナスはクリア時必ず獲得するので常に表示する
-  statClearBonus.textContent = `クリアボーナス ＋${info.clearBonus.toLocaleString()}！`;
-  rows.push({ el: statClearBonus, se: "bonus" });
-  statScore.textContent = `合計スコア：${info.score.toLocaleString()}`;
-  rows.push({ el: statScore, se: "tally" });
+  // 合計はボーナス加算前の値から出発し、いま見せた内訳ぶんをカウントアップで積み上げる
+  const baseScore = info.score - info.clearBonus - info.bonus;
+  statScore.textContent = `合計スコア：${baseScore.toLocaleString()}`;
 
   resultStats.classList.remove("hidden");
   resultOverlay.classList.remove("hidden");
@@ -336,7 +352,7 @@ function revealClearResult(info: GameEndInfo): void {
   // 目で追えるよう各行は約 1 秒間隔にする（プレイ感調整・v0.9.16）。
   const FIRST_MS = 450; // 最初の行までの待ち
   const STEP_MS = 1000; // 行ごとの間隔
-  const BUTTON_GAP_MS = 450; // 最終行からボタン表示までの間
+  const BUTTON_GAP_MS = 450; // カウントアップ完了からボタン表示までの間
   rows.forEach((row, i) => {
     const id = window.setTimeout(() => {
       row.el.classList.add("revealed");
@@ -344,11 +360,51 @@ function revealClearResult(info: GameEndInfo): void {
     }, FIRST_MS + i * STEP_MS);
     clearRevealTimers.push(id);
   });
-  const endId = window.setTimeout(() => {
-    resultBest.classList.remove("hidden");
-    resultButtons.classList.remove("hidden");
-  }, FIRST_MS + rows.length * STEP_MS + BUTTON_GAP_MS);
-  clearRevealTimers.push(endId);
+  // 合計行：内訳を出し切った後に reveal し、そのままカウントアップを開始する
+  const totalId = window.setTimeout(() => {
+    statScore.classList.add("revealed");
+    countUpTotal(baseScore, info.score, () => {
+      // 段階表示を出し切ったので、HUD のスコアも合計へ切り替える（#30）
+      hudScore.textContent = String(info.score);
+      const endId = window.setTimeout(() => {
+        resultBest.classList.remove("hidden");
+        resultButtons.classList.remove("hidden");
+      }, BUTTON_GAP_MS);
+      clearRevealTimers.push(endId);
+    });
+  }, FIRST_MS + rows.length * STEP_MS);
+  clearRevealTimers.push(totalId);
+}
+
+/**
+ * 合計スコアのカウントアップ（約 1 秒・ease-out）。
+ * tick SE を刻みながら数字が伸び、着地で軽く弾ませて達成感を出す（#30）。
+ */
+function countUpTotal(from: number, to: number, onDone: () => void): void {
+  const COUNT_MS = 1000; // カウントアップの所要時間
+  const TICK_MS = 90; // tick SE の間隔（音程は徐々に上がる）
+  const start = performance.now();
+  let lastTick = -1;
+  const frame = (now: number) => {
+    const t = Math.min(1, (now - start) / COUNT_MS);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic：後半をゆっくりに
+    const value = Math.round(from + (to - from) * eased);
+    statScore.textContent = `合計スコア：${value.toLocaleString()}`;
+    const tick = Math.floor((now - start) / TICK_MS);
+    if (tick > lastTick && t < 1) {
+      lastTick = tick;
+      sound.play("tick", tick);
+    }
+    if (t < 1) {
+      countUpRaf = requestAnimationFrame(frame);
+    } else {
+      // 着地：スケールの「ポン」と高めのブリップでフィニッシュ
+      statScore.classList.add("landed");
+      sound.play("tally", 4);
+      onDone();
+    }
+  };
+  countUpRaf = requestAnimationFrame(frame);
 }
 
 /** 難易度別 Top5 の表を描画する。highlight 指定時は該当行を強調 */

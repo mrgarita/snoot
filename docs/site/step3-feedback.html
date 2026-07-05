@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-05</td><td class="num">30</td>
+          <td>クリア演出の開始前に上部 HUD のスコアが合計値になっている（完了後に切替すべき）。表示順はショット数→クリアボーナス→ショットボーナスに。合計スコアはカウントアップで見せたい</td>
+          <td><span class="ver-pill">v0.9.25</span></td>
+          <td><a class="lk-detail" href="#fb30">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.25/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-05</td><td class="num">29</td>
           <td>ショットボーナスの基準が厳しく、プレイしていて表示をほとんど見ることがない。基準を少し緩めたい</td>
           <td><span class="ver-pill">v0.9.24</span></td>
@@ -266,6 +273,35 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb30">
+    <h3><span>#30：クリア演出を再調整——HUD 切替の遅延・表示順の変更・合計スコアのカウントアップ（v0.9.25）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>（#28 の演出への追加フィードバック 3 点）<br>
+      (1) 段階表示の<strong>前に</strong>上部 HUD のスコアがすでに合計値になっている。段階表示が全て完了してから切り替えるべき。<br>
+      (2) ショットボーナスはクリアボーナスと違い毎回表示されないので、「ショット数→<strong>クリアボーナス→ショットボーナス</strong>」の順に。<br>
+      (3) 最後の合計スコアはただ数値を表示するのではなく、<strong>カウントアップ</strong>で見せるとプレイヤーの喜びが増す。</div>
+    <div class="note fix"><span class="k">原因</span>(1) は <code>Game.resolve()</code> がボーナスをスコアへ加算した直後に HUD を更新していたため。オーバーレイの後ろに見えている HUD が先にネタバレしていた。(2)(3) は演出設計の改善要望。</div>
+    <div class="note fix"><span class="k">対応</span>
+      (1) ボーナス加算後の HUD 更新をやめ、演出中は<strong>加算前スコアのまま</strong>表示。カウントアップが伸び切った瞬間に main.ts 側から合計へ切り替える。<br>
+      (2) 行の順を「ショット数 → クリアボーナス（毎回）→ ショットボーナス（獲得時のみ）→ 合計スコア」に変更。<br>
+      (3) 合計スコアは<strong>加算前の値から出発</strong>し、いま見せた内訳ぶんを約 1 秒の ease-out で積み上げるカウントアップに。カウント中は音程が上がる控えめな tick 音（<code>src/audio.ts</code> に新設）を刻み、着地の瞬間に数字が「ポン」と弾む（<code>total-pop</code> アニメ）。「次のレベルへ」等のボタンはカウントアップ完了後に表示する。<br>
+      連続クリアや再スタート時に古いタイマー・アニメが HUD を上書きしないよう、演出のキャンセル処理（<code>cancelClearReveal</code>）も追加。<br>
+      修正ファイル：<code>src/game.ts</code>・<code>src/main.ts</code>・<code>index.html</code>・<code>src/audio.ts</code>・<code>src/style.css</code>。<br>
+      <strong>検証</strong>：ヘッドレスで「HUD が演出中は加算前のまま→カウントアップ完了の瞬間に合計へ切替」「行順」「カウント途中の値が開始値と合計の間を推移し最終値＝合計」「ショットボーナス 0 の行スキップ」を確認後、ローカル（dev サーバー）での実プレイ確認を経てリリース。</div>
+    <p>対応前（v0.9.24）と対応後（v0.9.25）。対応前は演出開始時点で右上 HUD がすでに合計 3,510 になっている。対応後はカウントアップ中も HUD が加算前の 2350 のままで、着地後に 3,510 へ切り替わる。</p>
+    <figure class="shot">
+      <img src="img/fb28-after-result.png" alt="対応前のクリア画面。右上 HUD が演出中からすでに合計 3510 を表示している">
+      <figcaption>対応前（v0.9.24）。右上 HUD が演出中からすでに合計 3,510 で「ネタバレ」。順序もショットボーナスが先で、合計は静止表示だった</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb30-after-midcount.png" alt="対応後のカウントアップ途中。右上 HUD は加算前の 2350 のまま、合計スコアが 3,333 まで伸びている">
+      <figcaption>対応後（v0.9.25）・カウントアップ途中。クリアボーナス→ショットボーナスの順になり、HUD（右上）は加算前の 2350 のまま。合計が tick 音とともに伸びていく（この瞬間は 3,333）</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb30-after-landed.png" alt="対応後の着地画面。合計スコア 3,510 で確定し、右上 HUD も 3510 に切り替わり、ボタンが表示されている">
+      <figcaption>対応後（v0.9.25）・着地。数字が「ポン」と弾んで 3,510 で確定し、HUD も同時に 3510 へ切替。その後にボタンが現れる</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb29">
     <h3><span>#29：ショットボーナスの基準（par）を緩和し、実プレイで届く水準にした（v0.9.24）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
