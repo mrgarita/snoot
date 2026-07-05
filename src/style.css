@@ -17,7 +17,15 @@
   --font-display: "Mochiy Pop One", "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", sans-serif;
 }
 
-* { box-sizing: border-box; }
+/* iOS のダブルタップズーム等のネイティブジェスチャを画面・状態を問わず全面的に無効化する
+   （#31：HUD では touch-action: manipulation が実機 iPhone で効かずズームしたため、
+   全要素へ none を一律指定する方式に統一。ピンチは touch-action では止まらないので
+   main.ts の gesture イベント抑止と併用する）。touch-action は継承されないため
+   * セレクタで全要素に直接指定する。スクロールが必要な箇所のみ後述の pan-y で例外化 */
+* {
+  box-sizing: border-box;
+  touch-action: none;
+}
 
 html, body {
   margin: 0;
@@ -32,6 +40,7 @@ html, body {
   color: #fff;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none; /* iOS の長押しメニューを防止（継承されるので html/body のみで足りる） */
 }
 
 /* ゲーム中はルート背景のフォールバックを盤面色に切り替え、iOS の下端帯を盤面と
@@ -159,9 +168,7 @@ html.in-game body {
   justify-content: space-between;
   gap: 0.6rem;
   padding: 0.4rem 0.7rem;
-  /* ゲーム中の iOS ダブルタップズームを抑止（「タイトルへ」等のタップは維持する）。
-     touch-action は継承されないため、タッチを受ける要素ごとに個別指定する（#canvas-wrap も同様） */
-  touch-action: manipulation;
+  /* ズーム抑止は冒頭の * { touch-action: none } に統一（manipulation は実機 iPhone で効かなかった。#31） */
   /* 横向きのノッチ端末で左右の切り欠きを避ける（非ノッチ・PC では 0.7rem のまま） */
   padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
   padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
@@ -227,10 +234,7 @@ html.in-game body {
   background: var(--bg-edge);
   /* ノッチ端末のホームインジケータに砲台が潜らないよう下端を持ち上げる（非ノッチでは 0） */
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* 盤面の左右／上下のレターボックス余白でも iOS のダブルタップ／ピンチズームを抑止する
-     （canvas 自身は下の touch-action:none。ここはスクロール不要なので none でよい）。
-     iOS のピンチは touch-action では止まらないため main.ts の gesturestart 抑止と併用する */
-  touch-action: none;
+  /* ズーム・スクロール抑止は冒頭の * { touch-action: none } が全要素に効く */
 }
 
 /* スマホ等で盤面が画面全幅のときは左右余白＝跳ね返り壁が存在しない。枠を盤面の
@@ -240,7 +244,7 @@ html.in-game body {
 #canvas-wrap.board-fullwidth { background: var(--play-bg); }
 
 #game-canvas {
-  touch-action: none; /* スマホでのスクロール・ズームを抑止して照準操作を可能にする */
+  /* スクロール・ズーム抑止（照準操作のため）は冒頭の * { touch-action: none } が効く */
   display: block;
 }
 
@@ -376,6 +380,17 @@ html.in-game body {
   max-height: 90%;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* 全面の touch-action: none の例外：この 2 ボックスは overflow-y: auto でスクロールする
+   ことがある（ハイスコア一覧・キーボード表示時の名前入力）ため、縦パンだけ許可する。
+   touch-action は継承されず「タッチ開始要素から祖先までの共通許可」で決まるため、
+   ボックス内の子孫（表のセル等）にも同じ pan-y を指定する必要がある */
+#name-entry-box,
+#name-entry-box *,
+#highscore-box,
+#highscore-box * {
+  touch-action: pan-y;
 }
 
 #name-entry-box h2,

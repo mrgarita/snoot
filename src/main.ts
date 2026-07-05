@@ -85,47 +85,47 @@ function initLogo(): void {
 initLogo();
 
 /**
- * ゲーム中（html.in-game）だけ、iOS のデフォルトズームを抑止する。
- * iOS Safari は viewport の user-scalable=no を無視するため、JS で防ぐ必要がある
- * （バブルシューターは連打発射するので、連続タップがダブルタップズームと誤認され、
- *  画面全体が拡大して上部の HUD が見えなくなる不具合が実機で起きた）。
- * リスナは起動時に 1 度だけ張り、毎回 in-game クラスの有無で作用を切り替える
- * （付け外しの取りこぼしを避ける）。タイトル／リザルトはズーム可のまま残す。
+ * iOS 独自のズーム挙動を、画面（タイトル／ゲーム／リザルト）やゲーム状態を問わず
+ * すべて無効化する（#31）。iOS Safari は viewport の user-scalable=no を無視するため
+ * JS で防ぐ必要がある。v0.9.25 まではゲーム中の盤面だけに限定していたが、実機で
+ * HUD タップ時に確実に画面が拡大し（touch-action: manipulation も効かず）、
+ * タイトル画面ではピンチズームが可能なままで、プレイヤーが迷う挙動になっていた。
+ * そのため「iPhone 側のネイティブ挙動は常に全部オフ」に統一する。
+ * CSS 側の全面指定（style.css の * { touch-action: none }）と対になる保険。
  */
-function preventGameZoom(): void {
-  const inGame = () => document.documentElement.classList.contains("in-game");
-
+function preventNativeGestures(): void {
   // ピンチズーム：iOS 独自の gesture イベント。touch-action では止まらないので preventDefault する。
   // TS の型定義に無いイベント名なので文字列で回し、ハンドラは Event で受ける。
   for (const type of ["gesturestart", "gesturechange", "gestureend"]) {
-    document.addEventListener(
-      type,
-      (e: Event) => {
-        if (inGame()) e.preventDefault();
-      },
-      { passive: false },
-    );
+    document.addEventListener(type, (e: Event) => e.preventDefault(), { passive: false });
   }
 
-  // ダブルタップズーム：古い iOS は touch-action を無視することがあるため JS でも保険をかける。
-  // 盤面（#canvas-wrap 内）で 300ms 以内に続いた touchend だけ抑止する。発射は Pointer Events
-  // （game.ts の pointerup）で処理され touchend.preventDefault では止まらないので、連打発射は
-  // そのまま効く。ボタン／入力欄の連打・単語選択を妨げないよう、対象を盤面領域に限定する。
+  // ダブルタップズーム：touch-action を無視する iOS に備えた JS の保険。
+  // 500ms 以内に続いた 2 回目の touchend を document 全体で抑止する
+  // （v0.9.25 までの「盤面限定・300ms」では iOS の判定窓より狭く、砲台周りの
+  // 連打がすり抜けて拡大した）。発射は Pointer Events（game.ts の pointerup）で
+  // 処理されるため連打発射はそのまま効く。
+  // ただし preventDefault は click 合成も消すため、抑止したタップがボタン上なら
+  // click を代わりに発火して操作性を保つ（例：「登録」→すぐ「ハイスコア」と
+  // テンポよく押しても 2 つ目が反応する）。名前入力はフォーカス用の click を
+  // 確実に通すため抑止の対象から外す。
   let lastTouchEndAt = 0;
   document.addEventListener(
     "touchend",
     (e: TouchEvent) => {
-      if (!inGame()) return;
       const target = e.target as Element | null;
-      if (!target || !target.closest("#canvas-wrap")) return;
+      if (target?.closest("input")) return;
       const now = Date.now();
-      if (now - lastTouchEndAt <= 300) e.preventDefault();
+      if (now - lastTouchEndAt <= 500) {
+        e.preventDefault();
+        target?.closest("button")?.click();
+      }
       lastTouchEndAt = now;
     },
     { passive: false },
   );
 }
-preventGameZoom();
+preventNativeGestures();
 
 let currentDifficulty: DifficultyId = "easy";
 let lastEnd: GameEndInfo | null = null;

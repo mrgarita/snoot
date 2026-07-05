@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-07-05</td><td class="num">31</td>
+          <td>iPhone 実機でゲーム中に画面が拡大する（#27 対応後も再発）。上部ステータス（HUD）はタップで確実に拡大し、タイトル画面はピンチズーム可のまま。ゲームの状況にかかわらず iPhone 側の挙動は統一してすべてオフにすべき</td>
+          <td><span class="ver-pill">v0.9.26</span></td>
+          <td><a class="lk-detail" href="#fb31">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v0.9.26/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-05</td><td class="num">30</td>
           <td>クリア演出の開始前に上部 HUD のスコアが合計値になっている（完了後に切替すべき）。表示順はショット数→クリアボーナス→ショットボーナスに。合計スコアはカウントアップで見せたい</td>
           <td><span class="ver-pill">v0.9.25</span></td>
@@ -273,6 +280,30 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb31">
+    <h3><span>#31：iOS のズーム等ネイティブジェスチャを全画面・全状態で無効化（v0.9.26）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>（v0.9.25 の実機確認より）#27 の対応後も、iPhone 実機で<strong>ゲーム中に画面が拡大する</strong>。砲台周りをタップしていて発生し、上部ステータス（HUD）は<strong>タップすると確実に拡大</strong>する。タイトル画面は現状ピンチズームが可能。プレイヤーが迷わないよう、<strong>ゲームの状況いかんにかかわらず iPhone 側の挙動は統一してすべてオフ</strong>にすべき。</div>
+    <div class="note fix"><span class="k">原因</span>#27（v0.9.23）の抑止が「ゲーム中だけ・場所ごとに方式を変える」<strong>部分適用</strong>だったため、すき間が残っていた。<br>
+      ① HUD は <code>touch-action: manipulation</code>（ダブルタップズームのみ禁止の指定）に頼っていたが、<strong>実機の iOS Safari では効かなかった</strong>。<br>
+      ② 盤面の JS 抑止（連続 <code>touchend</code> の <code>preventDefault()</code>）は判定窓が 300ms で <strong>iOS のダブルタップ判定より狭く</strong>、それを超える間隔の連打がすり抜けて拡大した。<br>
+      ③ タイトル／リザルト画面は #27 当時の判断で意図的にズーム可のまま残していた。</div>
+    <div class="note fix"><span class="k">対応</span>ユーザー過去作のブラウザゲーム（OTIMONO）で実績のある<strong>「全面オフ」方式へ統一</strong>した。<br>
+      (1) CSS：<code>* { touch-action: none }</code> を全要素へ一律指定（manipulation は使わない）。スクロールが必要な<strong>ハイスコア一覧と名前入力ボックスだけ</strong> <code>pan-y</code>（縦パンのみ許可）で例外化し、長押しメニューも <code>-webkit-touch-callout: none</code> で禁止。<br>
+      (2) JS：ピンチ（<code>gesturestart</code> 系）の <code>preventDefault()</code> を<strong>無条件</strong>に（従来はゲーム中のみ）。ダブルタップ抑止も <strong>document 全体・無条件</strong>とし、判定窓を 300ms → <strong>500ms</strong> に拡大。<br>
+      (3) 抑止したタップが<strong>ボタン上なら <code>click()</code> を代わりに発火</strong>し、「登録 → すぐハイスコア」のようなテンポの良い連続タップでも反応が消えないようにした。名前入力欄はフォーカス用の click を通すため抑止対象外。発射は Pointer Events（<code>pointerup</code>）処理のため<strong>連打発射は従来どおり効く</strong>。<br>
+      修正ファイル：<code>src/style.css</code>・<code>src/main.ts</code>（<code>preventGameZoom</code> → <code>preventNativeGestures</code> に改称）。<br>
+      <strong>検証</strong>：ヘッドレス（タッチ端末エミュレーション）で 19 項目——全要素の computed <code>touch-action</code>（一律 none・例外 2 ボックスのみ pan-y）、タップ動線（レベル選択→発射→タイトルへ→名前入力→ハイスコア開閉）、500ms 内の 2 連タップの抑止とボタン click 合成——をすべて確認。レイアウトは iPhone SE／iPhone 12／横向き／PC の 4 ケースで修正前後の計測値が<strong>完全一致</strong>（退行なし）。実機（iPhone）での最終確認は次回のプレイ確認で行う。</div>
+    <p>対応前に拡大が起きていた領域と、対応後の抑止範囲。</p>
+    <figure class="shot">
+      <img src="img/fb31-before-zones.png" alt="対応前のゲーム画面。上部 HUD と砲台周りに、拡大が発生していた領域の注記が重ねてある">
+      <figcaption>対応前（v0.9.25）。① HUD はタップで確実に拡大（touch-action: manipulation が実機で効かず）、② 砲台周りは 300ms の抑止窓をすり抜けた連打で拡大。このほかタイトル画面はピンチズームが可能だった</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb31-after-unified.png" alt="対応後のゲーム画面。画面全体が緑の枠で囲われ、全面でズーム無効になったことを示している">
+      <figcaption>対応後（v0.9.26）。タイトル・ゲーム・リザルトを問わず画面全体で iOS のピンチ／ダブルタップズームを無効化。スクロールが必要なハイスコア一覧・名前入力だけ縦スクロールを許可</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb30">
     <h3><span>#30：クリア演出を再調整——HUD 切替の遅延・表示順の変更・合計スコアのカウントアップ（v0.9.25）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
