@@ -586,10 +586,13 @@ export class Game {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.W, this.H);
 
-    // 盤面背景：背後の #canvas-wrap 色に依存しないよう不透明の盤面色 --play-bg で塗る。
-    // 半透明（rgba 黒×0.25）だと全幅時に wrap 色×0.75 で実効色が変わり、版数表示部の
-    // 下端帯と色差が出てしまうため、実効色を #19283f に固定する（#14 追従）
-    ctx.fillStyle = "#19283f";
+    // 盤面背景：背後の #canvas-wrap 色に依存しないよう不透明の空色グラデで塗る。
+    // 半透明だと全幅時に wrap 色と混ざって実効色が変わり、版数表示部の下端帯と
+    // 色差が出てしまう（#14 追従）。下端は必ず --play-bg と同じ #c2d2e4 で終える
+    const sky = ctx.createLinearGradient(0, 0, 0, this.H);
+    sky.addColorStop(0, "#e6edf6");
+    sky.addColorStop(1, "#c2d2e4");
+    ctx.fillStyle = sky;
     ctx.fillRect(0, 0, this.W, this.H);
 
     // 天井降下アニメの見かけのオフセット（px）。論理座標は動かさず描画だけずらす。
@@ -597,15 +600,15 @@ export class Game {
     const off = this.dropAnim * this.dropAnim * (3 - 2 * this.dropAnim);
     const dropPx = off * ROW_H * this.cell;
 
-    // 天井バンド（岩肌＋下端ギザギザ）。降下中は見かけの下端を 1 行ぶん上げて描く。
+    // 天井バンド（金属板＋斜めの警告ストライプ）。降下中は見かけの下端を 1 行ぶん上げて描く。
     const cy = this.ceilingY();
     if (cy > 0) {
-      this.renderRockyCeiling(ctx, cy - dropPx);
+      this.renderCeilingBand(ctx, cy - dropPx);
     }
 
     // デッドライン
     const dy = this.deadlineY();
-    ctx.strokeStyle = "rgba(231,76,60,0.7)";
+    ctx.strokeStyle = "rgba(226,84,63,0.75)";
     ctx.setLineDash([8, 6]);
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -675,82 +678,41 @@ export class Game {
   }
 
   /**
-   * 岩っぽい天井バンドを描く（著作権配慮でコード描画・画像は使わない）。
+   * 天井バンドを描く（著作権配慮でコード描画・画像は使わない）。
+   * 立体キャラ案の意匠：金属質の縦グラデ板＋下端に斜めの警告ストライプ。
    * edgeY は見かけの下端 y（降下アニメ中は 1 行ぶん上がる）。
-   * 地層・スペックル・下端のギザギザ岩は整数インデックスのハッシュで決定論的に
-   * 生成し、毎フレームのちらつきを防ぐ。
    */
-  private renderRockyCeiling(ctx: CanvasRenderingContext2D, edgeY: number): void {
+  private renderCeilingBand(ctx: CanvasRenderingContext2D, edgeY: number): void {
     const W = this.W;
     if (edgeY <= 0) return;
-    // 0〜1 を返す決定論的ハッシュ（i ごとに固定値）
-    const h = (i: number): number => {
-      const x = Math.sin(i * 12.9898) * 43758.5453;
-      return x - Math.floor(x);
-    };
 
     ctx.save();
 
-    // 帯本体：上が暗く下が明るい石肌のグラデーション
+    // 帯本体：上が明るく下が暗い金属板のグラデーション
     const grad = ctx.createLinearGradient(0, 0, 0, edgeY);
-    grad.addColorStop(0, "#2c2622");
-    grad.addColorStop(1, "#4a423a");
+    grad.addColorStop(0, "#9aa7b6");
+    grad.addColorStop(1, "#5f6c7d");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, edgeY);
 
-    // 地層（暗い横線）
-    ctx.strokeStyle = "rgba(0,0,0,0.18)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 3; i++) {
-      const y = edgeY * (i / 4) + (h(i) - 0.5) * 4;
+    // 下端の警告ストライプ（黄と紺の斜め帯）
+    const bandH = Math.max(7, Math.min(14, this.cell * 0.3));
+    const step = 16;
+    const skew = bandH * 0.65; // 斜めの倒れ具合
+    for (let x = -step, i = 0; x < W + step; x += step, i++) {
+      ctx.fillStyle = i % 2 ? "#3c4652" : "#f2c231";
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
-
-    // スペックル（岩肌の粒。明暗を散らす）
-    const dots = Math.floor((W * edgeY) / 900);
-    for (let i = 0; i < dots; i++) {
-      const x = h(i * 2 + 1) * W;
-      const y = h(i * 2 + 2) * edgeY;
-      const r = 0.6 + h(i + 7) * 1.2;
-      ctx.fillStyle = h(i + 3) > 0.5 ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.16)";
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.moveTo(x, edgeY - bandH);
+      ctx.lineTo(x + step, edgeY - bandH);
+      ctx.lineTo(x + step - skew, edgeY);
+      ctx.lineTo(x - skew, edgeY);
+      ctx.closePath();
       ctx.fill();
     }
 
-    // 下端のギザギザ岩（鍾乳石風の歯）。edgeY を基準に下へ突き出す。
-    const step = Math.max(10, this.cell * 0.7);
-    const n = Math.ceil(W / step) + 1;
-    ctx.beginPath();
-    ctx.moveTo(0, edgeY);
-    for (let i = 0; i < n; i++) {
-      const x0 = i * step;
-      const xMid = x0 + step / 2;
-      const x1 = x0 + step;
-      const depth = this.cell * (0.18 + h(i) * 0.22); // 歯の長さに変化をつける
-      ctx.lineTo(xMid, edgeY + depth);
-      ctx.lineTo(Math.min(W, x1), edgeY);
-    }
-    ctx.lineTo(W, edgeY);
-    ctx.closePath();
-    ctx.fillStyle = "#3b342d";
-    ctx.fill();
-
-    // 歯の輪郭（暗い影）で立体感を出す
-    ctx.strokeStyle = "#1c1814";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // 下端に明るいリムを 1 本入れて岩の張り出し感を強める
-    ctx.strokeStyle = "rgba(150,140,125,0.5)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, edgeY - 1);
-    ctx.lineTo(W, edgeY - 1);
-    ctx.stroke();
+    // 下端に影を落として板の張り出し感を出す
+    ctx.fillStyle = "rgba(0,0,0,0.25)";
+    ctx.fillRect(0, edgeY, W, 3);
 
     ctx.restore();
   }
@@ -764,7 +726,7 @@ export class Game {
     let dy = -Math.cos(this.aimAngle);
     let remain = this.H * 1.2;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.strokeStyle = "rgba(40,60,90,0.5)";
     ctx.setLineDash([4, 8]);
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -788,14 +750,23 @@ export class Game {
   }
 
   private renderCannon(ctx: CanvasRenderingContext2D): void {
-    // 台座
-    ctx.fillStyle = "#3a4a63";
+    // 台座：金属質の縦グラデ＋接地影（キャラの光沢と質感を揃える）
+    ctx.fillStyle = "rgba(30,40,60,0.18)";
+    ctx.beginPath();
+    ctx.ellipse(this.cannonX, this.cannonY + this.cell * 0.8, this.cell * 0.8, this.cell * 0.16, 0, 0, Math.PI * 2);
+    ctx.fill();
+    const base = ctx.createLinearGradient(
+      0, this.cannonY - this.cell * 0.75, 0, this.cannonY + this.cell * 0.75,
+    );
+    base.addColorStop(0, "#aab6c4");
+    base.addColorStop(1, "#5f6c7d");
+    ctx.fillStyle = base;
     ctx.beginPath();
     ctx.arc(this.cannonX, this.cannonY, this.cell * 0.75, 0, Math.PI * 2);
     ctx.fill();
 
     // 砲身（照準方向）
-    ctx.strokeStyle = "#b8c4d6";
+    ctx.strokeStyle = "#8595a8";
     ctx.lineWidth = this.cell * 0.22;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -813,8 +784,8 @@ export class Game {
 
     // NEXT 表示（誤認防止のため表情は動かさない＝アニメ時刻を渡さない）
     const nx = this.cannonX + this.cell * 2.2;
-    ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.font = `${this.cell * 0.32}px ${CANVAS_FONT}`;
+    ctx.fillStyle = "#5a6c80";
+    ctx.font = `700 ${this.cell * 0.32}px ${CANVAS_FONT}`;
     ctx.textAlign = "center";
     ctx.fillText("NEXT", nx, this.cannonY - this.cell * 0.7);
     drawSnoot(ctx, this.nextType, nx, this.cannonY, this.cell * 0.35);
