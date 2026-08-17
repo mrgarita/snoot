@@ -69,7 +69,7 @@ versionBadge.textContent = `Snoot v${pkg.version}`;
 // Canvas 内テキスト（NEXT・寝息の z）用にウェブフォントの読み込みを先行して促す保険。
 // タイトル画面の DOM 表示で実際には読み込まれるため await はしない（毎フレーム
 // 再描画のゲームなので、読み込み完了後のフレームから自然に切り替わる）
-document.fonts?.load('bold 16px "M PLUS Rounded 1c"').catch(() => {});
+document.fonts?.load('16px "DotGothic16"').catch(() => {});
 
 // ロゴの「oo」＝キャラ 2 体の顔（index.html の data-snoot で種類を指定）を描画する。
 // 静的な顔にしたいので drawSnoot にアニメ時刻 t は渡さない

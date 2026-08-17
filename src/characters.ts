@@ -1,29 +1,215 @@
-// Snoot のオリジナルキャラクター描画
+// Snoot のオリジナルキャラクター描画（デザイン案 1a：ドット絵風）
 // 著作権配慮のため Snood のキャラクターは使わず、全キャラを Canvas でコード描画する。
+// 16×16 のオフスクリーン canvas にスプライトを一度だけ生成してキャッシュし、
+// imageSmoothingEnabled=false で拡大ブリットしてレトロ携帯機のドット絵に見せる。
 // 色だけでなく表情・付属パーツも変えて、色覚にかかわらず見分けられるようにする。
+// 特に「青（マルオ）と緑（ハッパ）が見分けにくい」対策として、青は藍寄り・緑は
+// 黄緑寄りに色相を引き離し、ハッパは葉＋体の斑点で「形」でも区別できるようにした。
 
 export const TYPE_COLORS = [
-  "#4a90d9", // 0: マルオ（青・にっこり）
-  "#5cb85c", // 1: ハッパ（緑・葉っぱ頭）
-  "#e74c3c", // 2: プンタ（赤・怒り眉）
-  "#f5a623", // 3: ヒナタ(オレンジ・星目)
-  "#9b59b6", // 4: ネムリ（紫・ねむり目）
-  "#45c4c8", // 5: ビック（水色・びっくり口）
-  "#8d8d8d", // 6: イシゴロ（灰色・四角顔）
+  "#4a6df5", // 0: マルオ（藍寄りの青・にっこり）
+  "#9ccb2e", // 1: ハッパ（黄緑・葉っぱ頭＋斑点）
+  "#ef3b2f", // 2: プンタ（赤・怒り眉）
+  "#ffb703", // 3: ヒナタ（黄・星目）
+  "#a05bd8", // 4: ネムリ（紫・寝息の z）
+  "#3fd0d4", // 5: ビック（水色・びっくり目）
+  "#9aa0a6", // 6: イシゴロ（灰色・角形）
 ];
 
 export const TYPE_COUNT_MAX = TYPE_COLORS.length;
 
 /** Canvas 内テキストの書体。DOM 側（style.css の --font-body）と揃えて統一する */
-export const CANVAS_FONT = '"M PLUS Rounded 1c", sans-serif';
+export const CANVAS_FONT = '"DotGothic16", monospace';
 
 /** キャラクター名（TYPE_COLORS と同順） */
 export const TYPE_NAMES = ["マルオ", "ハッパ", "プンタ", "ヒナタ", "ネムリ", "ビック", "イシゴロ"];
+
+/** スプライトの表情。normal＝通常、blink＝まばたき（ネムリのみ寝息オフ）、surprised＝驚き */
+type Face = "normal" | "blink" | "surprised";
+
+/** 生成済みスプライトの置き場（キー："{type}-{face}"）。毎フレームの再生成を防ぐ */
+const spriteCache = new Map<string, HTMLCanvasElement>();
+
+/** 骸骨スプライト（1 枚だけ生成して使い回す） */
+let skullCache: HTMLCanvasElement | null = null;
 
 /** まばたき判定：周期 cycle 秒のうち先頭 dur 秒だけ目を閉じる */
 function isBlinking(t: number, cycle: number, dur: number): boolean {
   return t % cycle < dur;
 }
+
+/** #rrggbb を amt（-255..255）だけ明暗させた rgb() 文字列を返す */
+function shade(hex: string, amt: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const c = (v: number): number => Math.max(0, Math.min(255, v + amt));
+  return `rgb(${c(n >> 16)},${c((n >> 8) & 255)},${c(n & 255)})`;
+}
+
+/**
+ * 16×16 のスプライトを 1 枚生成する。
+ * 本体は 3 階調（base ／ 輪郭 base−70 ／ ハイライト base+60）で統一し、
+ * 顔パーツだけを種類・表情ごとに描き分ける。
+ */
+function makeSprite(type: number, face: Face): HTMLCanvasElement {
+  const off = document.createElement("canvas");
+  off.width = 16;
+  off.height = 16;
+  const o = off.getContext("2d")!;
+
+  const col = TYPE_COLORS[type % TYPE_COLORS.length];
+  const dk = shade(col, -70); // 輪郭
+  const lt = shade(col, 60); // ハイライト
+  const K = "#1c2026"; // 顔パーツの黒
+  const W = "#f2f5ff"; // 白目
+
+  const px = (x: number, y: number, c: string): void => {
+    o.fillStyle = c;
+    o.fillRect(x, y, 1, 1);
+  };
+  const rect = (x: number, y: number, w: number, h: number, c: string): void => {
+    o.fillStyle = c;
+    o.fillRect(x, y, w, h);
+  };
+
+  // 本体：イシゴロだけ角ばった岩、他は丸い体
+  if (type === 6) {
+    rect(2, 3, 12, 11, dk);
+    rect(3, 4, 10, 9, col);
+    rect(3, 4, 10, 1, lt);
+  } else {
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        const d = Math.hypot(x - 7.5, y - 8.2);
+        if (d <= 5.9) px(x, y, col);
+        else if (d <= 7.0) px(x, y, dk);
+      }
+    }
+    // 左上のハイライト 3 ドット
+    for (const [hx, hy] of [[5, 4], [6, 4], [4, 5]]) px(hx, hy, lt);
+  }
+
+  // ハッパの葉と斑点は表情にかかわらず描く（形でも見分けられるようにする）
+  if (type === 1) {
+    const LG = "#3a7d1e";
+    rect(7, 0, 2, 2, LG);
+    px(6, 1, LG);
+    px(9, 1, LG);
+    px(8, 2, LG);
+    px(3, 10, dk);
+    px(12, 9, dk);
+    px(11, 12, dk);
+  }
+
+  // 驚き顔（消滅エフェクト用・全種共通）：体の個性は残し顔だけ差し替える
+  if (face === "surprised") {
+    rect(3, 6, 3, 3, W);
+    rect(10, 6, 3, 3, W);
+    px(4, 7, K);
+    px(11, 7, K);
+    rect(6, 11, 4, 2, "#5a2222");
+    return off;
+  }
+
+  const blink = face === "blink";
+
+  switch (type % TYPE_COLORS.length) {
+    case 0: // マルオ：丸目＋にっこり口。まばたきで目が 1 ドットの線になる
+      if (blink) {
+        rect(4, 8, 2, 1, K);
+        rect(10, 8, 2, 1, K);
+      } else {
+        rect(4, 7, 2, 2, K);
+        rect(10, 7, 2, 2, K);
+      }
+      px(5, 11, K);
+      px(10, 11, K);
+      rect(6, 12, 4, 1, K);
+      break;
+    case 1: // ハッパ：まばたき（葉と斑点は共通部で描画済み）
+      if (blink) {
+        rect(4, 8, 2, 1, K);
+        rect(10, 8, 2, 1, K);
+      } else {
+        rect(4, 7, 2, 2, K);
+        rect(10, 7, 2, 2, K);
+      }
+      rect(6, 11, 4, 1, K);
+      break;
+    case 2: // プンタ：怒り眉＋への字口（動かないのが持ち味なので表情は 1 種類）
+      px(3, 5, K);
+      px(4, 6, K);
+      px(12, 5, K);
+      px(11, 6, K);
+      rect(4, 8, 2, 2, K);
+      rect(10, 8, 2, 2, K);
+      px(5, 13, K);
+      rect(6, 12, 4, 1, K);
+      px(10, 13, K);
+      break;
+    case 3: // ヒナタ：星目（十字の 5 ドット）＋開いた笑い口
+      for (const [ex, ey] of [[5, 7], [10, 7]]) {
+        px(ex, ey, K);
+        px(ex - 1, ey, K);
+        px(ex + 1, ey, K);
+        px(ex, ey - 1, K);
+        px(ex, ey + 1, K);
+      }
+      rect(6, 11, 4, 2, K);
+      rect(7, 12, 2, 1, "#8a2b2b");
+      break;
+    case 4: // ネムリ：閉じた目。寝息の「z」は blink 側で消して明滅させる
+      rect(3, 8, 4, 1, K);
+      rect(9, 8, 4, 1, K);
+      rect(7, 11, 2, 1, K);
+      if (!blink) {
+        const Z = "#dfe6ff";
+        rect(10, 1, 3, 1, Z);
+        px(11, 2, Z);
+        rect(10, 3, 3, 1, Z);
+      }
+      break;
+    case 5: // ビック：白目＋びっくり口
+      rect(3, 6, 3, 3, W);
+      rect(10, 6, 3, 3, W);
+      px(4, 7, K);
+      px(11, 7, K);
+      rect(7, 11, 2, 2, K);
+      break;
+    case 6: // イシゴロ：一文字の目と口。たまにゆっくり目を閉じる（瞳が消える）
+      rect(4, 7, 3, 1, K);
+      rect(9, 7, 3, 1, K);
+      if (!blink) {
+        px(5, 8, K);
+        px(10, 8, K);
+      }
+      rect(5, 11, 6, 1, K);
+      break;
+  }
+
+  return off;
+}
+
+/** キャッシュ経由でスプライトを取り出す */
+function snootSprite(type: number, face: Face): HTMLCanvasElement {
+  const key = `${type % TYPE_COLORS.length}-${face}`;
+  let sp = spriteCache.get(key);
+  if (!sp) {
+    sp = makeSprite(type % TYPE_COLORS.length, face);
+    spriteCache.set(key, sp);
+  }
+  return sp;
+}
+
+/** 種類ごとのまばたき周期（[周期秒, 閉じている秒]）。0 は「まばたきしない」 */
+const BLINK_CYCLE: [number, number][] = [
+  [3.1, 0.18], // 0 マルオ
+  [3.7, 0.18], // 1 ハッパ
+  [0, 0], // 2 プンタ（怒り顔のまま）
+  [0, 0], // 3 ヒナタ（星目のまま）
+  [2.2, 1.1], // 4 ネムリ（寝息 z の明滅）
+  [0, 0], // 5 ビック（見開いたまま）
+  [6.0, 0.5], // 6 イシゴロ（ゆっくり閉じる）
+];
 
 /**
  * 種類 type のキャラを中心 (cx, cy)・半径 r で描画する。
@@ -39,162 +225,65 @@ export function drawSnoot(
   t?: number,
   surprised = false,
 ): void {
-  const anim = t !== undefined;
-  const tt = t ?? 0;
-  ctx.save();
-  ctx.translate(cx, cy);
-
-  const color = TYPE_COLORS[type % TYPE_COLORS.length];
-
-  // 本体（イシゴロのみ角丸四角、他は円）
-  ctx.fillStyle = color;
-  ctx.strokeStyle = "rgba(0,0,0,0.35)";
-  ctx.lineWidth = Math.max(1, r * 0.08);
-  ctx.beginPath();
-  if (type === 6) {
-    const s = r * 0.92;
-    roundRect(ctx, -s, -s, s * 2, s * 2, r * 0.3);
-  } else {
-    ctx.arc(0, 0, r * 0.95, 0, Math.PI * 2);
-  }
-  ctx.fill();
-  ctx.stroke();
-
-  // ハイライト
-  ctx.fillStyle = "rgba(255,255,255,0.25)";
-  ctx.beginPath();
-  ctx.ellipse(-r * 0.3, -r * 0.4, r * 0.32, r * 0.2, -0.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  // ハッパの葉っぱは表情にかかわらず描く（キャラの個性を保つ）
-  if (type % TYPE_COLORS.length === 1) {
-    const sway = anim && !surprised ? 0.35 * Math.sin(tt * 1.8) : 0;
-    ctx.fillStyle = "#2e7d32";
-    ctx.beginPath();
-    ctx.ellipse(0, -r * 1.05, r * 0.28, r * 0.16, -0.6 + sway, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // 顔パーツ
-  ctx.fillStyle = "#222";
-  ctx.strokeStyle = "#222";
-  ctx.lineWidth = Math.max(1, r * 0.1);
-  const eyeY = -r * 0.15;
-  const eyeX = r * 0.32;
-
-  // 驚き顔（消滅エフェクト用・全種共通）：体の個性は残し顔だけ差し替える
+  let face: Face = "normal";
   if (surprised) {
-    ctx.fillStyle = "#fff";
-    dot(ctx, -eyeX, eyeY, r * 0.2);
-    dot(ctx, eyeX, eyeY, r * 0.2);
-    ctx.fillStyle = "#222";
-    dot(ctx, -eyeX, eyeY, r * 0.07);
-    dot(ctx, eyeX, eyeY, r * 0.07);
-    // 大きく開いた口
-    ctx.fillStyle = "#5a2222";
-    ctx.beginPath();
-    ctx.ellipse(0, r * 0.4, r * 0.2, r * 0.26, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // コミック風の驚き線
-    ctx.strokeStyle = "#ffe27a";
-    ctx.lineWidth = Math.max(1.5, r * 0.09);
-    for (const a of [-2.2, -Math.PI / 2, -0.95]) {
-      line(
-        ctx,
-        Math.cos(a) * r * 1.05,
-        Math.sin(a) * r * 1.05,
-        Math.cos(a) * r * 1.35,
-        Math.sin(a) * r * 1.35,
-      );
-    }
-    ctx.restore();
-    return;
+    face = "surprised";
+  } else if (t !== undefined) {
+    const [cycle, dur] = BLINK_CYCLE[type % TYPE_COLORS.length];
+    if (cycle > 0 && isBlinking(t, cycle, dur)) face = "blink";
   }
 
-  switch (type % TYPE_COLORS.length) {
-    case 0: { // マルオ：丸目＋にっこり口。まばたきし、口がゆれる
-      if (anim && isBlinking(tt, 3.1, 0.18)) {
-        line(ctx, -eyeX - r * 0.12, eyeY, -eyeX + r * 0.12, eyeY);
-        line(ctx, eyeX - r * 0.12, eyeY, eyeX + r * 0.12, eyeY);
-      } else {
-        dot(ctx, -eyeX, eyeY, r * 0.13);
-        dot(ctx, eyeX, eyeY, r * 0.13);
-      }
-      const rm = r * 0.35 * (anim ? 1 + 0.08 * Math.sin(tt * 2.2) : 1);
-      arcMouth(ctx, 0, r * 0.25, rm, 0.15 * Math.PI, 0.85 * Math.PI);
-      break;
-    }
-    case 1: { // ハッパ：まばたき（葉っぱの揺れは共通部で描画済み）
-      if (anim && isBlinking(tt, 3.7, 0.18)) {
-        line(ctx, -eyeX - r * 0.12, eyeY, -eyeX + r * 0.12, eyeY);
-        line(ctx, eyeX - r * 0.12, eyeY, eyeX + r * 0.12, eyeY);
-      } else {
-        dot(ctx, -eyeX, eyeY, r * 0.13);
-        dot(ctx, eyeX, eyeY, r * 0.13);
-      }
-      arcMouth(ctx, 0, r * 0.3, r * 0.25, 0.2 * Math.PI, 0.8 * Math.PI);
-      break;
-    }
-    case 2: { // プンタ：怒り眉がピクピク上下し、への字口がふるえる
-      const jitter = anim ? r * 0.06 * Math.sin(tt * 8) : 0;
-      line(ctx, -eyeX - r * 0.15, eyeY - r * 0.25 + jitter, -eyeX + r * 0.12, eyeY - r * 0.08);
-      line(ctx, eyeX + r * 0.15, eyeY - r * 0.25 + jitter, eyeX - r * 0.12, eyeY - r * 0.08);
-      dot(ctx, -eyeX, eyeY + r * 0.08, r * 0.12);
-      dot(ctx, eyeX, eyeY + r * 0.08, r * 0.12);
-      arcMouth(ctx, 0, r * 0.55 - jitter * 0.5, r * 0.3, 1.2 * Math.PI, 1.8 * Math.PI);
-      break;
-    }
-    case 3: { // ヒナタ：星の目がキラキラ拡縮し、笑い口が開閉する
-      const tw = anim ? 1 + 0.25 * Math.sin(tt * 5) : 1;
-      const tw2 = anim ? 1 + 0.25 * Math.sin(tt * 5 + 1.6) : 1;
-      star(ctx, -eyeX, eyeY, r * 0.18 * tw);
-      star(ctx, eyeX, eyeY, r * 0.18 * tw2);
-      const open = anim ? 0.7 + 0.3 * Math.abs(Math.sin(tt * 3)) : 1;
-      ctx.beginPath();
-      ctx.ellipse(0, r * 0.22, r * 0.34, r * 0.34 * open, 0, 0, Math.PI);
-      ctx.closePath();
-      ctx.fill();
-      break;
-    }
-    case 4: { // ネムリ：寝息の「z」がふわふわ浮き沈みして明滅する
-      line(ctx, -eyeX - r * 0.15, eyeY, -eyeX + r * 0.15, eyeY);
-      line(ctx, eyeX - r * 0.15, eyeY, eyeX + r * 0.15, eyeY);
-      dot(ctx, 0, r * 0.35, r * 0.08);
-      const floatY = anim ? r * 0.12 * Math.sin(tt * 1.5) : 0;
-      if (anim) ctx.globalAlpha = 0.55 + 0.45 * Math.sin(tt * 1.5);
-      ctx.font = `bold ${r * 0.45}px ${CANVAS_FONT}`;
-      ctx.fillText("z", r * 0.45, -r * 0.45 - floatY);
-      ctx.globalAlpha = 1;
-      break;
-    }
-    case 5: { // ビック：驚き口が大小し、瞳が左右に泳ぐ
-      const dart = anim ? r * 0.07 * Math.sin(tt * 2.3) : 0;
-      ctx.fillStyle = "#fff";
-      dot(ctx, -eyeX, eyeY, r * 0.2);
-      dot(ctx, eyeX, eyeY, r * 0.2);
-      ctx.fillStyle = "#222";
-      dot(ctx, -eyeX + dart, eyeY, r * 0.09);
-      dot(ctx, eyeX + dart, eyeY, r * 0.09);
-      const mr = r * 0.18 * (anim ? 0.7 + 0.4 * Math.abs(Math.sin(tt * 4)) : 1);
-      ctx.beginPath();
-      ctx.arc(0, r * 0.35, mr, 0, Math.PI * 2);
-      ctx.fill();
-      break;
-    }
-    case 6: { // イシゴロ：基本無表情。たまにゆっくり目を閉じる（動かないのが持ち味）
-      const closed = anim && isBlinking(tt, 6.0, 0.5);
-      line(ctx, -eyeX - r * 0.14, eyeY, -eyeX + r * 0.14, eyeY);
-      line(ctx, eyeX - r * 0.14, eyeY, eyeX + r * 0.14, eyeY);
-      if (!closed) {
-        dot(ctx, -eyeX, eyeY + r * 0.06, r * 0.1);
-        dot(ctx, eyeX, eyeY + r * 0.06, r * 0.1);
-      }
-      line(ctx, -r * 0.25, r * 0.35, r * 0.25, r * 0.35);
-      break;
-    }
-  }
-
+  ctx.save();
+  // ドットの輪郭を保つため補間を切る（スプライトを整数倍以外に拡大しても粒が残る）
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(snootSprite(type, face), cx - r, cy - r, r * 2, r * 2);
   ctx.restore();
+}
+
+/** 骸骨スプライト（16×16）。骨色 #e9e6da／輪郭 #7d786a／穴 #14161c の 3 階調 */
+function skullSprite(): HTMLCanvasElement {
+  if (skullCache) return skullCache;
+  const off = document.createElement("canvas");
+  off.width = 16;
+  off.height = 16;
+  const o = off.getContext("2d")!;
+  const B = "#e9e6da";
+  const dk = "#7d786a";
+  const K = "#14161c";
+  const px = (x: number, y: number, c: string): void => {
+    o.fillStyle = c;
+    o.fillRect(x, y, 1, 1);
+  };
+  const rect = (x: number, y: number, w: number, h: number, c: string): void => {
+    o.fillStyle = c;
+    o.fillRect(x, y, w, h);
+  };
+
+  // 頭蓋（上半分のドーム）
+  for (let y = 0; y <= 10; y++) {
+    for (let x = 0; x < 16; x++) {
+      const d = Math.hypot(x - 7.5, y - 7);
+      if (d <= 5.6) px(x, y, B);
+      else if (d <= 6.7) px(x, y, dk);
+    }
+  }
+  // あご
+  rect(5, 10, 6, 3, B);
+  rect(4, 10, 1, 3, dk);
+  rect(11, 10, 1, 3, dk);
+  rect(5, 13, 6, 1, dk);
+  // 眼窩と鼻の穴
+  rect(4, 5, 3, 3, K);
+  rect(9, 5, 3, 3, K);
+  rect(7, 8, 2, 1, K);
+  // 歯の合わせ目
+  for (const x of [6, 8, 10]) {
+    px(x, 11, dk);
+    px(x, 12, dk);
+  }
+
+  skullCache = off;
+  return off;
 }
 
 /**
@@ -209,99 +298,9 @@ export function drawSkull(
   r: number,
   popK = 0,
 ): void {
+  const s = r * (1 + 0.25 * popK); // 変化直後にふくらむ
   ctx.save();
-  ctx.translate(cx, cy);
-  const s = 1 + 0.25 * popK; // 変化直後にふくらむ
-  ctx.scale(s, s);
-
-  // 頭蓋（骨色）：上半分のドーム＋下すぼまりのあご
-  ctx.fillStyle = "#e9e6da";
-  ctx.strokeStyle = "rgba(0,0,0,0.4)";
-  ctx.lineWidth = Math.max(1, r * 0.08);
-  ctx.beginPath();
-  ctx.arc(0, -r * 0.1, r * 0.9, Math.PI, 0);
-  ctx.lineTo(r * 0.5, r * 0.55);
-  ctx.quadraticCurveTo(0, r * 0.82, -r * 0.5, r * 0.55);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // 眼窩（落ちくぼんだ黒い穴）
-  ctx.fillStyle = "#1a1a1a";
-  ctx.beginPath();
-  ctx.ellipse(-r * 0.36, -r * 0.12, r * 0.26, r * 0.3, 0, 0, Math.PI * 2);
-  ctx.ellipse(r * 0.36, -r * 0.12, r * 0.26, r * 0.3, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // 鼻（逆三角の穴）
-  ctx.beginPath();
-  ctx.moveTo(0, r * 0.06);
-  ctx.lineTo(-r * 0.12, r * 0.34);
-  ctx.lineTo(r * 0.12, r * 0.34);
-  ctx.closePath();
-  ctx.fill();
-
-  // 歯（歯ぐきラインと縦の歯）
-  ctx.strokeStyle = "rgba(0,0,0,0.4)";
-  ctx.lineWidth = Math.max(1, r * 0.05);
-  ctx.beginPath();
-  ctx.moveTo(-r * 0.4, r * 0.5);
-  ctx.lineTo(r * 0.4, r * 0.5);
-  ctx.stroke();
-  for (const tx of [-r * 0.3, -r * 0.1, r * 0.1, r * 0.3]) {
-    ctx.beginPath();
-    ctx.moveTo(tx, r * 0.5);
-    ctx.lineTo(tx, r * 0.72);
-    ctx.stroke();
-  }
-
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(skullSprite(), cx - s, cy - s, s * 2, s * 2);
   ctx.restore();
-}
-
-function dot(ctx: CanvasRenderingContext2D, x: number, y: number, r: number): void {
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function line(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number): void {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-}
-
-function arcMouth(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, r: number, start: number, end: number,
-): void {
-  ctx.beginPath();
-  ctx.arc(x, y, r, start, end);
-  ctx.stroke();
-}
-
-function star(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number): void {
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const rad = i % 2 === 0 ? r : r * 0.45;
-    const a = (i * Math.PI) / 5 - Math.PI / 2;
-    const x = cx + Math.cos(a) * rad;
-    const y = cy + Math.sin(a) * rad;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number, r: number,
-): void {
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
 }

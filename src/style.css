@@ -1,20 +1,27 @@
-/* Snoot 全体スタイル */
+/* Snoot 全体スタイル（デザイン案 1a：ドット絵風）
+   角丸をなくしたハードシャドウのボタン、ドット書体（DotGothic16）、
+   セグメント式の DANGER ゲージで、レトロ携帯機の画面らしさを出す。 */
 :root {
-  --bg-top: #1b2a4a;
-  --bg-bottom: #2c4870;
+  --bg-top: #141f42;
+  --bg-bottom: #0a1228;
   /* 盤面の外周（PC の左右余白＝ボールの跳ね返り壁の外側）の色。#canvas-wrap の
-     背景に使い、盤面（やや濃い --play-bg）との色差で跳ね返り壁の位置を示す */
-  --bg-edge: #213654;
+     背景に使い、盤面（やや明るい --play-bg）との色差で跳ね返り壁の位置を示す */
+  --bg-edge: #0a1228;
   /* 盤面（キャンバス）の実効色。game.ts の render() がこの色で不透明に塗る。
      ゲーム中はルート背景のフォールバックと #canvas-wrap.board-fullwidth も同色にし、
      iOS で画面外に出る下端帯／盤面下端の隙間を盤面と継ぎ目なく見せる */
-  --play-bg: #19283f;
-  --accent: #ffb347;
-  --danger: #e74c3c;
+  --play-bg: #101a38;
+  /* パネル（HUD・ダイアログ）と枠線。ドット絵 UI の基調 */
+  --panel: #0a1228;
+  --line: #2a3766;
+  --shadow: #060a18;
+  --accent: #ffd75e;
+  --danger: #ef3b2f;
+  --text-sub: #8fa3d9;
   /* ウェブフォント（index.html で Google Fonts から読み込み）。読み込み前・オフライン
-     初回訪問時に備え、フォールバックへ従来のシステムフォントスタックを残す */
-  --font-body: "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  --font-display: "Mochiy Pop One", "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", sans-serif;
+     初回訪問時に備え、フォールバックへ等幅系のシステムフォントスタックを残す */
+  --font-body: "DotGothic16", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, monospace;
+  --font-display: "DotGothic16", "Hiragino Kaku Gothic ProN", monospace;
 }
 
 /* iOS のダブルタップズーム等のネイティブジェスチャを画面・状態を問わず全面的に無効化する
@@ -37,7 +44,7 @@ html, body {
      ではグラデ末尾色 --bg-bottom を使い、その下端帯をグラデの裾と同色にして帯を消す。
      ゲーム中だけ html.in-game で盤面色 --play-bg に切り替える（下記） */
   background: linear-gradient(var(--bg-top), var(--bg-bottom)) var(--bg-bottom);
-  color: #fff;
+  color: #e8ecf8;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none; /* iOS の長押しメニューを防止（継承されるので html/body のみで足りる） */
@@ -65,15 +72,39 @@ html.in-game body {
   gap: 1.2rem;
   text-align: center;
   padding: 1rem;
+  position: relative; /* 星（::before）の基準 */
+  overflow: hidden;
+}
+
+/* 夜空の星：4px の白い四角を box-shadow で散らす（ドット絵に合わせて円にしない）。
+   1 個の疑似要素＋影の複製なので DOM を増やさず、この 1 ブロックの削除だけで外せる */
+#title-screen::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  box-shadow:
+    34px 60px rgba(255, 255, 255, 0.5),
+    76vw 92px rgba(255, 255, 255, 0.4),
+    32vw 150px rgba(255, 255, 255, 0.35),
+    88vw 62vh rgba(255, 255, 255, 0.4),
+    14vw 74vh rgba(255, 255, 255, 0.35),
+    60vw 38vh rgba(255, 255, 255, 0.25),
+    8vw 30vh rgba(255, 255, 255, 0.3),
+    94vw 22vh rgba(255, 255, 255, 0.3);
 }
 
 #logo {
   font-family: var(--font-display);
   font-size: clamp(3rem, 14vw, 5.5rem);
   margin: 0;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--accent);
-  text-shadow: 0 4px 0 rgba(0,0,0,0.35);
+  text-shadow: 4px 4px 0 var(--line);
 }
 
 /* ---- ロゴの遊び演出 ----
@@ -92,16 +123,17 @@ html.in-game body {
   width: 0.6em;
   height: 0.6em;
   vertical-align: -0.03em; /* ベースラインの光学調整 */
-  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.35)); /* 文字の text-shadow と揃える */
+  filter: drop-shadow(4px 4px 0 var(--line)); /* 文字の text-shadow と揃える */
+  image-rendering: pixelated; /* ロゴの顔もドットのまま拡大する */
 }
 
-/* (a) 彩色＋傾き：色は characters.ts の TYPE_COLORS と同値（手作り感を出す）。
-   3・4 文字目は canvas の顔（マルオ青・ネムリ紫）なので傾きのみ */
-#logo .logo-ch:nth-child(1) { color: #f5a623; --i: 0; --tilt: -7deg; } /* S ヒナタ橙 */
-#logo .logo-ch:nth-child(2) { color: #5cb85c; --i: 1; --tilt: 4deg; }  /* n ハッパ緑 */
-#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; }                 /* o マルオ（canvas） */
-#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }                  /* o ネムリ（canvas） */
-#logo .logo-ch:nth-child(5) { color: #e74c3c; --i: 4; --tilt: 6deg; }  /* t プンタ赤 */
+/* (a) 傾き：文字色はドット絵 UI に合わせて全文字アクセント色で統一し、
+   3・4 文字目は canvas の顔（マルオ藍・ネムリ紫）なので傾きのみ */
+#logo .logo-ch:nth-child(1) { --i: 0; --tilt: -6deg; } /* S */
+#logo .logo-ch:nth-child(2) { --i: 1; --tilt: 3deg; }  /* n */
+#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas） */
+#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas） */
+#logo .logo-ch:nth-child(5) { --i: 4; --tilt: 5deg; }  /* t */
 
 /* (b) 登場のぽよん＋(c) アイドルの上下ゆれ。--tilt を transform に含めて回転と両立。
    backwards フィルで登場前（時間差の待ち中）は scale(0) のまま見えない。
@@ -128,32 +160,43 @@ html.in-game body {
   #logo .logo-ch { animation: none; }
 }
 
-#tagline { margin: 0; opacity: 0.85; }
+#tagline { margin: 0; color: #aab6dc; }
 
 #level-buttons {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   width: min(70vw, 260px);
+  position: relative; /* 星より前面に置く */
 }
 
 .level-btn {
+  font-family: inherit;
   font-size: 1.3rem;
-  padding: 0.7rem;
-  border: none;
-  border-radius: 10px;
+  letter-spacing: 0.12em;
+  padding: 0.65rem;
+  border: 2px solid #101a38;
+  border-radius: 0; /* ドット絵 UI：角は丸めない */
   cursor: pointer;
-  font-weight: bold;
-  color: #fff;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+  color: #101a38;
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 
-.level-btn[data-level="easy"]   { background: #5cb85c; }
-.level-btn[data-level="normal"] { background: #4a90d9; }
-.level-btn[data-level="hard"]   { background: #e74c3c; }
-.level-btn:active { transform: translateY(2px); box-shadow: none; }
+.level-btn[data-level="easy"]   { background: #9ccb2e; }
+.level-btn[data-level="normal"] { background: #4a6df5; color: #fff; }
+.level-btn[data-level="hard"]   { background: #ef3b2f; color: #fff; }
+/* 押下は「2px 沈む」＝影を半分に詰めて位置をずらす（ドット絵の押し込み表現） */
+.level-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
 
-#title-help { font-size: 0.85rem; opacity: 0.75; line-height: 1.8; }
+#title-help {
+  font-size: 0.8rem;
+  color: #6f7fae;
+  line-height: 1.9;
+  position: relative;
+}
 
 /* ---- ゲーム画面 ---- */
 #game-screen {
@@ -172,8 +215,9 @@ html.in-game body {
   /* 横向きのノッチ端末で左右の切り欠きを避ける（非ノッチ・PC では 0.7rem のまま） */
   padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
   padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
-  background: rgba(0, 0, 0, 0.35);
-  font-size: 0.9rem;
+  background: var(--panel);
+  border-bottom: 2px solid var(--line);
+  font-size: 0.8rem;
 }
 
 /*
@@ -190,36 +234,53 @@ html.in-game body {
 }
 
 #hud-left { display: flex; gap: 0.6rem; align-items: baseline; }
-#hud-difficulty { font-weight: bold; color: var(--accent); }
+#hud-difficulty { color: var(--accent); }
 
-#hud-danger { display: flex; align-items: center; gap: 0.4rem; flex: 1; max-width: 280px; }
-.danger-label { font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.8; }
+#hud-danger { display: flex; align-items: center; gap: 0.4rem; flex: 1; max-width: 190px; }
+.danger-label { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--danger); }
 
+/* DANGER ゲージ：連続バーではなくセグメント列で見せる。
+   実装は「バー＋伸縮する塗り」のまま（game.ts の updateHud は幅 % を更新するだけ）で、
+   上から地色のスリット（::after）を重ねて 9px 幅のセグメントに切り分ける */
 #danger-bar {
+  position: relative;
   flex: 1;
+  max-width: 110px;
   height: 12px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 6px;
+  background: var(--line);
+  border-radius: 0;
   overflow: hidden;
+}
+
+#danger-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* 9px 点灯＋2px 消灯。地色は HUD と同色なので背景に溶けて「粒」が分かれて見える */
+  background: repeating-linear-gradient(90deg, transparent 0 9px, var(--panel) 9px 11px);
+  pointer-events: none;
 }
 
 #danger-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #f5a623, var(--danger));
+  /* 序盤は黄、満タンに近づくほど赤（左から点灯していくセグメントの色） */
+  background: linear-gradient(90deg, #ffb703 0%, #ff8b2f 55%, var(--danger) 100%);
+  background-size: 110px 100%; /* バー全長基準の配色にして、伸びても色が動かないようにする */
   transition: width 0.15s;
 }
 
 #hud-right { display: flex; align-items: center; gap: 0.6rem; }
-#hud-score { font-weight: bold; min-width: 3.5em; text-align: right; }
+#hud-score { min-width: 3.5em; text-align: right; color: #fff; }
 
 #btn-quit {
-  font-size: 0.75rem;
+  font-family: inherit;
+  font-size: 0.7rem;
   padding: 0.25rem 0.5rem;
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 6px;
+  border: 2px solid #3d4d85;
+  border-radius: 0;
   background: transparent;
-  color: #fff;
+  color: #c6d0ee;
   cursor: pointer;
 }
 
@@ -246,13 +307,15 @@ html.in-game body {
 #game-canvas {
   /* スクロール・ズーム抑止（照準操作のため）は冒頭の * { touch-action: none } が効く */
   display: block;
+  /* スプライトを拡大しても粒を残す（描画側の imageSmoothingEnabled=false と対） */
+  image-rendering: pixelated;
 }
 
 /* ---- リザルト ---- */
 #result-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(8, 12, 26, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,37 +323,42 @@ html.in-game body {
 }
 
 #result-box {
-  background: #fff;
-  color: #333;
-  border-radius: 14px;
+  background: var(--panel);
+  color: #e8ecf8;
+  border: 2px solid var(--accent);
+  border-radius: 0;
   padding: 1.5rem 2rem;
   text-align: center;
   min-width: min(80vw, 320px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 6px 6px 0 var(--shadow);
 }
 
-#result-title { margin: 0 0 0.5rem; font-size: 1.6rem; }
+#result-title { margin: 0 0 0.5rem; font-size: 1.5rem; }
 /* 見出しはロゴと同じディスプレイ書体で「ゲームらしさ」を出す（外すのも独立に可能） */
-#result-title { font-family: var(--font-display); font-weight: normal; }
-#result-score { margin: 0 0 0.4rem; font-size: 1.1rem; }
-#result-best { margin: 0 0 1.2rem; font-size: 0.95rem; color: #666; }
-#result-best.new-record { color: #e67e22; font-weight: bold; }
+#result-title {
+  font-family: var(--font-display);
+  font-weight: normal;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+#result-score { margin: 0 0 0.4rem; font-size: 1rem; }
+#result-best { margin: 0 0 1.2rem; font-size: 0.85rem; color: var(--text-sub); }
+#result-best.new-record { color: var(--accent); }
 
 /* ②b クリア演出：プレイ情報の段階表示。各行は最初 .revealed なしで隠れ、
    順に付与してフェードイン＋せり上がりで現れる（盛り上げの「間」をつくる）。 */
 #result-stats { margin: 0 0 1rem; min-height: 4.2rem; }
 #result-stats .stat-row {
   margin: 0.25rem 0;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 #result-stats .stat-row.revealed { opacity: 1; transform: none; }
 #result-stats .stat-bonus {
-  color: #e67e22;
-  font-weight: bold;
-  font-size: 1.4rem;
+  color: var(--accent);
+  font-size: 1.25rem;
 }
 #result-stats .stat-bonus.revealed { animation: bonus-pop 0.45s ease; }
 @keyframes bonus-pop {
@@ -302,9 +370,9 @@ html.in-game body {
 #result-stats .stat-total {
   margin-top: 0.6rem;
   padding-top: 0.6rem;
-  border-top: 1px solid #ddd;
-  font-weight: bold;
-  font-size: 1.3rem;
+  border-top: 2px solid var(--line);
+  font-size: 1.2rem;
+  color: #fff;
 }
 /* カウントアップ着地の「ポン」：数字が伸び切った瞬間に軽く弾ませる（#30） */
 #result-stats .stat-total.landed { animation: total-pop 0.4s ease; }
@@ -317,17 +385,28 @@ html.in-game body {
 #result-buttons { display: flex; flex-direction: column; gap: 0.6rem; }
 
 #result-buttons button {
-  font-size: 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
   padding: 0.6rem;
-  border: none;
-  border-radius: 8px;
+  border: 2px solid #101a38;
+  border-radius: 0;
   cursor: pointer;
-  font-weight: bold;
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+#result-buttons button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--shadow);
 }
 
-#btn-retry { background: #4a90d9; color: #fff; }
-#btn-next  { background: #5cb85c; color: #fff; }
-#btn-title { background: #ddd; color: #333; }
+#btn-retry { background: #4a6df5; color: #fff; }
+#btn-next  { background: #9ccb2e; color: #101a38; }
+#btn-title {
+  background: transparent;
+  color: #c6d0ee;
+  border-color: #3d4d85;
+  box-shadow: none;
+}
 
 /* クリア時の主要アクション「次のレベルへ」は誤タップを防ぐため一回り大きく強調する
    （フィードバック #17）。順序・他ボタンのサイズは変えず、このボタンだけ拡大する。
@@ -336,31 +415,32 @@ html.in-game body {
    詳細度が高く font-size/padding が上書きされてしまう（v0.9.11 の不具合）。
    #result-buttons #btn-next（id 2 つ）で詳細度を上げ、確実に拡大を効かせる。 */
 #result-buttons #btn-next {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   padding: 1rem 0.6rem;
-  box-shadow: 0 3px 0 #3d8b3d;
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 
 /* ---- タイトルのハイスコアボタン ---- */
 #btn-highscore {
-  font-size: 1rem;
-  padding: 0.55rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  padding: 0.5rem;
   margin-top: 0.2rem;
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  border: 2px solid #3d4d85;
+  border-radius: 0;
+  background: transparent;
+  color: #c6d0ee;
   cursor: pointer;
-  font-weight: bold;
 }
-#btn-highscore:active { transform: translateY(2px); }
+#btn-highscore:active { transform: translate(2px, 2px); }
 
 /* ---- 名前入力・ハイスコア共通オーバーレイ ---- */
 #name-entry-overlay,
 #highscore-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(8, 12, 26, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -369,9 +449,10 @@ html.in-game body {
 
 #name-entry-box,
 #highscore-box {
-  background: #fff;
-  color: #333;
-  border-radius: 14px;
+  background: var(--panel);
+  color: #e8ecf8;
+  border: 2px solid var(--accent);
+  border-radius: 0;
   padding: 1.4rem 1.6rem;
   text-align: center;
   min-width: min(86vw, 360px);
@@ -379,7 +460,7 @@ html.in-game body {
      キーボード表示時はオーバーレイが visualViewport に縮むので、その中に収まる */
   max-height: 90%;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 6px 6px 0 var(--shadow);
 }
 
 /* 全面の touch-action: none の例外：この 2 ボックスは overflow-y: auto でスクロールする
@@ -394,52 +475,69 @@ html.in-game body {
 }
 
 #name-entry-box h2,
-#highscore-box h2 { margin: 0 0 0.8rem; color: #e67e22; }
-/* リザルト見出しと同様にディスプレイ書体を適用（Mochiy Pop One は 400 のみ提供） */
+#highscore-box h2 { margin: 0 0 0.8rem; color: var(--accent); }
+/* リザルト見出しと同様にディスプレイ書体を適用 */
 #name-entry-box h2,
-#highscore-box h2 { font-family: var(--font-display); font-weight: normal; }
-#name-entry-msg { margin: 0 0 0.8rem; font-size: 0.95rem; }
+#highscore-box h2 {
+  font-family: var(--font-display);
+  font-weight: normal;
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+#name-entry-msg { margin: 0 0 0.8rem; font-size: 0.9rem; }
 
 #name-input {
+  font-family: inherit;
   width: 100%;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   padding: 0.5rem 0.7rem;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid var(--line);
+  border-radius: 0;
+  background: #141f42;
+  color: #fff;
   text-align: center;
   margin-bottom: 1rem;
 }
-#name-input:focus { outline: none; border-color: #4a90d9; }
+#name-input:focus { outline: none; border-color: var(--accent); }
 
 #btn-name-ok,
 #btn-highscore-close {
-  font-size: 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
   padding: 0.6rem 1.4rem;
-  border: none;
-  border-radius: 8px;
+  border: 2px solid #101a38;
+  border-radius: 0;
   cursor: pointer;
-  font-weight: bold;
-  color: #fff;
-  background: #5cb85c;
+  color: #101a38;
+  background: #9ccb2e;
+  box-shadow: 3px 3px 0 var(--shadow);
 }
-#btn-highscore-close { background: #888; margin-top: 0.6rem; }
+#btn-highscore-close {
+  background: transparent;
+  color: #c6d0ee;
+  border-color: #3d4d85;
+  box-shadow: none;
+  margin-top: 0.6rem;
+}
 
 /* ---- ハイスコア表 ---- */
 .hs-group { margin-bottom: 1rem; text-align: left; }
 .hs-group h3 {
   margin: 0 0 0.3rem;
-  font-size: 1rem;
-  border-bottom: 2px solid #eee;
+  font-size: 0.95rem;
+  font-weight: normal;
+  color: var(--accent);
+  border-bottom: 2px solid var(--line);
   padding-bottom: 0.2rem;
 }
-.hs-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.hs-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 .hs-table td { padding: 0.2rem 0.3rem; }
-.hs-rank { width: 1.6em; color: #999; text-align: right; }
+.hs-rank { width: 1.6em; color: var(--text-sub); text-align: right; }
 .hs-name { max-width: 8em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hs-score { text-align: right; font-variant-numeric: tabular-nums; font-weight: bold; }
-.hs-level { width: 3.2em; text-align: right; color: #888; font-size: 0.8rem; }
-.hs-empty td { color: #ccc; }
-.hs-table tr.hs-highlight { background: #fff3e0; }
+.hs-score { text-align: right; font-variant-numeric: tabular-nums; color: #fff; }
+.hs-level { width: 3.2em; text-align: right; color: var(--text-sub); font-size: 0.75rem; }
+.hs-empty td { color: #3d4d85; }
+.hs-table tr.hs-highlight { background: rgba(255, 215, 94, 0.18); }
 
 /* ---- バージョン表示 ---- */
 #version-badge {
@@ -447,8 +545,8 @@ html.in-game body {
   /* ノッチ端末のホームインジケータ／右切り欠きに重ならないようインセットを加算 */
   right: calc(0.5rem + env(safe-area-inset-right, 0px));
   bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
-  font-size: 0.7rem;
-  opacity: 0.6;
+  font-size: 0.65rem;
+  color: #4a5a8c;
   z-index: 20;
   pointer-events: none;
 }
