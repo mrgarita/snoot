@@ -27,7 +27,7 @@ export const TYPE_NAMES = ["マルオ", "ハッパ", "プンタ", "ヒナタ", "
 /** スプライトの表情。normal＝通常、blink＝まばたき（ネムリのみ寝息オフ）、surprised＝驚き */
 type Face = "normal" | "blink" | "surprised";
 
-/** 生成済みスプライトの置き場（キー："{type}-{face}"）。毎フレームの再生成を防ぐ */
+/** 生成済みスプライトの置き場（キー："{type}-{face}-{frame}"）。毎フレームの再生成を防ぐ */
 const spriteCache = new Map<string, HTMLCanvasElement>();
 
 /** 骸骨スプライト（1 枚だけ生成して使い回す） */
@@ -48,9 +48,9 @@ function shade(hex: string, amt: number): string {
 /**
  * 16×16 のスプライトを 1 枚生成する。
  * 本体は 3 階調（base ／ 輪郭 base−70 ／ ハイライト base+60）で統一し、
- * 顔パーツだけを種類・表情ごとに描き分ける。
+ * 顔パーツだけを種類・表情・コマ（frame＝0／1）ごとに描き分ける。
  */
-function makeSprite(type: number, face: Face): HTMLCanvasElement {
+function makeSprite(type: number, face: Face, frame: number): HTMLCanvasElement {
   const off = document.createElement("canvas");
   off.width = 16;
   off.height = 16;
@@ -113,7 +113,7 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
   const blink = face === "blink";
 
   switch (type % TYPE_COLORS.length) {
-    case 0: // マルオ：丸目＋にっこり口。まばたきで目が 1 ドットの線になる
+    case 0: // マルオ：丸目＋にっこり口。まばたきし、口が大小にゆれる
       if (blink) {
         rect(4, 8, 2, 1, K);
         rect(10, 8, 2, 1, K);
@@ -121,11 +121,18 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
         rect(4, 7, 2, 2, K);
         rect(10, 7, 2, 2, K);
       }
-      px(5, 11, K);
-      px(10, 11, K);
-      rect(6, 12, 4, 1, K);
+      if (frame === 0) {
+        px(5, 11, K);
+        px(10, 11, K);
+        rect(6, 12, 4, 1, K);
+      } else {
+        // すぼめた笑い口（左右 1 ドットずつ縮める）
+        px(6, 11, K);
+        px(9, 11, K);
+        rect(7, 12, 2, 1, K);
+      }
       break;
-    case 1: // ハッパ：まばたき（葉と斑点は共通部で描画済み）
+    case 1: // ハッパ：まばたき＋口が横に伸び縮み（葉と斑点は共通部で描画済み）
       if (blink) {
         rect(4, 8, 2, 1, K);
         rect(10, 8, 2, 1, K);
@@ -133,20 +140,23 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
         rect(4, 7, 2, 2, K);
         rect(10, 7, 2, 2, K);
       }
-      rect(6, 11, 4, 1, K);
+      if (frame === 0) rect(6, 11, 4, 1, K);
+      else rect(5, 11, 6, 1, K);
       break;
-    case 2: // プンタ：怒り眉＋への字口（動かないのが持ち味なので表情は 1 種類）
-      px(3, 5, K);
-      px(4, 6, K);
-      px(12, 5, K);
-      px(11, 6, K);
+    case 2: { // プンタ：怒り眉がピクピク下がり、への字口がふるえる
+      const glare = frame === 0 ? 0 : 1; // 1 コマおきに眉を下げて顔をしかめる
+      px(3, 5 + glare, K);
+      px(4, 6 + glare, K);
+      px(12, 5 + glare, K);
+      px(11, 6 + glare, K);
       rect(4, 8, 2, 2, K);
       rect(10, 8, 2, 2, K);
-      px(5, 13, K);
-      rect(6, 12, 4, 1, K);
-      px(10, 13, K);
+      px(5, 13 - glare, K);
+      rect(6, 12 - glare, 4, 1, K);
+      px(10, 13 - glare, K);
       break;
-    case 3: // ヒナタ：星目（十字の 5 ドット）＋舌をベロ〜んと出した口
+    }
+    case 3: { // ヒナタ：星目（十字の 5 ドット）＋舌をベロ〜んと出した口
       for (const [ex, ey] of [[5, 7], [10, 7]]) {
         px(ex, ey, K);
         px(ex - 1, ey, K);
@@ -156,15 +166,18 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
       }
       // 開いた口（上唇のライン）
       rect(6, 10, 4, 1, K);
-      // 舌は体の下端（y=14）まで垂らす。ハッパと色ではなく「形」で見分けられる
-      rect(6, 11, 4, 3, "#f2708f");
-      rect(7, 14, 2, 1, "#f2708f");
+      // 舌は体の下端（y=14）まで垂らす。ハッパと色ではなく「形」で見分けられる。
+      // コマごとに先端を 1 ドット出し入れして、ベロ〜んと伸び縮みさせる
+      const tipY = frame === 0 ? 14 : 13;
+      rect(6, 11, 4, tipY - 11, "#f2708f");
+      rect(7, tipY, 2, 1, "#f2708f");
       // 舌の陰影（左右の上角と中央の割れ目）
       px(6, 11, "#c14a68");
       px(9, 11, "#c14a68");
       rect(7, 11, 2, 1, "#c14a68");
       px(7, 12, "#c14a68");
       break;
+    }
     case 4: // ネムリ：閉じた目。寝息の「z」は blink 側で消して明滅させる
       rect(3, 8, 4, 1, K);
       rect(9, 8, 4, 1, K);
@@ -176,13 +189,15 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
         rect(10, 3, 3, 1, Z);
       }
       break;
-    case 5: // ビック：白目＋びっくり口
+    case 5: { // ビック：白目＋びっくり口。瞳が左右に泳ぎ、口が大小する
       rect(3, 6, 3, 3, W);
       rect(10, 6, 3, 3, W);
-      px(4, 7, K);
-      px(11, 7, K);
-      rect(7, 11, 2, 2, K);
+      const dart = frame === 0 ? 0 : 1; // 瞳は白目の中を 1 ドットだけ右へ泳ぐ
+      px(4 + dart, 7, K);
+      px(11 + dart, 7, K);
+      rect(7, 11, 2, frame === 0 ? 2 : 3, K);
       break;
+    }
     case 6: // イシゴロ：一文字の目と口。たまにゆっくり目を閉じる（瞳が消える）
       rect(4, 7, 3, 1, K);
       rect(9, 7, 3, 1, K);
@@ -198,11 +213,11 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
 }
 
 /** キャッシュ経由でスプライトを取り出す */
-function snootSprite(type: number, face: Face): HTMLCanvasElement {
-  const key = `${type % TYPE_COLORS.length}-${face}`;
+function snootSprite(type: number, face: Face, frame: number): HTMLCanvasElement {
+  const key = `${type % TYPE_COLORS.length}-${face}-${frame}`;
   let sp = spriteCache.get(key);
   if (!sp) {
-    sp = makeSprite(type % TYPE_COLORS.length, face);
+    sp = makeSprite(type % TYPE_COLORS.length, face, frame);
     spriteCache.set(key, sp);
   }
   return sp;
@@ -220,6 +235,20 @@ const BLINK_CYCLE: [number, number][] = [
 ];
 
 /**
+ * 種類ごとのコマ送り間隔（秒）。2 コマを交互に出してドット絵らしい動きにする。
+ * 0 は「コマ送りしない」＝まばたきだけで足りる種類。
+ */
+const FRAME_INTERVAL = [
+  0.45, // 0 マルオ（にっこり口が大小にゆれる）
+  0.5, // 1 ハッパ（口が横に伸び縮みする）
+  0.22, // 2 プンタ（眉と口がピクピクふるえる。短めで小刻みに）
+  0.35, // 3 ヒナタ（舌がベロ〜んと伸び縮みする）
+  0, // 4 ネムリ（寝息 z の明滅で足りる）
+  0.3, // 5 ビック（瞳が泳ぎ、口が大小する）
+  0, // 6 イシゴロ（動かないのが持ち味）
+];
+
+/**
  * 種類 type のキャラを中心 (cx, cy)・半径 r で描画する。
  * t（秒）を渡すと表情がコミカルに変化する。省略時は静的な顔
  * （NEXT 表示は誤認防止のため意図的に t を渡さない）。
@@ -234,17 +263,20 @@ export function drawSnoot(
   surprised = false,
 ): void {
   let face: Face = "normal";
+  let frame = 0;
   if (surprised) {
-    face = "surprised";
+    face = "surprised"; // 驚き顔はコマ送りしない（frame は 0 のまま）
   } else if (t !== undefined) {
     const [cycle, dur] = BLINK_CYCLE[type % TYPE_COLORS.length];
     if (cycle > 0 && isBlinking(t, cycle, dur)) face = "blink";
+    const interval = FRAME_INTERVAL[type % TYPE_COLORS.length];
+    if (interval > 0) frame = Math.floor(t / interval) % 2;
   }
 
   ctx.save();
   // ドットの輪郭を保つため補間を切る（スプライトを整数倍以外に拡大しても粒が残る）
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(snootSprite(type, face), cx - r, cy - r, r * 2, r * 2);
+  ctx.drawImage(snootSprite(type, face, frame), cx - r, cy - r, r * 2, r * 2);
   ctx.restore();
 }
 
