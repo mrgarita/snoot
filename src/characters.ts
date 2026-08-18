@@ -198,16 +198,44 @@ export function drawSnoot(
       arcMouth(ctx, 0, r * 0.58 - jitter * 0.5, r * 0.3, 1.2 * Math.PI, 1.8 * Math.PI);
       break;
     }
-    case 3: { // ヒナタ：星の目がキラキラ拡縮し、笑い口が開閉する
+    case 3: { // ヒナタ：星の目がキラキラ拡縮し、ベロ〜んと出した舌がのび縮みする
       const tw = anim ? 1 + 0.25 * Math.sin(tt * 5) : 1;
       const tw2 = anim ? 1 + 0.25 * Math.sin(tt * 5 + 1.6) : 1;
       star(ctx, -eyeX, eyeY, r * 0.18 * tw);
       star(ctx, eyeX, eyeY, r * 0.18 * tw2);
-      const open = anim ? 0.7 + 0.3 * Math.abs(Math.sin(tt * 3)) : 1;
+      // 開いた口（上半分の塗り）
       ctx.beginPath();
-      ctx.ellipse(0, r * 0.24, r * 0.32, r * 0.3 * open, 0, 0, Math.PI);
+      ctx.ellipse(0, r * 0.22, r * 0.3, r * 0.18, 0, 0, Math.PI);
       ctx.closePath();
       ctx.fill();
+      // 舌：光沢球の質感に合わせ、縦グラデ＋ツヤでピンクの舌を垂らす
+      const tip = r * 0.74 * (anim ? 1 + 0.06 * Math.sin(tt * 3) : 1);
+      const tongue = ctx.createLinearGradient(0, r * 0.3, 0, tip);
+      tongue.addColorStop(0, "#f78ba5");
+      tongue.addColorStop(1, "#d94f74");
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.14, r * 0.3);
+      ctx.quadraticCurveTo(-r * 0.16, tip - r * 0.02, 0, tip);
+      ctx.quadraticCurveTo(r * 0.16, tip - r * 0.02, r * 0.14, r * 0.3);
+      ctx.closePath();
+      ctx.fillStyle = tongue;
+      ctx.fill();
+      // 舌中央の割れ目
+      ctx.strokeStyle = "#b23a5c";
+      ctx.lineWidth = r * 0.05;
+      ctx.beginPath();
+      ctx.moveTo(0, r * 0.42);
+      ctx.lineTo(0, tip - r * 0.12);
+      ctx.stroke();
+      // ツヤ（白ハイライト）
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.05, r * 0.4, r * 0.045, r * 0.07, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      // 後続の描画のために顔パーツの色と線幅へ戻す
+      ctx.fillStyle = FACE_COLOR;
+      ctx.strokeStyle = FACE_COLOR;
+      ctx.lineWidth = Math.max(1, r * 0.1);
       break;
     }
     case 4: { // ネムリ：寝息の「z」がふわふわ浮き沈みして明滅する
