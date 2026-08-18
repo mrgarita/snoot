@@ -146,7 +146,7 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
       rect(6, 12, 4, 1, K);
       px(10, 13, K);
       break;
-    case 3: // ヒナタ：星目（十字の 5 ドット）＋開いた笑い口
+    case 3: // ヒナタ：星目（十字の 5 ドット）＋舌をベロ〜んと出した口
       for (const [ex, ey] of [[5, 7], [10, 7]]) {
         px(ex, ey, K);
         px(ex - 1, ey, K);
@@ -154,8 +154,16 @@ function makeSprite(type: number, face: Face): HTMLCanvasElement {
         px(ex, ey - 1, K);
         px(ex, ey + 1, K);
       }
-      rect(6, 11, 4, 2, K);
-      rect(7, 12, 2, 1, "#8a2b2b");
+      // 開いた口（上唇のライン）
+      rect(6, 10, 4, 1, K);
+      // 舌は体の下端（y=14）まで垂らす。ハッパと色ではなく「形」で見分けられる
+      rect(6, 11, 4, 3, "#f2708f");
+      rect(7, 14, 2, 1, "#f2708f");
+      // 舌の陰影（左右の上角と中央の割れ目）
+      px(6, 11, "#c14a68");
+      px(9, 11, "#c14a68");
+      rect(7, 11, 2, 1, "#c14a68");
+      px(7, 12, "#c14a68");
       break;
     case 4: // ネムリ：閉じた目。寝息の「z」は blink 側で消して明滅させる
       rect(3, 8, 4, 1, K);
