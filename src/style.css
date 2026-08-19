@@ -127,13 +127,14 @@ html.in-game body {
   image-rendering: pixelated; /* ロゴの顔もドットのまま拡大する */
 }
 
-/* (a) 傾き：文字色はドット絵 UI に合わせて全文字アクセント色で統一し、
-   3・4 文字目は canvas の顔（マルオ藍・ネムリ紫）なので傾きのみ */
-#logo .logo-ch:nth-child(1) { --i: 0; --tilt: -6deg; } /* S */
-#logo .logo-ch:nth-child(2) { --i: 1; --tilt: 3deg; }  /* n */
-#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas） */
-#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas） */
-#logo .logo-ch:nth-child(5) { --i: 4; --tilt: 5deg; }  /* t */
+/* (a) 彩色＋傾き：オリジナル同様にロゴ全体を 5 色で見せる。色は characters.ts の
+   TYPE_COLORS と同値にしてキャラと世界観を揃える。3・4 文字目は canvas の顔
+   （マルオ藍・ネムリ紫）が色を持つので傾きのみ指定する */
+#logo .logo-ch:nth-child(1) { color: #ffb703; --i: 0; --tilt: -6deg; } /* S ヒナタ黄 */
+#logo .logo-ch:nth-child(2) { color: #9ccb2e; --i: 1; --tilt: 3deg; }  /* n ハッパ黄緑 */
+#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas・藍） */
+#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas・紫） */
+#logo .logo-ch:nth-child(5) { color: #ef3b2f; --i: 4; --tilt: 5deg; }  /* t プンタ赤 */
 
 /* (b) 登場のぽよん＋(c) アイドルの上下ゆれ。--tilt を transform に含めて回転と両立。
    backwards フィルで登場前（時間差の待ち中）は scale(0) のまま見えない。
@@ -401,11 +402,13 @@ html.in-game body {
 
 #btn-retry { background: #4a6df5; color: #fff; }
 #btn-next  { background: #9ccb2e; color: #101a38; }
+/* 三次アクション。前面に出しすぎない濃さに留めつつ、面・枠線・ハードシャドウを
+   与えてボタンだと一目で分かるようにする（枠線が背景へ沈んで押せると気づけなかった
+   のを修正）。box-shadow は #result-buttons button の既定値をそのまま使う */
 #btn-title {
-  background: transparent;
-  color: #c6d0ee;
-  border-color: #3d4d85;
-  box-shadow: none;
+  background: #24325e;
+  color: #e8ecf8;
+  border-color: #8fa3d9;
 }
 
 /* クリア時の主要アクション「次のレベルへ」は誤タップを防ぐため一回り大きく強調する
