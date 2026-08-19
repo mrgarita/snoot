@@ -277,8 +277,10 @@ export function drawSnoot(
       dot(ctx, 0, r * 0.35, r * 0.08);
       const floatY = anim ? r * 0.12 * Math.sin(tt * 1.5) : 0;
       if (anim) ctx.globalAlpha = 0.55 + 0.45 * Math.sin(tt * 1.5);
-      ctx.font = `800 ${r * 0.45}px ${CANVAS_FONT}`;
-      ctx.fillText("z", r * 0.42, -r * 0.5 - floatY);
+      // z は本体の輪郭の内側に収める。モノクロ案は輪郭線が太い（r*0.12）ため、
+      // 外寄り・大きめだと右上が線に食い込んで潰れて見える（アプリアイコンで顕著）
+      ctx.font = `800 ${r * 0.4}px ${CANVAS_FONT}`;
+      ctx.fillText("z", r * 0.3, -r * 0.36 - floatY);
       ctx.globalAlpha = 1;
       break;
     }
