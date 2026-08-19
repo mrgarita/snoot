@@ -13,9 +13,11 @@ export default defineConfig({
       // manifest に載らない iOS 用アイコンもプリキャッシュ対象に含める
       includeAssets: ["apple-touch-icon.png"],
       manifest: {
-        name: "Snoot",
-        short_name: "Snoot",
-        description: "Snood 風バブルシューター「Snoot」",
+        // 見た目 4 種を同じ端末へ並べてインストールできるよう、案ごとに名前を変える
+        // （short_name はホーム画面のラベル。長いと省略されるので短く保つ）
+        name: "Snoot ドット絵",
+        short_name: "Snoot ドット",
+        description: "Snood 風バブルシューター「Snoot」（ドット絵）",
         lang: "ja",
         // サブディレクトリ配信（play/<tag>/ や XServer 配下）でも動くよう相対指定にする
         start_url: ".",

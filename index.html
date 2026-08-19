@@ -12,7 +12,9 @@
   <!-- favicon：キャラ「ネムリ」（紫・寝息の z）。characters.ts の 16×16 スプライトを
        そのまま SVG の矩形へ写し、shape-rendering=crispEdges でドットのまま表示する -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cg fill='%23a05bd8'%3E%3Crect x='5' y='3' width='6' height='1'/%3E%3Crect x='4' y='4' width='8' height='1'/%3E%3Crect x='3' y='5' width='10' height='2'/%3E%3Crect x='2' y='7' width='12' height='4'/%3E%3Crect x='3' y='11' width='10' height='2'/%3E%3Crect x='5' y='13' width='6' height='1'/%3E%3Crect x='7' y='14' width='2' height='1'/%3E%3C/g%3E%3Cg fill='%23dc97ff'%3E%3Crect x='5' y='4' width='2' height='1'/%3E%3Crect x='4' y='5' width='1' height='1'/%3E%3C/g%3E%3Cg fill='%231c2026'%3E%3Crect x='3' y='8' width='4' height='1'/%3E%3Crect x='9' y='8' width='4' height='1'/%3E%3Crect x='7' y='11' width='2' height='1'/%3E%3C/g%3E%3Cg fill='%23dfe6ff'%3E%3Crect x='10' y='1' width='3' height='1'/%3E%3Crect x='11' y='2' width='1' height='1'/%3E%3Crect x='10' y='3' width='3' height='1'/%3E%3C/g%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <!-- base: "./" で相対配信する設計なので、ここもルート絶対パスにしない
+       （/apple-touch-icon.png だと play/<名前>/ 配下から参照したとき 404 になる） -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <!-- ウェブフォント：端末環境に依存せず見た目を統一する（Google Fonts・ゼロコスト）。
        オフライン時は Service Worker の実行時キャッシュ（vite.config.ts）から返す -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

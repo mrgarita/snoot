@@ -12,15 +12,20 @@ const docImgDir = "docs/site/img";
 mkdirSync(publicDir, { recursive: true });
 mkdirSync(docImgDir, { recursive: true });
 
-// 背景色は本体カラーに馴染む紺（style.css の --bg-top）。ステータスバー／スプラッシュと統一する
-const BG = "#1b2a4a";
-
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const ctx = await browser.newContext();
 const page = await ctx.newPage();
 await page.goto(url, { waitUntil: "networkidle" });
 // __snoot（drawSnoot を含む DEV 限定フック）が公開されるのを待つ
 await page.waitForFunction(() => !!(window).__snoot?.drawSnoot);
+
+// 背景色は本体カラーに馴染む色。値を固定せず style.css の --bg-top を実ページから読むので、
+// 見た目の違うブランチ（design/*）で実行すればその案の背景色が自動で使われる。
+// ステータスバー／スプラッシュ（manifest の background_color）と揃える意図は変わらない
+const BG = await page.evaluate(() =>
+  getComputedStyle(document.documentElement).getPropertyValue("--bg-top").trim(),
+);
+console.log(`背景色（--bg-top）: ${BG}`);
 
 /** ネムリ（type=4）を中央に静止顔で描いた size×size の PNG を dataURL で返す */
 async function renderIcon(size, radiusFactor) {
@@ -59,8 +64,9 @@ savePng(publicDir, "pwa-512x512.png", any512);
 savePng(publicDir, "pwa-maskable-512x512.png", maskable512);
 savePng(publicDir, "apple-touch-icon.png", apple180);
 
-// 備忘録（docs/site）掲載用に 512px を流用
-savePng(docImgDir, "app-icon.png", any512);
+// 備忘録（docs/site）掲載用に 512px を流用。備忘録サイトは main の docs/site だけが
+// 公開されるので、design/* のブランチで実行するときは SKIP_DOC_ICON=1 で抑止する
+if (!process.env.SKIP_DOC_ICON) savePng(docImgDir, "app-icon.png", any512);
 
 await browser.close();
 console.log("public/ にアプリアイコン、docs/site/img/app-icon.png を生成しました");
