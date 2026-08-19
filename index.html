@@ -11,7 +11,9 @@
   <title>Snoot</title>
   <!-- favicon：キャラ「ネムリ」（紫・寝息の z）。Canvas 描画(drawSnoot type=4)と同じ意匠を SVG 化 -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%239b59b6' stroke='%23222' stroke-width='4'/%3E%3Cellipse cx='36' cy='32' rx='15' ry='9' fill='%23ffffff' fill-opacity='0.25' transform='rotate(-28 36 32)'/%3E%3Cline x1='28' y1='43' x2='42' y2='43' stroke='%23222' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='58' y1='43' x2='72' y2='43' stroke='%23222' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='66' r='4' fill='%23222'/%3E%3Ctext x='70' y='30' font-family='sans-serif' font-size='22' font-weight='bold' fill='%23222'%3Ez%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <!-- base: "./" で相対配信する設計なので、ここもルート絶対パスにしない
+       （/apple-touch-icon.png だと play/<名前>/ 配下から参照したとき 404 になる） -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <!-- ウェブフォント：端末環境に依存せず見た目を統一する（Google Fonts・ゼロコスト）。
        オフライン時は Service Worker の実行時キャッシュ（vite.config.ts）から返す -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
