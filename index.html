@@ -12,7 +12,9 @@
   <!-- favicon：キャラ「ネムリ」（紫・寝息の z）。Canvas 描画(drawSnoot type=4)と同じ
        光沢球の意匠（放射グラデ＋白いスペキュラ）を SVG 化 -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g' cx='34%25' cy='29%25' r='78%25'%3E%3Cstop offset='0' stop-color='%23c98ae0'/%3E%3Cstop offset='0.5' stop-color='%238e44ad'/%3E%3Cstop offset='1' stop-color='%234a1d63'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cellipse cx='34' cy='30' rx='9' ry='5.5' fill='%23ffffff' fill-opacity='0.9' transform='rotate(-34 34 30)'/%3E%3Cline x1='28' y1='45' x2='42' y2='45' stroke='%2322262e' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='58' y1='45' x2='72' y2='45' stroke='%2322262e' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='68' r='4' fill='%2322262e'/%3E%3Ctext x='66' y='30' font-family='sans-serif' font-size='24' font-weight='bold' fill='%2322262e'%3Ez%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <!-- base: "./" で相対配信する設計なので、ここもルート絶対パスにしない
+       （/apple-touch-icon.png だと play/<名前>/ 配下から参照したとき 404 になる） -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <!-- ウェブフォント：端末環境に依存せず見た目を統一する（Google Fonts・ゼロコスト）。
        オフライン時は Service Worker の実行時キャッシュ（vite.config.ts）から返す -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
