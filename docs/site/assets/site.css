@@ -120,6 +120,20 @@ img{display:block;max-width:100%;}
   border:3px solid var(--ink);border-radius:26px;padding:12px 28px;box-shadow:var(--shadow-sm);cursor:pointer;}
 .btn-more:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);}
 
+/* 4 つの見た目（デザイン違いの入口）。中身は同じゲームなのでサムネイルで違いを見せる */
+.designs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.design{text-decoration:none;display:flex;flex-direction:column;background:#fff;border:3px solid var(--ink);
+  border-radius:14px;padding:14px;box-shadow:var(--shadow);transition:transform .08s ease, box-shadow .08s ease;}
+.design:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.design .thumb{border:2px solid var(--ink);border-radius:10px;overflow:hidden;line-height:0;margin-bottom:12px;}
+.design .thumb img{width:100%;height:auto;display:block;}
+.design .name{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.design .name b{font-size:15px;font-weight:800;}
+.design .badge{font-size:10px;color:var(--ink);background:var(--c-yellow);border:2px solid var(--ink);
+  padding:1px 8px;border-radius:10px;font-weight:800;}
+.design .desc{font-size:12.5px;line-height:1.65;color:var(--muted);flex:1;}
+.design .go{font-size:12px;font-weight:800;color:var(--c-blue);margin-top:10px;}
+
 .docs{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:860px;margin:0 auto;}
 .doc{text-decoration:none;display:flex;gap:15px;align-items:flex-start;background:#fff;border:3px solid var(--ink);
   border-radius:14px;padding:20px;box-shadow:var(--shadow);transition:transform .08s ease, box-shadow .08s ease;}
@@ -222,9 +236,11 @@ figcaption{font-size:12px;color:var(--muted);line-height:1.75;margin-top:9px;fon
 @media (max-width:860px){
   .docs{grid-template-columns:1fr;}
   .flow{grid-template-columns:1fr 1fr;}
+  .designs{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:640px){
   .wrap,.hdr-in,.ftr-in{padding-left:18px;padding-right:18px;}
+  .designs{grid-template-columns:1fr;}
   .nav a:not(.btn-play){display:none;}  /* モバイルはテキストナビを畳み、遊ぶボタンのみ残す */
   .hero{padding:32px 0 36px;}
   .hero h1{font-size:31px;}

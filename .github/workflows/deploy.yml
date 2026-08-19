@@ -57,6 +57,22 @@ jobs:
           mkdir -p _site/play/latest
           cp -r "_site/play/$LATEST/." _site/play/latest/
 
+          # 見た目のバリエーション（デザイン案）をブランチからビルドして play/<名前>/ へ。
+          # ゲームの中身は同じで意匠だけが違うため、版数体系（VERSIONS）とは別枠にする。
+          # オリジナルの見た目は play/latest/ がそのまま担当する
+          DESIGNS="pixel:design/1a-pixel gloss:design/1b-solid mono:design/1c-mono"
+          for d in $DESIGNS; do
+            slug="${d%%:*}"
+            branch="${d#*:}"
+            wt="$RUNNER_TEMP/build-design-$slug"
+            git fetch --no-tags origin "$branch"
+            git worktree add "$wt" "origin/$branch"
+            ( cd "$wt" && npm ci && npm run build )
+            mkdir -p "_site/play/$slug"
+            cp -r "$wt/dist/." "_site/play/$slug/"
+            git worktree remove "$wt" --force
+          done
+
       - name: Pages 設定（未設定なら自動で有効化）
         uses: actions/configure-pages@v6
         with:
