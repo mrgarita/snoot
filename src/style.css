@@ -104,19 +104,22 @@ html.in-game body {
   filter: drop-shadow(0 3px 0 rgba(31, 60, 110, 0.25)); /* 文字の影と揃える */
 }
 
-/* (a) 彩色：文字は青のグラデ 1 種で統一し、立体キャラの世界観に合わせる。
-   3・4 文字目は canvas の顔（マルオ青・ネムリ紫）なので傾きのみ */
+/* (a) 彩色：オリジナル同様にロゴ全体を 5 色で見せる。立体キャラの世界観を保つため
+   単色ではなく各色の明→暗の縦グラデで塗り、色は characters.ts の TYPE_COLORS に
+   合わせる。3・4 文字目は canvas の顔（マルオ青・ネムリ紫）が色を持つので傾きのみ */
 #logo .logo-ch:not(.logo-face) {
-  background: linear-gradient(#5a9bf0, #1f4fa8);
   -webkit-background-clip: text;
   background-clip: text;
   filter: drop-shadow(0 3px 0 rgba(31, 60, 110, 0.3));
 }
-#logo .logo-ch:nth-child(1) { --i: 0; --tilt: -6deg; } /* S */
-#logo .logo-ch:nth-child(2) { --i: 1; --tilt: 4deg; }  /* n */
-#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas） */
-#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas） */
-#logo .logo-ch:nth-child(5) { --i: 4; --tilt: 6deg; }  /* t */
+/* 各文字のグラデは background ショートハンドではなく background-image で指定する。
+   ショートハンドだと上の background-clip: text まで初期値へ戻され、文字型に
+   切り抜かれず矩形のベタ塗りになってしまう */
+#logo .logo-ch:nth-child(1) { --i: 0; --tilt: -6deg; background-image: linear-gradient(#ffb454, #d2760a); } /* S ヒナタ橙 */
+#logo .logo-ch:nth-child(2) { --i: 1; --tilt: 4deg; background-image: linear-gradient(#96d95a, #4c8c1c); }  /* n ハッパ黄緑 */
+#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas・青） */
+#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas・紫） */
+#logo .logo-ch:nth-child(5) { --i: 4; --tilt: 6deg; background-image: linear-gradient(#f0685a, #a81f13); }  /* t プンタ赤 */
 
 /* (b) 登場のぽよん＋(c) アイドルの上下ゆれ。--tilt を transform に含めて回転と両立。
    backwards フィルで登場前（時間差の待ち中）は scale(0) のまま見えない。
