@@ -105,13 +105,14 @@ html.in-game body {
   filter: drop-shadow(4px 4px 0 #d8d8d3); /* 文字の text-shadow と揃える */
 }
 
-/* (a) 傾き：モノクロ案は文字色を分けず、傾きだけで手作り感を出す。
-   3・4 文字目は canvas の顔（マルオ白・ネムリ灰） */
-#logo .logo-ch:nth-child(1) { --i: 0; --tilt: -7deg; } /* S */
-#logo .logo-ch:nth-child(2) { --i: 1; --tilt: 4deg; }  /* n */
-#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas） */
-#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas） */
-#logo .logo-ch:nth-child(5) { --i: 4; --tilt: 6deg; }  /* t */
+/* (a) 彩色＋傾き：オリジナル同様にロゴ全体を 5 つの色合いで見せる。モノクロ案なので
+   色相ではなく明度で 5 段階（黒→濃灰→中灰→灰→白）をつくり、キャラの明度と揃える。
+   3・4 文字目は canvas の顔（マルオ白・ネムリ灰）が明度を持つので傾きのみ */
+#logo .logo-ch:nth-child(1) { color: #181818; --i: 0; --tilt: -7deg; } /* S 黒 */
+#logo .logo-ch:nth-child(2) { color: #767676; --i: 1; --tilt: 4deg; }  /* n 中灰 */
+#logo .logo-ch:nth-child(3) { --i: 2; --tilt: -3deg; } /* o マルオ（canvas・白） */
+#logo .logo-ch:nth-child(4) { --i: 3; --tilt: 3deg; }  /* o ネムリ（canvas・灰） */
+#logo .logo-ch:nth-child(5) { color: #4a4a4a; --i: 4; --tilt: 6deg; }  /* t 濃灰 */
 
 /* (b) 登場のぽよん＋(c) アイドルの上下ゆれ。--tilt を transform に含めて回転と両立。
    backwards フィルで登場前（時間差の待ち中）は scale(0) のまま見えない。
@@ -328,12 +329,11 @@ html.in-game body {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 #result-stats .stat-row.revealed { opacity: 1; transform: none; }
-/* 色を使えないぶん、ボーナス行は太さと下線で強調する */
+/* 色を使えないぶん、ボーナス行は太さと大きさで強調する。下線は使わない
+   （合計スコアの区切り罫線と紛らわしく、行ごとに罫線が入って見えるため） */
 #result-stats .stat-bonus {
   font-weight: 800;
   font-size: 1.3rem;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
 }
 #result-stats .stat-bonus.revealed { animation: bonus-pop 0.45s ease; }
 @keyframes bonus-pop {
