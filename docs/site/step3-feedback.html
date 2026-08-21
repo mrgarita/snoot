@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-08-21</td><td class="num">32</td>
+          <td>タイトル画面の説明文が、スマホで見ると句の途中で改行されて読みにくい（PC は横長なので気にならない）。句読点で改行するか、幅を狭めたテキスト枠に収めたい。文面も長すぎるので見直したい</td>
+          <td><span class="ver-pill">v1.0.0</span></td>
+          <td><a class="lk-detail" href="#fb32">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v1.0.0/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-07-05</td><td class="num">31</td>
           <td>iPhone 実機でゲーム中に画面が拡大する（#27 対応後も再発）。上部ステータス（HUD）はタップで確実に拡大し、タイトル画面はピンチズーム可のまま。ゲームの状況にかかわらず iPhone 側の挙動は統一してすべてオフにすべき</td>
           <td><span class="ver-pill">v0.9.26</span></td>
@@ -280,6 +287,35 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb32">
+    <h3><span>#32：タイトル説明文の折り返しを整え、文面を 3 行に短縮（v1.0.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>タイトル画面のゲーム説明文のレイアウトについて、PC 版は横長なので気にならないが、<strong>スマホで見ると改行位置に違和感がある</strong>。句読点で改行するか、幅を狭めたテキスト枠に収めた方が見やすい。文面も長すぎる感があるので、この際見直してもよい。</div>
+    <div class="note fix"><span class="k">原因</span>説明文は 2 つの長い文を <code>&lt;br&gt;</code> 1 個で区切っただけの段落で、幅の制限が無かった。そのため<strong>ブラウザ任せの折り返し</strong>になり、幅の狭いスマホでは句の途中で改行が入る。実測（ヘッドレス・iPhone 8 幅 375px）では「同じ顔を 3 つ／つなげると消える。」「天井が降りてく／る。」のように<strong>文節や単語の途中で分断</strong>され、さらに 2 行目・4 行目が 9〜11 字しか無い不揃いな 4 行になっていた。PC では 1 文が 1 行に収まるため表面化しない。</div>
+    <div class="note fix"><span class="k">対応</span>文面と折り返しの両方を直した。<br>
+      (1) <strong>文面を 3 行に短縮</strong>：「タップ／クリックで発射。／同じ顔が 3 つつながると消える。／全部消せばクリア！」。DANGER と天井の説明は、ゲーム中の HUD で実際に見て気づける要素なので省いた（従来 4 文・66 字 → 3 文・38 字）。<br>
+      (2) <strong>折り返す位置を自分で決める</strong>：1 文を <code>.help-line</code>（ブロック）で包んで「1 文 1 行」を基本とし、その中の文節を <code>.help-phrase</code>（<code>inline-block</code>）で包んだ。inline-block は内部で改行されないため、幅が足りないときも<strong>文節の切れ目でしか改行されない</strong>。<br>
+      (3) <strong>枠幅を制限</strong>：<code>max-width: 24em</code> を指定。実際の枠幅は最長行に合わせた 206px に収まり、PC でも横に間延びしない。<br>
+      修正ファイル：<code>index.html</code>・<code>src/style.css</code>。デザイン案 3 種（ドット絵・つやつや・モノクロ）にも同じ修正を適用した。</div>
+    <p>指摘のあったスマホ（iPhone 8 幅・375px）での対応前後。</p>
+    <figure class="shot">
+      <img src="img/fb32-before-title.png" alt="対応前のタイトル画面。説明文が 4 行になり、2 行目と 4 行目が極端に短い" width="375">
+      <figcaption>対応前（v0.9.26）。「同じ顔を 3 つ／つなげると消える。」「天井が降りてく／る。」と句の途中で改行され、行の長さも不揃い</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb32-after-title.png" alt="対応後のタイトル画面。説明文が短い 3 行に整い、中央にそろっている" width="375">
+      <figcaption>対応後（v1.0.0）。1 文 1 行の 3 行に収まり、幅 206px の枠に中央ぞろえ。iPhone SE（320px）でも 3 行のまま崩れない</figcaption>
+    </figure>
+    <div class="note fix"><span class="k">あわせて対応</span>この確認中に、<strong>スマホを横向きにするとタイトル画面が縦にはみ出す</strong>既存の不具合が見つかった（対応前から発生。ロゴが上で切れ、説明文は画面外で読めない。<code>body</code> が <code>overflow: hidden</code> のためスクロールもできない）。高さの低い画面向けにメディアクエリを追加し、ロゴ・余白・ボタンを詰めて収めた（<code>max-height: 480px</code> と、iPhone SE 横向き用にもう一段の <code>max-height: 340px</code>）。<strong>検証</strong>：縦向き 3 種・横向き 4 種・PC の計 8 ケースをヘッドレスで実測し、はみ出しが全ケースで解消（縦向きの寸法は対応前と同一で退行なし）。</div>
+    <figure class="shot">
+      <img src="img/fb32-before-landscape.png" alt="対応前の横向きタイトル画面。ロゴが上端で切れ、説明文が画面の外に出て見えない" width="480">
+      <figcaption>対応前（v0.9.26）・横向き 667×375。ロゴが上で切れ、説明文は 53px 分が画面外で読めない</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb32-after-landscape.png" alt="対応後の横向きタイトル画面。ロゴから説明文まで画面内に収まっている" width="480">
+      <figcaption>対応後（v1.0.0）・横向き 667×375。ロゴから説明文の 3 行目まで画面内に収まる</figcaption>
+    </figure>
+  </div>
 
   <div class="fb-detail" id="fb31">
     <h3><span>#31：iOS のズーム等ネイティブジェスチャを全画面・全状態で無効化（v0.9.26）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>

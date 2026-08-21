@@ -62,9 +62,14 @@
         <button class="level-btn" data-level="hard" type="button">Hard</button>
         <button id="btn-highscore" type="button">ハイスコア</button>
       </div>
+      <!-- 説明文は「文」を .help-line、その中の「文節」を .help-phrase で包む（#32）。
+           スマホ幅でも句の途中では折り返さず、意味の切れ目だけで改行される。
+           .help-phrase は inline-block なので、タグの間に空白を入れると余分な
+           スペースとして出る。改行せず詰めて書くこと -->
       <p id="title-help">
-        ねらいを定めてタップ／クリックで発射。同じ顔を 3 つつなげると消える。<br>
-        撃つほど DANGER が増え、満タンで天井が降りてくる。全部消せばクリア！
+        <span class="help-line">タップ／クリックで発射。</span>
+        <span class="help-line"><span class="help-phrase">同じ顔が 3 つ</span><span class="help-phrase">つながると消える。</span></span>
+        <span class="help-line">全部消せばクリア！</span>
       </p>
     </div>
 
