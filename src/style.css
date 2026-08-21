@@ -172,18 +172,21 @@ html.in-game body {
    従来はロゴが上で切れ、説明文が画面外へ出ていた（body は overflow:hidden なので
    スクロールもできず読めない）。縦向きスマホ（高さ 568px 以上）には影響しない */
 @media (max-height: 480px) {
-  #title-screen { gap: 0.5rem; padding: 0.5rem; }
-  #logo { font-size: clamp(2.2rem, 9vh, 3.2rem); }
-  #level-buttons { gap: 0.5rem; }
-  .level-btn { font-size: 1.1rem; padding: 0.5rem; }
-  #title-help { line-height: 1.6; }
+  #title-screen { gap: 0.45rem; padding: 0.5rem; }
+  #logo { font-size: clamp(2rem, 8.5vh, 3rem); }
+  #tagline { font-size: 0.95rem; }
+  #level-buttons { gap: 0.45rem; }
+  .level-btn { font-size: 1.1rem; padding: 0.45rem; }
+  #title-help { line-height: 1.5; }
 }
 
 /* さらに低い画面（iPhone SE の横向き＝320px 等）はもう一段詰める */
 @media (max-height: 340px) {
-  #title-screen { gap: 0.35rem; }
-  #tagline { font-size: 0.85rem; }
-  .level-btn { font-size: 1rem; padding: 0.4rem; }
+  #title-screen { gap: 0.3rem; padding: 0.3rem; }
+  #logo { font-size: 2rem; }
+  #tagline { font-size: 0.8rem; }
+  .level-btn { font-size: 0.95rem; padding: 0.35rem; }
+  #title-help { line-height: 1.4; }
 }
 
 /* ---- ゲーム画面 ---- */
