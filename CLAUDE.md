@@ -86,6 +86,23 @@
    - commit → `v{version}` タグ作成 → `git push origin main` + タグ push
    - push により `deploy.yml` の GitHub Actions が起動し `play/v{version}/`
      （= `play/latest/`）へ公開される
+5. **デザイン案 3 種（`design/*`）も手で追随させる**（自動化しない方針。詳細は下記）
+
+### デザイン案（`design/*`）の追随は手作業
+見た目 4 種（オリジナル＝`main`／ドット絵・つやつや・モノクロ＝`design/*`）は
+**ブランチごとに独立した `package.json` を持つ**ため、`npm run release` で main を上げても
+デザイン案の版数表示は古いままになる（v1.0.0 公開時に実際に発生）。deploy.yml が
+ビルド時に版数を注入する自動化も検討したが、**移植漏れがあっても新しい版数に見えてしまう**
+ため、実態を正しく映す手作業を選択している（ユーザー判断・2026-08-21）。
+
+ゲーム本体に手を入れたら、各 `design/*` ブランチで次を行う：
+
+1. 同じ修正を移植する（見た目の差分は各ブランチの値に合わせる）
+2. `package.json` の `version` を main と同じ新版に上げる
+3. commit して `git push origin design/1a-pixel design/1b-solid design/1c-mono`
+4. `gh workflow run deploy.yml --ref main` で**デプロイを手動起動**する
+   （`deploy.yml` は `on: push branches: [main]` のため design/* の push では走らない）
+5. `node scripts/shots/check-published.mjs` で 4 種の版数と起動を確認する
 
 確認だけしたいときは `npm run release -- --dry-run`（変更内容のプレビューのみ／
 何も変更しない）。実装は `scripts/release.mjs`。
