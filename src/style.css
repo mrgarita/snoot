@@ -186,7 +186,41 @@ html.in-game body {
   box-shadow: 0 0 0 rgba(0, 0, 0, 0), 0 2px 6px rgba(40, 60, 90, 0.25);
 }
 
-#title-help { font-size: 0.8rem; color: #7a8a9c; line-height: 1.9; }
+/* 説明文（#32）：スマホの狭い幅でも句の途中で改行させない。
+   ・枠幅を全角 24 文字相当に制限し、1 行が長く伸びすぎないようにする
+   ・.help-line（＝1 文）をブロックにして「1 文 1 行」を基本にする
+   ・それでも入らない狭い画面（iPhone SE 320px 等）では、inline-block の
+     .help-phrase が内部で改行されないため、文節の切れ目だけで折り返す */
+#title-help {
+  font-size: 0.8rem;
+  color: #7a8a9c;
+  line-height: 1.9;
+  max-width: 24em;
+  margin: 0 auto;
+}
+#title-help .help-line { display: block; }
+#title-help .help-phrase { display: inline-block; }
+
+/* 高さの低い画面（スマホを横にしたとき等）はタイトルの各要素を詰めて画面内に収める（#32）。
+   従来はロゴが上で切れ、説明文が画面外へ出ていた（body は overflow: hidden なので
+   スクロールもできず読めない）。縦向きスマホ（高さ 568px 以上）には影響しない */
+@media (max-height: 480px) {
+  #title-screen { gap: 0.45rem; padding: 0.5rem; }
+  #logo { font-size: clamp(2rem, 8.5vh, 3rem); }
+  #tagline { font-size: 0.95rem; }
+  #level-buttons { gap: 0.45rem; }
+  .level-btn { font-size: 1.1rem; padding: 0.45rem; }
+  #title-help { line-height: 1.5; }
+}
+
+/* さらに低い画面（iPhone SE の横向き＝320px 等）はもう一段詰める */
+@media (max-height: 340px) {
+  #title-screen { gap: 0.3rem; padding: 0.3rem; }
+  #logo { font-size: 2rem; }
+  #tagline { font-size: 0.8rem; }
+  .level-btn { font-size: 0.95rem; padding: 0.35rem; }
+  #title-help { line-height: 1.4; }
+}
 
 /* ---- ゲーム画面 ---- */
 #game-screen {
