@@ -83,10 +83,24 @@
    - 事前チェック（main ブランチ・作業ツリーがクリーン・タグ未存在）
    - `deploy.yml` の `VERSIONS` 追記＋`LATEST` 更新、`index.html` のヒーロー版表示更新
    - 説明文（手順 2）が未反映なら**警告**（中断はしない）
+   - つやつや（`design/1b-solid`）の版数が main とズレていれば**警告**（同上）
    - commit → `v{version}` タグ作成 → `git push origin main` + タグ push
    - push により `deploy.yml` の GitHub Actions が起動し `play/v{version}/`
-     （= `play/latest/`）へ公開される
-5. **デザイン案 3 種（`design/*`）も手で追随させる**（自動化しない方針。詳細は下記）
+     （= `play/original/`）へ公開される
+5. **デザイン案 3 種（`design/*`）も手で追随させる**（自動化しない方針。詳細は下記）。
+   `play/latest/` はつやつやが担当するため、**この手順を終えるまで latest は古いまま**になる
+
+### 公開 URL の対応
+| URL | 中身 | ビルド元 |
+| --- | --- | --- |
+| `play/latest/` | **つやつや**（既定・一番人気） | `design/1b-solid` 先端 |
+| `play/original/` | オリジナル（濃紺・丸キャラ） | `LATEST` タグ |
+| `play/gloss/` `play/pixel/` `play/mono/` | 各デザイン案 | `design/*` 先端 |
+| `play/v{version}/` | その版のオリジナル | 各タグ |
+
+`play/latest/` は 2026-09-20 にオリジナルからつやつやへ差し替えた（ユーザー判断・一番人気のため）。
+`play/latest/` がタグではなくブランチ先端を指すようになったので、main をリリースしただけでは
+latest は更新されない。取りこぼしは `npm run release` の警告で検知する。
 
 ### デザイン案（`design/*`）の追随は手作業
 見た目 4 種（オリジナル＝`main`／ドット絵・つやつや・モノクロ＝`design/*`）は

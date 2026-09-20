@@ -5,7 +5,8 @@
 //   1. package.json の version を正としてタグ名（v{version}）を決める
 //   2. 事前チェック（main ブランチ・作業ツリーがクリーン・タグ未存在）
 //   3. deploy.yml の VERSIONS/LATEST と index.html のヒーロー版表示を更新
-//   4. 進化の記録（index.html）と step3-feedback.html への未反映を警告（中断しない）
+//   4. 未反映を警告（中断しない）：進化の記録（index.html）／step3-feedback.html の説明文と、
+//      play/latest/ を担当する「つやつや」（design/1b-solid）の版数ズレ
 //   5. commit → tag → git push origin main + tag（--dry-run のときは何もせず差分表示）
 //
 // バージョンのバンプはしない（package.json を先に新版へ上げておく前提）。
@@ -116,6 +117,23 @@ if (!step3Html.includes(tag)) {
   warnings.push(`${STEP3_HTML} に ${tag} の記載がありません（フィードバック詳細は手動で追記してください）。`);
 }
 
+// play/latest/ を担当する「つやつや」の版数が main に追随しているか。
+// ズレたままだと最新版のつもりで latest を開いた人に古いゲームが出るため、必ず確認する。
+const GLOSS_BRANCH = "design/1b-solid";
+try {
+  execFileSync("git", ["fetch", "--no-tags", "--quiet", "origin", GLOSS_BRANCH], { stdio: "ignore" });
+  const glossVersion = JSON.parse(git(["show", "FETCH_HEAD:package.json"])).version;
+  if (glossVersion !== version) {
+    warnings.push(
+      `つやつや（${GLOSS_BRANCH}）の version が ${glossVersion} で main（${version}）と揃っていません。` +
+        `play/latest/ はつやつやを配信するため、このままだと latest は古い版のままです。` +
+        `リリース後に同ブランチへ修正を移植し version を ${version} に上げて push してください。`,
+    );
+  }
+} catch {
+  warnings.push(`つやつや（${GLOSS_BRANCH}）の version を確認できませんでした（play/latest/ の担当なので手動で確認してください）。`);
+}
+
 // --- 5. dry-run なら差分表示して終了 -------------------------------------
 log("\n--- 変更予定 ---");
 if (changes.length === 0) {
@@ -158,8 +176,9 @@ log(`✔ push しました（main + ${tag}）。GitHub Actions のデプロイ�
 // --- 7. 完了メッセージ ---------------------------------------------------
 log("\n=== 完了 ===");
 log("Actions: https://github.com/mrgarita/snoot/actions");
-log(`公開URL: https://mrgarita.github.io/snoot/play/${tag}/`);
-log("最新版:  https://mrgarita.github.io/snoot/play/latest/");
+log(`公開URL:   https://mrgarita.github.io/snoot/play/${tag}/`);
+log("オリジナル: https://mrgarita.github.io/snoot/play/original/");
+log("最新版:    https://mrgarita.github.io/snoot/play/latest/（つやつや＝design/1b-solid の先端）");
 if (warnings.length > 0) {
   log("\n⚠ 未反映の説明文（上記警告）を忘れずに追記してください。");
 }
