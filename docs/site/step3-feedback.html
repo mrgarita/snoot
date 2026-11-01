@@ -58,6 +58,13 @@
       </thead>
       <tbody>
         <tr>
+          <td>2026-11-01</td><td class="num">33</td>
+          <td>スマホでアプリをインストールすると、アイコンの周りが白だったり黒っぽかったりして違和感がある（ユーザーからの指摘・開発者の実機でも同様）。顔の周りは透明が望ましいのではないか</td>
+          <td><span class="ver-pill">v1.0.1</span></td>
+          <td><a class="lk-detail" href="#fb33">詳細 →</a></td>
+          <td><a class="lk-play" target="_blank" rel="noopener" href="play/v1.0.1/">▶ プレイ</a></td>
+        </tr>
+        <tr>
           <td>2026-08-21</td><td class="num">32</td>
           <td>タイトル画面の説明文が、スマホで見ると句の途中で改行されて読みにくい（PC は横長なので気にならない）。句読点で改行するか、幅を狭めたテキスト枠に収めたい。文面も長すぎるので見直したい</td>
           <td><span class="ver-pill">v1.0.0</span></td>
@@ -287,6 +294,33 @@
 
   <h2>対応の詳細</h2>
   <p>各項目は一覧と同じ<strong>新しい順</strong>。見出し右の「↑ 一覧へ戻る」で表へ戻れる。</p>
+
+  <div class="fb-detail" id="fb33">
+    <h3><span>#33：アプリアイコンの地を顔に馴染む色に、PC 用は透明に（v1.0.1）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
+    <div class="note issue"><span class="k">指摘</span>スマホでアプリをインストールしたユーザーから、<strong>アイコンの周りが透明ではないので違和感がある</strong>との指摘。開発者のスマホでも、アイコンの顔の周りが白だったり黒っぽかったりしている。顔の周りは透明が望ましいのではないか。</div>
+    <div class="note fix"><span class="k">原因</span>アイコン生成（<code>scripts/make-icons.mjs</code>）で、顔の下に<strong>各デザインの背景色（<code>--bg-top</code>）をそのまま塗っていた</strong>。つやつや（<code>play/latest/</code>）は <code>#e6edf6</code>、モノクロは <code>#f4f4f1</code> でほぼ白、オリジナルは <code>#1b2a4a</code>、ドット絵は <code>#101a38</code> で黒に近い紺。ゲーム画面ではこの色が背景として馴染むが、ホーム画面では丸い顔の周りに<strong>ただの余白として残り</strong>、白や黒の枠に見えていた。</div>
+    <div class="note fix"><span class="k">検討</span>ご提案の「透明」は、<strong>スマホのホーム画面では実現できない</strong>。iPhone も Android もアイコンを必ずタイル状（iPhone は角丸の正方形、Android は機種ごとの円や角丸）に切り抜いて表示し、透明部分は <strong>iPhone では黒で塗られ</strong>、Android では <strong>白い台座の上に縮小して載る</strong>。透明にしても、白や紺の枠が「黒や白の枠」に変わるだけで違和感は解消しない（下の模式図）。透明がそのまま効くのは、PC（Chrome・Edge）でインストールしたときだけである。</div>
+    <figure class="shot">
+      <img src="img/fb33-transparent.png" alt="模式図。透明にしたアイコンは、iPhone では黒い角丸の正方形に、Android では白い円の台座の上に小さく表示される" width="300">
+      <figcaption>模式図：スマホ用まで透明にした場合。iPhone は透明部分が黒で塗られ、Android は白い台座に縮小して載る</figcaption>
+    </figure>
+    <div class="note fix"><span class="k">対応</span>スマホ用と PC 用で地の扱いを分けた。<br>
+      (1) <strong>スマホ用（iPhone の <code>apple-touch-icon</code>・Android の <code>maskable</code>）は塗りつぶしのまま、地を顔に馴染む色に</strong>：「キャラの色」と「そのデザインの地色」を半々に混ぜた色にした（オリジナル・ドット絵は落ち着いた紫、つやつやは淡いラベンダー、モノクロは明るい灰色）。あわせて顔を大きくし、地が枠に見えないようにした。<br>
+      (2) <strong>PC 用（manifest の <code>purpose: any</code>）は地を透明に</strong>：PC でインストールしたときは、顔だけが浮いて見える。<br>
+      (3) <strong>描画範囲で大きさと位置を決める</strong>：つやつやは顔の下に影があり、ドット絵は z が顔の外へはみ出しているため、従来の「顔の半径」基準では影が下端で切れる。透明なキャンバスに一度描いて<strong>影や z を含む描画範囲を測り</strong>、その範囲が一辺 86%（iPhone）／80%（Android の安全域）／90%（PC）の正方形に収まるよう中央に置いた。<br>
+      色はすべて実ページの CSS とキャラ色から自動で決まるため、<code>scripts/make-icons.mjs</code> は 4 種のブランチで同一のまま、各ブランチで実行するだけでその案に合った地になる。デザイン案 3 種（ドット絵・つやつや・モノクロ）にも同じ修正を適用した。</div>
+    <p>スマホのホーム画面での見え方（壁紙の上に、各 OS の形で切り抜いて表示）。Android は円形の機種の例で、角丸の機種でも四隅に見える地が同じ色になる。</p>
+    <figure class="shot">
+      <img src="img/fb33-phone.png" alt="スマホ用アイコンの対応前後の比較。対応前は顔の周りに紺や白の枠が見え、対応後は紫やラベンダーの地に大きな顔が収まっている" width="460">
+      <figcaption>スマホ用アイコン：対応前（v1.0.0）と対応後（v1.0.1）。白・紺の枠が、顔と同系色の地に変わった</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/fb33-pc.png" alt="PC 用アイコンの対応前後の比較。対応前は四角い地が見え、対応後は明るい背景でも暗い背景でも顔だけが表示されている" width="460">
+      <figcaption>PC 用アイコン：対応後は地が透明になり、明るい背景でも暗い背景でも顔だけが表示される</figcaption>
+    </figure>
+    <div class="note fix"><span class="k">留意点</span>(1) すでにホーム画面に追加している場合、<strong>iPhone は追加した時点の画像のまま変わらない</strong>ため、一度削除して追加し直す必要がある。Android は Chrome が更新を検知して差し替える（数日かかることがある）。<br>
+      (2) PC 用は透明にしたことで、明るい背景ではドット絵の白っぽい z が見えにくく、オリジナルの顔の縁（半透明の黒い線）が灰色のふちに見える。いずれもゲーム内と同じ描き方のままとした。</div>
+  </div>
 
   <div class="fb-detail" id="fb32">
     <h3><span>#32：タイトル説明文の折り返しを整え、文面を 3 行に短縮（v1.0.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
