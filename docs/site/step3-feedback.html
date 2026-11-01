@@ -435,7 +435,7 @@
     <div class="note fix"><span class="k">原因</span>HTML の <code>viewport</code> には拡大禁止（<code>user-scalable=no</code>）を指定しているが、<strong>iOS Safari は iOS 10 以降この指定を無視する</strong>ため効かない。加えて、拡大抑止用の <code>touch-action:&nbsp;none</code> は盤面の <code>&lt;canvas&gt;</code> だけに付いており、盤面まわりのレターボックス余白（<code>#canvas-wrap</code>）や上部 HUD ではダブルタップズームが有効なままだった。さらに <strong>iOS のピンチズームは <code>touch-action</code> では止まらず</strong>、<code>gesturestart</code> の <code>preventDefault()</code> が必要になる。</div>
     <div class="note fix"><span class="k">対応</span>ゲーム中（<code>&lt;html&gt;</code> に <code>in-game</code> クラスが付いている間）<strong>だけ</strong>、JavaScript でズームを抑止するようにした。<br>
       (1) iOS 独自の <code>gesturestart</code>／<code>gesturechange</code>／<code>gestureend</code> を <code>preventDefault()</code> して<strong>ピンチ</strong>を無効化。<br>
-      (2) 盤面領域で 300ms 以内に続いたタップ（<code>touchend</code>）を <code>preventDefault()</code> して<strong>ダブルタップズーム</strong>を無効化。発射は Pointer Events（<code>pointerup</code>）で処理され <code>touchend.preventDefault()</code> では止まらないため、<strong>連打発射は従来どおり効く</strong>。<br>
+      (2) 盤面領域で 300ms 以内に続いたタップ（<code>touchend</code>）を <code>preventDefault()</code> して<strong>ダブルタップズーム</strong>を無効化。発射は Pointer Events（<code>pointerup</code>）で処理され <code>touchend.<wbr>preventDefault()</code> では止まらないため、<strong>連打発射は従来どおり効く</strong>。<br>
       (3) <code>touch-action</code> を盤面まわりへ拡張（<code>#canvas-wrap</code>＝<code>none</code>／<code>#hud</code>＝<code>manipulation</code>）。<br>
       タイトル／リザルト画面ではズームを許可したまま残す（テキスト拡大のアクセシビリティを維持）。<br>
       <strong>検証</strong>：ヘッドレスで「ゲーム中だけ」抑止が効くこと（ダブルタップ 2 回目・ピンチが抑止され、ボタン連打・タイトルでは非抑止、HUD が可視領域内）を 10 項目確認。<code>touch-action</code> は描画に影響しないプロパティのため、修正前後で <strong>mobile／PC × Easy／Hard の全ケースが 1px 一致</strong>（レイアウト退行なし）。最後に iPhone 実機で拡大しなくなり HUD が常に見えることを確認した。<br>
@@ -1550,7 +1550,7 @@
   <div class="fb-detail" id="fb9">
     <h3><span>#9：PWA 化とアプリアイコンの「ネムリ」化（v0.9.0）</span><a class="back-link" href="#list">↑ 一覧へ戻る</a></h3>
     <div class="note issue"><span class="k">指摘</span>テストプレイしやすいよう PWA 化したい。あわせて黄色いアプリアイコンを、ゲームキャラに使われている紫の「ネムリ：寝息の浮き沈み」のアイコンに変更したい。</div>
-    <div class="note fix"><span class="k">原因・対応</span>スマホで「ホーム画面に追加」でき、スタンドアロン（全画面）で起動・オフライン対応する PWA にした。今後のこまめな更新が確実に届くよう、<code>vite-plugin-pwa</code> の <code>autoUpdate</code> でビルド毎に Service Worker を更新し、インストール済みアプリが次回起動時に自動で最新化する方式を採用。配信場所（<code>play/&lt;tag&gt;/</code>・XServer サブディレクトリ）が一定しないため manifest / SW 登録をすべて相対パスにした。アイコンは著作権配慮のため本家画像を使わず、<code>drawSnoot()</code> の <code>type=4</code>（ネムリ）から生成（<code>scripts/make-icons.mjs</code>）。詳細は <a href="step4-pwa.html">step4：PWA 化</a>。<code>vite.config.ts</code>・<code>index.html</code>・<code>package.json</code>・<code>.github/workflows/deploy.yml</code> を修正、<code>public/</code> アイコンと <code>scripts/make-icons.mjs</code> を追加。</div>
+    <div class="note fix"><span class="k">原因・対応</span>スマホで「ホーム画面に追加」でき、スタンドアロン（全画面）で起動・オフライン対応する PWA にした。今後のこまめな更新が確実に届くよう、<code>vite-plugin-pwa</code> の <code>autoUpdate</code> でビルド毎に Service Worker を更新し、インストール済みアプリが次回起動時に自動で最新化する方式を採用。配信場所（<code>play/&lt;tag&gt;/</code>・XServer サブディレクトリ）が一定しないため manifest / SW 登録をすべて相対パスにした。アイコンは著作権配慮のため本家画像を使わず、<code>drawSnoot()</code> の <code>type=4</code>（ネムリ）から生成（<code>scripts/make-icons.mjs</code>）。詳細は <a href="step4-pwa.html">step4：PWA 化</a>。<code>vite.config.ts</code>・<code>index.html</code>・<code>package.json</code>・<code>.github/<wbr>workflows/<wbr>deploy.yml</code> を修正、<code>public/</code> アイコンと <code>scripts/make-icons.mjs</code> を追加。</div>
   </div>
 
   <div class="fb-detail" id="fb8">
